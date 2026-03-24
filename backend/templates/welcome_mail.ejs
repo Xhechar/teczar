@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="x-apple-disable-message-reformatting" />
+  <title>Welcome to Raz Technologies</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { margin: 0; padding: 0; background-color: #f1f5f9; -webkit-text-size-adjust: 100%; }
+    a { text-decoration: none; }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+    .feature-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 18px 16px;
+    }
+    .feature-icon {
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+    .feature-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #0d1a42;
+      margin: 0 0 4px;
+    }
+    .feature-desc {
+      font-size: 12px;
+      color: #64748b;
+      line-height: 1.5;
+      margin: 0;
+    }
+
+    .step-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+    .step-number {
+      width: 28px;
+      height: 28px;
+      background: linear-gradient(135deg, #1660eb, #0d1a42);
+      border-radius: 50%;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    @media only screen and (max-width: 600px) {
+      .email-wrapper  { padding: 16px !important; }
+      .card-body      { padding: 28px 20px !important; }
+      .header-pad     { padding: 32px 20px !important; }
+      .feature-grid   { grid-template-columns: 1fr !important; }
+      .cta-btn        { display: block !important; text-align: center !important; }
+    }
+  </style>
+</head>
+
+<body style="margin:0;padding:0;background-color:#f1f5f9;font-family:'Segoe UI',Helvetica,Arial,sans-serif;">
+
+  <%# Hidden preheader %>
+  <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;color:#f1f5f9;">
+    Welcome to Raz Technologies, <%= user.FirstName %>! Your account is ready — let's get started.
+    &nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;
+  </div>
+
+  <div class="email-wrapper" style="width:100%;padding:32px 16px;">
+    <div style="max-width:600px;margin:0 auto;">
+      <div style="background:#ffffff;border-radius:20px;overflow:hidden;box-shadow:0 4px 24px rgba(13,26,66,0.10);">
+
+        <%# ── HEADER ── %>
+        <div class="header-pad" style="background:linear-gradient(135deg,#0d1a42 0%,#1660eb 100%);padding:40px 40px 36px;text-align:center;position:relative;overflow:hidden;">
+
+          <%# Decorative circles %>
+          <div style="position:absolute;top:-30px;right:-30px;width:120px;height:120px;background:rgba(255,255,255,0.05);border-radius:50%;"></div>
+          <div style="position:absolute;bottom:-20px;left:-20px;width:90px;height:90px;background:rgba(245,158,11,0.10);border-radius:50%;"></div>
+
+          <div style="position:relative;z-index:1;">
+            <%# Logo %>
+            <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:28px;">
+              <div style="width:40px;height:40px;background:rgba(255,255,255,0.15);border-radius:10px;display:flex;align-items:center;justify-content:center;">
+                <span style="font-size:20px;line-height:1;">⚡</span>
+              </div>
+              <p style="font-size:18px;font-weight:800;color:#ffffff;margin:0;letter-spacing:-0.3px;">Technologies</p>
+            </div>
+
+            <%# Celebration emoji %>
+            <div style="font-size:48px;margin-bottom:16px;line-height:1;">🎉</div>
+
+            <h1 style="font-size:28px;font-weight:800;color:#ffffff;line-height:1.2;margin:0 0 10px;">
+              Welcome aboard,<br /><%= user.FirstName %>!
+            </h1>
+            <p style="font-size:15px;color:rgba(255,255,255,0.70);margin:0;line-height:1.6;">
+              Your Raz Technologies account is ready.<br />
+              Kenya's trusted technology partner — at your service.
+            </p>
+          </div>
+        </div>
+
+        <%# ── BODY ── %>
+        <div class="card-body" style="padding:40px 40px 32px;">
+
+          <%# Personalised greeting %>
+          <p style="font-size:15px;color:#475569;line-height:1.8;margin:0 0 28px;">
+            Hi <strong style="color:#0d1a42;"><%= user.FirstName %> <%= user.SecondName %></strong>, thank you
+            for joining Raz Technologies! Your account has been created under
+            <strong style="color:#0d1a42;"><%= user.Email %></strong>.
+            You now have full access to our services, products, and booking tools.
+          </p>
+
+          <%# ── ACCOUNT SUMMARY CARD ── %>
+          <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:20px 24px;margin-bottom:32px;">
+            <p style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:1.5px;margin:0 0 14px;">
+              Your Account
+            </p>
+            <div style="display:flex;flex-wrap:wrap;gap:16px;">
+              <div>
+                <p style="font-size:11px;color:#94a3b8;margin:0 0 2px;">Name</p>
+                <p style="font-size:14px;font-weight:600;color:#0d1a42;margin:0;"><%= user.FirstName %> <%= user.SecondName %></p>
+              </div>
+              <div>
+                <p style="font-size:11px;color:#94a3b8;margin:0 0 2px;">Email</p>
+                <p style="font-size:14px;font-weight:600;color:#1660eb;margin:0;"><%= user.Email %></p>
+              </div>
+              <div>
+                <p style="font-size:11px;color:#94a3b8;margin:0 0 2px;">Phone</p>
+                <p style="font-size:14px;font-weight:600;color:#0d1a42;margin:0;"><%= user.Phone %></p>
+              </div>
+              <div>
+                <p style="font-size:11px;color:#94a3b8;margin:0 0 2px;">County</p>
+                <p style="font-size:14px;font-weight:600;color:#0d1a42;margin:0;"><%= user.County %></p>
+              </div>
+              <div>
+                <p style="font-size:11px;color:#94a3b8;margin:0 0 2px;">Account Type</p>
+                <p style="font-size:14px;font-weight:600;color:#0d1a42;margin:0;"><%= user.Role %></p>
+              </div>
+            </div>
+          </div>
+
+          <%# ── WHAT YOU CAN DO ── %>
+          <p style="font-size:13px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:1.5px;margin:0 0 14px;">
+            What you can do with your account
+          </p>
+
+          <div class="feature-grid">
+            <div class="feature-card">
+              <div class="feature-icon">☀️</div>
+              <p class="feature-title">Book Solar Installation</p>
+              <p class="feature-desc">Request a free site assessment and get a solar system quote for your home or business.</p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">📦</div>
+              <p class="feature-title">Shop Our Products</p>
+              <p class="feature-desc">Browse inverters, cameras, panels, and networking equipment with M-Pesa checkout.</p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">🔧</div>
+              <p class="feature-title">Request a Service</p>
+              <p class="feature-desc">Book electrical, CCTV, WiFi, plumbing, or intercom installations at your location.</p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">📋</div>
+              <p class="feature-title">Track Everything</p>
+              <p class="feature-desc">Follow your orders, service bookings, and payment history from your dashboard.</p>
+            </div>
+          </div>
+
+          <%# ── GET STARTED STEPS ── %>
+          <p style="font-size:13px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:1.5px;margin:0 0 16px;">
+            Get started in 3 steps
+          </p>
+
+          <div style="margin-bottom:32px;">
+            <div class="step-row">
+              <div class="step-number">1</div>
+              <div>
+                <p style="font-size:14px;font-weight:600;color:#0d1a42;margin:0 0 2px;">Explore our services</p>
+                <p style="font-size:13px;color:#64748b;margin:0;line-height:1.5;">Browse solar, CCTV, WiFi, electrical, plumbing, and more — all available for booking online.</p>
+              </div>
+            </div>
+            <div class="step-row">
+              <div class="step-number">2</div>
+              <div>
+                <p style="font-size:14px;font-weight:600;color:#0d1a42;margin:0 0 2px;">Place an order or book a service</p>
+                <p style="font-size:13px;color:#64748b;margin:0;line-height:1.5;">Add products to your cart or submit a service booking request. Our team will confirm within 2 hours.</p>
+              </div>
+            </div>
+            <div class="step-row" style="margin-bottom:0;">
+              <div class="step-number">3</div>
+              <div>
+                <p style="font-size:14px;font-weight:600;color:#0d1a42;margin:0 0 2px;">Pay securely with M-Pesa</p>
+                <p style="font-size:13px;color:#64748b;margin:0;line-height:1.5;">All payments are processed via Safaricom Daraja — fast, safe, and familiar.</p>
+              </div>
+            </div>
+          </div>
+
+          <%# ── CTA BUTTON ── %>
+          <div style="text-align:center;margin-bottom:32px;">
+            <a class="cta-btn" href="https://raztechnologies.co.ke"
+              style="display:inline-block;background:linear-gradient(135deg,#f59e0b,#d97706);
+                     color:#ffffff;font-size:15px;font-weight:700;padding:14px 36px;
+                     border-radius:12px;text-decoration:none;
+                     box-shadow:0 4px 14px rgba(245,158,11,0.35);">
+              🚀&nbsp; Explore Raz Technologies
+            </a>
+          </div>
+
+          <%# ── SUPPORT NOTE ── %>
+          <div style="background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:12px;padding:16px 20px;text-align:center;">
+            <p style="font-size:14px;color:#166534;margin:0;line-height:1.6;">
+              Need help getting started? Our team is available
+              <strong>24/7</strong> for emergencies.<br />
+              <a href="tel:+254700000000" style="color:#15803d;font-weight:700;">📞 +254 700 000 000</a>
+              &nbsp;&bull;&nbsp;
+              <a href="mailto:support@raztechnologies.co.ke" style="color:#15803d;font-weight:700;">✉️ support@raztechnologies.co.ke</a>
+            </p>
+          </div>
+
+        </div>
+        <%# /BODY %>
+
+        <%# DIVIDER %>
+        <div style="height:1px;background:#e2e8f0;margin:0 40px;"></div>
+
+        <%# ── FOOTER ── %>
+        <div style="padding:24px 40px 32px;text-align:center;">
+          <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:12px;">
+            <div style="width:26px;height:26px;background:linear-gradient(135deg,#1660eb,#0d1a42);border-radius:6px;display:flex;align-items:center;justify-content:center;">
+              <span style="font-size:13px;line-height:1;">⚡</span>
+            </div>
+            <p style="font-size:13px;font-weight:700;color:#0d1a42;margin:0;">Raz Technologies</p>
+          </div>
+          <p style="font-size:12px;color:#94a3b8;margin:0 0 8px;">
+            <a href="https://raztechnologies.co.ke" style="color:#64748b;font-weight:500;">Website</a>
+            &nbsp;&bull;&nbsp;
+            <a href="https://raztechnologies.co.ke/explore?tab=services" style="color:#64748b;font-weight:500;">Services</a>
+            &nbsp;&bull;&nbsp;
+            <a href="https://raztechnologies.co.ke/explore?tab=products" style="color:#64748b;font-weight:500;">Products</a>
+            &nbsp;&bull;&nbsp;
+            <a href="https://raztechnologies.co.ke/privacy" style="color:#64748b;font-weight:500;">Privacy</a>
+          </p>
+          <p style="font-size:12px;color:#cbd5e1;margin:0 0 4px;">
+            &copy; <%= new Date().getFullYear() %> Raz Technologies. All rights reserved.
+          </p>
+          <p style="font-size:12px;color:#cbd5e1;margin:0;">Nairobi, Kenya &mdash; Serving All Counties</p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

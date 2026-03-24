@@ -1,0 +1,400 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum OrderStatus {
+  AwaitingPayment
+  Paid
+  Processing
+  Delivered
+  Cancelled
+}
+
+enum PaymentStatus {
+  Pending
+  Completed
+  Failed
+}
+
+enum ServiceRequestStatus {
+  Pending
+  Contacted
+  Scheduled
+  Completed
+  Cancelled
+}
+
+enum ReviewStatus {
+  Pending
+  Approved
+  Rejected
+}
+
+enum MediaType {
+  Image
+  Video
+}
+
+enum UserRole {
+  Admin
+  Customer
+  Staff
+}
+
+enum JobApplicationStatus {
+  Pending
+  Reviewing
+  Interview
+  Accepted
+  Rejected
+}
+
+model Product {
+  ProductId     String   @id @default(uuid()) @db.Uuid
+  Name          String
+  Description   String
+  Price         Decimal  @db.Decimal(10,2)
+  OfferPrice    Decimal? @db.Decimal(10,2)
+  OnOffer       Boolean  @default(false)
+  Quantity      Int
+  CategoryId    String   @db.Uuid
+  IsFeatured    Boolean  @default(false)
+  IsAvailable   Boolean  @default(true)
+
+  Category      Category      @relation(fields: [CategoryId], references: [CategoryId], onDelete: NoAction, onUpdate: NoAction)
+  Images        ProductImage[]
+  CartItems     CartItem[]
+  OrderItems    OrderItem[]
+  Reviews       Review[]
+
+  IsDeleted     Boolean  @default(false)
+  CreatedAt     DateTime @default(now())
+  UpdatedAt     DateTime @updatedAt
+
+  @@index([CategoryId])
+  @@index([IsFeatured])
+}
+
+model ProductImage {
+  ImageId    String   @id @default(uuid()) @db.Uuid
+  ProductId  String   @db.Uuid
+  ImageUrl   String
+
+  Product    Product  @relation(fields: [ProductId], references: [ProductId], onDelete: NoAction, onUpdate: NoAction)
+
+  IsDeleted  Boolean  @default(false)
+  CreatedAt  DateTime @default(now())
+  UpdatedAt  DateTime @updatedAt
+
+  @@index([ProductId])
+}
+
+model Service {
+  ServiceId      String           @id @default(uuid()) @db.Uuid
+  Title          String
+  Description    String
+  ImageUrl       String
+  OnOffer        Boolean          @default(false)
+  IsFeatured     Boolean          @default(false)
+
+  Requests       ServiceRequest[]
+
+  IsDeleted      Boolean          @default(false)
+  CreatedAt      DateTime         @default(now())
+  UpdatedAt      DateTime         @updatedAt
+
+  @@index([IsFeatured])
+}
+
+model ServiceRequest {
+  RequestId           String    @id @default(uuid()) @db.Uuid
+  UserId              String    @db.Uuid
+  ServiceId           String    @db.Uuid
+  PreferredDate       DateTime
+  LocationDescription String
+  Status              ServiceRequestStatus @default(Pending)
+
+  User                User      @relation(fields: [UserId], references: [UserId], onDelete: NoAction, onUpdate: NoAction)
+  Service             Service   @relation(fields: [ServiceId], references: [ServiceId], onDelete: NoAction, onUpdate: NoAction)
+
+  IsDeleted           Boolean   @default(false)
+  CreatedAt           DateTime  @default(now())
+  UpdatedAt           DateTime  @updatedAt
+
+  @@index([UserId])
+  @@index([ServiceId])
+  @@index([Status])
+}
+
+model Category {
+  CategoryId   String    @id @default(uuid()) @db.Uuid
+  Name         String
+  ImageUrl     String?
+
+  Products     Product[]
+
+  IsDeleted    Boolean   @default(false)
+  CreatedAt    DateTime  @default(now())
+  UpdatedAt    DateTime  @updatedAt
+
+  @@index([Name])
+}
+
+model User {
+  UserId              String         @id @default(uuid()) @db.Uuid
+  FirstName           String
+  SecondName          String
+  Email               String         @unique
+  Phone               String         @unique
+  County              String
+  LocationDescription String?
+  Role                UserRole       @default(Customer)
+  PasswordHash        String
+  IsActive            Boolean        @default(true)
+  IsWelcomed          Boolean        @default(false)
+
+  Cart                Cart?
+  Orders              Order[]
+  Payments            Payment[]
+  Reviews             Review[]
+  ServiceRequests     ServiceRequest[]
+  StkRequests         StkRequest[]
+  RefreshTokens       RefreshToken[]
+
+  IsDeleted           Boolean        @default(false)
+  CreatedAt           DateTime       @default(now())
+  UpdatedAt           DateTime       @updatedAt
+
+  @@index([Role])
+}
+
+model Cart {
+  CartId      String     @id @default(uuid()) @db.Uuid
+  UserId      String     @unique @db.Uuid
+
+  User        User       @relation(fields: [UserId], references: [UserId], onDelete: NoAction, onUpdate: NoAction)
+  Items       CartItem[]
+
+  IsDeleted   Boolean    @default(false)
+  CreatedAt   DateTime   @default(now())
+  UpdatedAt   DateTime   @updatedAt
+}
+
+model CartItem {
+  CartItemId  String   @id @default(uuid()) @db.Uuid
+  CartId      String   @db.Uuid
+  ProductId   String   @db.Uuid
+  Quantity    Int
+
+  Cart        Cart     @relation(fields: [CartId], references: [CartId], onDelete: NoAction, onUpdate: NoAction)
+  Product     Product  @relation(fields: [ProductId], references: [ProductId], onDelete: NoAction, onUpdate: NoAction)
+
+  IsDeleted   Boolean  @default(false)
+  CreatedAt   DateTime @default(now())
+  UpdatedAt   DateTime @updatedAt
+
+  @@index([CartId])
+  @@index([ProductId])
+}
+
+model Order {
+  OrderId      String      @id @default(uuid()) @db.Uuid
+  UserId       String      @db.Uuid
+  Status       OrderStatus @default(AwaitingPayment)
+  TotalAmount  Decimal     @db.Decimal(10,2)
+  IsSent           Boolean  @default(false)
+
+  User         User        @relation(fields: [UserId], references: [UserId], onDelete: NoAction, onUpdate: NoAction)
+  Items        OrderItem[]
+  Payments     Payment[]
+
+  IsDeleted    Boolean     @default(false)
+  CreatedAt    DateTime    @default(now())
+  UpdatedAt    DateTime    @updatedAt
+
+  @@index([UserId])
+  @@index([Status])
+}
+
+model OrderItem {
+  OrderItemId      String   @id @default(uuid()) @db.Uuid
+  OrderId          String   @db.Uuid
+  ProductId        String   @db.Uuid
+  Quantity         Int
+  PriceAtPurchase  Decimal  @db.Decimal(10,2)
+
+  Order            Order    @relation(fields: [OrderId], references: [OrderId], onDelete: NoAction, onUpdate: NoAction)
+  Product          Product  @relation(fields: [ProductId], references: [ProductId], onDelete: NoAction, onUpdate: NoAction)
+
+  IsDeleted        Boolean  @default(false)
+  CreatedAt        DateTime @default(now())
+  UpdatedAt        DateTime @updatedAt
+
+  @@index([OrderId])
+  @@index([ProductId])
+}
+
+model Payment {
+  PaymentId           String       @id @default(uuid()) @db.Uuid
+  UserId              String       @db.Uuid
+  OrderId             String       @db.Uuid
+  Amount              Decimal      @db.Decimal(10,2)
+  MpesaReferenceCode  String?
+  Status              PaymentStatus @default(Pending)
+
+  User                User         @relation(fields: [UserId], references: [UserId], onDelete: NoAction, onUpdate: NoAction)
+  Order               Order        @relation(fields: [OrderId], references: [OrderId], onDelete: NoAction, onUpdate: NoAction)
+  StkRequests         StkRequest[]
+
+  IsDeleted           Boolean      @default(false)
+  CreatedAt           DateTime     @default(now())
+  UpdatedAt           DateTime     @updatedAt
+
+  @@index([UserId])
+  @@index([OrderId])
+  @@index([Status])
+}
+
+model Review {
+  ReviewId    String   @id @default(uuid()) @db.Uuid
+  UserId      String   @db.Uuid
+  ProductId   String   @db.Uuid
+  Rating      Int
+  Message     String
+  Status      ReviewStatus  @default(Pending)
+
+  User        User     @relation(fields: [UserId], references: [UserId], onDelete: NoAction, onUpdate: NoAction)
+  Product     Product  @relation(fields: [ProductId], references: [ProductId], onDelete: NoAction, onUpdate: NoAction)
+
+  IsDeleted   Boolean  @default(false)
+  CreatedAt   DateTime @default(now())
+  UpdatedAt   DateTime @updatedAt
+}
+
+model StkRequest {
+  RequestId          String   @id @default(uuid()) @db.Uuid
+  PaymentId          String   @db.Uuid
+  UserId             String   @db.Uuid
+  MerchantRequestID  String   @unique
+  CheckoutRequestID  String   @unique
+  Amount             Decimal  @db.Decimal(10,2)
+  ResponseCode       String?
+  ResultCode         String?
+  ResultDesc         String?
+
+  Payment            Payment  @relation(fields: [PaymentId], references: [PaymentId], onDelete: NoAction, onUpdate: NoAction)
+  User               User     @relation(fields: [UserId], references: [UserId], onDelete: NoAction, onUpdate: NoAction)
+
+  IsDeleted          Boolean  @default(false)
+  CreatedAt          DateTime @default(now())
+  UpdatedAt          DateTime @updatedAt
+
+  @@index([PaymentId])
+}
+
+model Advert {
+  AdvertId    String   @id @default(uuid()) @db.Uuid
+  MediaUrl    String
+  MediaType   MediaType
+  Title       String
+  IsActive    Boolean  @default(true)
+
+  IsDeleted   Boolean  @default(false)
+  CreatedAt   DateTime @default(now())
+  UpdatedAt   DateTime @updatedAt
+}
+
+model Recovery {
+  RecoveryId    String   @id @default(uuid()) @db.Uuid
+  Email        String   @db.Uuid
+  RecoveryCode  String
+  Expiry        DateTime
+  IsUsed        Boolean  @default(false)
+  Attempts      Int      @default(0)
+
+  IsDeleted     Boolean  @default(false)
+  CreatedAt     DateTime @default(now())
+  UpdatedAt     DateTime @updatedAt
+
+  @@index([Email])
+}
+
+model RefreshToken {
+  RefreshTokenId String   @id @default(uuid()) @db.Uuid
+  UserId         String   @db.Uuid
+  TokenHash      String
+
+  User           User     @relation(fields: [UserId], references: [UserId], onDelete: NoAction, onUpdate: NoAction)
+
+  IsDeleted      Boolean  @default(false)
+  CreatedAt      DateTime @default(now())
+  UpdatedAt      DateTime @updatedAt
+
+  @@index([UserId])
+}
+
+model Job {
+  JobId          String           @id @default(uuid()) @db.Uuid
+  Title          String
+  Description    String
+  Location       String
+  SalaryRange    String?
+  EmploymentType String           @default("Permanent")
+  IsActive       Boolean          @default(true)
+
+  Applications   JobApplication[]
+
+  IsDeleted      Boolean          @default(false)
+  CreatedAt      DateTime         @default(now())
+  UpdatedAt      DateTime         @updatedAt
+}
+
+model JobApplication {
+  ApplicationId  String   @id @default(uuid()) @db.Uuid
+  JobId          String   @db.Uuid
+  FullName       String
+  Email          String
+  Phone          String
+  ResumeUrl      String?
+  CoverLetter    String?
+  Status         JobApplicationStatus   @default(Pending)
+
+  Job            Job      @relation(fields: [JobId], references: [JobId], onDelete: NoAction, onUpdate: NoAction)
+
+  IsDeleted      Boolean  @default(false)
+  CreatedAt      DateTime @default(now())
+  UpdatedAt      DateTime @updatedAt
+
+  @@unique([JobId, Phone])
+  @@index([JobId])
+}
+
+model HeroSlide {
+  SlideId       String   @id @default(uuid()) @db.Uuid
+  ImageUrl      String   
+  Tag           String   
+  Title         String   
+  TitleAccent   String  
+  Description   String   
+  CtaLabel      String   
+  CtaLink       String   
+  SortOrder     Int      @default(0)
+  IsActive      Boolean  @default(true)
+  IsDeleted     Boolean  @default(false)
+
+  CreatedAt     DateTime @default(now())
+  UpdatedAt     DateTime @updatedAt
+
+  @@index([SortOrder])
+  @@index([IsActive, SortOrder])
+}

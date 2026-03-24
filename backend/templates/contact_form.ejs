@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="x-apple-disable-message-reformatting" />
+  <title>Raz Technologies — New Contact Form Submission</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { margin: 0; padding: 0; background-color: #f1f5f9; -webkit-text-size-adjust: 100%; }
+    a { text-decoration: none; }
+
+    .detail-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 14px 0;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .detail-row:last-child { border-bottom: none; }
+    .detail-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 16px;
+    }
+    .detail-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin: 0 0 3px;
+    }
+    .detail-value {
+      font-size: 15px;
+      font-weight: 600;
+      color: #0d1a42;
+      margin: 0;
+      line-height: 1.5;
+      word-break: break-word;
+    }
+
+    @media only screen and (max-width: 600px) {
+      .email-wrapper { padding: 16px !important; }
+      .card-body     { padding: 28px 20px !important; }
+      .header-pad    { padding: 28px 20px !important; }
+    }
+  </style>
+</head>
+
+<body style="margin:0;padding:0;background-color:#f1f5f9;font-family:'Segoe UI',Helvetica,Arial,sans-serif;">
+
+  <%# Hidden preheader %>
+  <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;color:#f1f5f9;">
+    New enquiry from <%= formData.Name %> — <%= formData.Subject %>
+    &nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;
+  </div>
+
+  <div class="email-wrapper" style="width:100%;padding:32px 16px;">
+    <div style="max-width:600px;margin:0 auto;">
+
+      <div style="background:#ffffff;border-radius:20px;overflow:hidden;box-shadow:0 4px 24px rgba(13,26,66,0.10);">
+
+        <%# ── HEADER ── %>
+        <div class="header-pad" style="background:linear-gradient(135deg,#0d1a42 0%,#1660eb 100%);padding:32px 40px;">
+          <div style="display:flex;align-items:center;gap:14px;">
+            <div style="width:48px;height:48px;background:rgba(255,255,255,0.15);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <span style="font-size:22px;line-height:1;">📩</span>
+            </div>
+            <div>
+              <p style="font-size:11px;font-weight:600;color:rgba(255,255,255,0.55);text-transform:uppercase;letter-spacing:2px;margin:0 0 3px;">
+                New Enquiry
+              </p>
+              <h1 style="font-size:20px;font-weight:700;color:#ffffff;margin:0;line-height:1.2;">
+                Contact Form Submission
+              </h1>
+            </div>
+          </div>
+
+          <%# Badge showing when this was received %>
+          <%
+            var receivedAt = new Date().toLocaleString('en-KE', {
+              dateStyle: 'long',
+              timeStyle: 'short',
+              timeZone: 'Africa/Nairobi'
+            });
+          %>
+          <div style="margin-top:18px;display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.12);border-radius:100px;padding:6px 14px;">
+            <span style="font-size:12px;color:rgba(255,255,255,0.75);">⏰</span>
+            <p style="font-size:12px;color:rgba(255,255,255,0.75);font-weight:500;margin:0;">
+              Received <%= receivedAt %> EAT
+            </p>
+          </div>
+        </div>
+
+        <%# ── BODY ── %>
+        <div class="card-body" style="padding:36px 40px;">
+
+          <%# Alert strip %>
+          <div style="background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:12px;padding:14px 18px;margin-bottom:28px;display:flex;align-items:center;gap:10px;">
+            <span style="font-size:18px;flex-shrink:0;">🔔</span>
+            <p style="font-size:14px;color:#166534;margin:0;line-height:1.5;">
+              A customer has submitted an enquiry through your website.
+              Please respond within <strong>24 hours</strong> to maintain your service standards.
+            </p>
+          </div>
+
+          <%# ── SENDER DETAILS CARD ── %>
+          <p style="font-size:12px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:1.5px;margin:0 0 12px;">
+            Sender Details
+          </p>
+
+          <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:6px 20px;margin-bottom:28px;">
+
+            <%# Name %>
+            <div class="detail-row">
+              <div class="detail-icon" style="background:#eff6ff;">
+                <span>👤</span>
+              </div>
+              <div>
+                <p class="detail-label">Full Name</p>
+                <p class="detail-value"><%= formData.Name %></p>
+              </div>
+            </div>
+
+            <%# Email %>
+            <div class="detail-row">
+              <div class="detail-icon" style="background:#f0fdf4;">
+                <span>✉️</span>
+              </div>
+              <div>
+                <p class="detail-label">Email Address</p>
+                <p class="detail-value">
+                  <a href="mailto:<%= formData.Email %>" style="color:#1660eb;font-weight:600;">
+                    <%= formData.Email %>
+                  </a>
+                </p>
+              </div>
+            </div>
+
+            <%# Phone %>
+            <div class="detail-row">
+              <div class="detail-icon" style="background:#fefce8;">
+                <span>📞</span>
+              </div>
+              <div>
+                <p class="detail-label">Phone Number</p>
+                <p class="detail-value">
+                  <a href="tel:<%= formData.Phone %>" style="color:#0d1a42;font-weight:600;">
+                    <%= formData.Phone %>
+                  </a>
+                </p>
+              </div>
+            </div>
+
+            <%# Subject %>
+            <div class="detail-row">
+              <div class="detail-icon" style="background:#fdf4ff;">
+                <span>📋</span>
+              </div>
+              <div>
+                <p class="detail-label">Subject</p>
+                <p class="detail-value"><%= formData.Subject %></p>
+              </div>
+            </div>
+
+          </div>
+          <%# /SENDER DETAILS %>
+
+          <%# ── MESSAGE BODY ── %>
+          <p style="font-size:12px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:1.5px;margin:0 0 12px;">
+            Message
+          </p>
+
+          <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:24px;margin-bottom:32px;position:relative;">
+            <span style="font-size:36px;color:#e2e8f0;position:absolute;top:10px;left:18px;line-height:1;font-family:Georgia,serif;">&ldquo;</span>
+            <p style="font-size:15px;color:#334155;line-height:1.8;margin:0;padding-left:28px;white-space:pre-wrap;"><%= formData.Message %></p>
+          </div>
+
+          <%# ── QUICK REPLY CTAs ── %>
+          <p style="font-size:14px;color:#64748b;margin:0 0 16px;text-align:center;">
+            Reply directly to this enquiry:
+          </p>
+
+          <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:8px;">
+
+            <a href="mailto:<%= formData.Email %>?subject=Re: <%= formData.Subject %>"
+              style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#1660eb,#0d1a42);color:#ffffff;
+                     font-size:14px;font-weight:600;padding:12px 24px;border-radius:10px;
+                     text-decoration:none;">
+              ✉️&nbsp; Reply via Email
+            </a>
+
+            <a href="tel:<%= formData.Phone %>"
+              style="display:inline-flex;align-items:center;gap:8px;background:#f8fafc;
+                     border:1.5px solid #e2e8f0;color:#0d1a42;
+                     font-size:14px;font-weight:600;padding:12px 24px;border-radius:10px;
+                     text-decoration:none;">
+              📞&nbsp; Call Back
+            </a>
+
+          </div>
+
+        </div>
+        <%# /BODY %>
+
+        <%# ── DIVIDER ── %>
+        <div style="height:1px;background:#e2e8f0;margin:0 40px;"></div>
+
+        <%# ── FOOTER ── %>
+        <div style="padding:24px 40px 32px;text-align:center;">
+
+          <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:12px;">
+            <div style="width:28px;height:28px;background:linear-gradient(135deg,#1660eb,#0d1a42);border-radius:7px;display:flex;align-items:center;justify-content:center;">
+              <span style="font-size:14px;line-height:1;">⚡</span>
+            </div>
+            <p style="font-size:14px;font-weight:700;color:#0d1a42;margin:0;">Raz Technologies</p>
+          </div>
+
+          <p style="font-size:12px;color:#94a3b8;margin:0 0 8px;">
+            <a href="https://raztechnologies.co.ke" style="color:#64748b;font-weight:500;">Website</a>
+            &nbsp;&bull;&nbsp;
+            <a href="mailto:info@raztechnologies.co.ke" style="color:#64748b;font-weight:500;">info@raztechnologies.co.ke</a>
+            &nbsp;&bull;&nbsp;
+            <a href="tel:+254700000000" style="color:#64748b;font-weight:500;">+254 700 000 000</a>
+          </p>
+
+          <p style="font-size:12px;color:#cbd5e1;margin:0;">
+            &copy; <%= new Date().getFullYear() %> Raz Technologies &mdash; Nairobi, Kenya
+          </p>
+
+          <p style="font-size:11px;color:#e2e8f0;margin:8px 0 0;">
+            This is an automated notification from your website contact form.
+            Do not reply directly to this email.
+          </p>
+
+        </div>
+        <%# /FOOTER %>
+
+      </div>
+      <%# /EMAIL CARD %>
+
+    </div>
+  </div>
+
+</body>
+</html>

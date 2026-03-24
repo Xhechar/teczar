@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="x-apple-disable-message-reformatting" />
+  <title>Order Confirmation — Raz Technologies</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { margin: 0; padding: 0; background-color: #f1f5f9; -webkit-text-size-adjust: 100%; }
+    a { text-decoration: none; }
+
+    /* Order item rows */
+    .order-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 16px 0;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .order-item:last-child { border-bottom: none; }
+
+    .item-thumb {
+      width: 56px;
+      height: 56px;
+      border-radius: 10px;
+      object-fit: cover;
+      flex-shrink: 0;
+      border: 1px solid #e2e8f0;
+      background: #f8fafc;
+    }
+
+    .item-thumb-placeholder {
+      width: 56px;
+      height: 56px;
+      border-radius: 10px;
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 22px;
+    }
+
+    .item-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: #0d1a42;
+      margin: 0 0 3px;
+      line-height: 1.3;
+    }
+    .item-meta {
+      font-size: 12px;
+      color: #94a3b8;
+      margin: 0 0 5px;
+    }
+    .item-price {
+      font-size: 14px;
+      font-weight: 700;
+      color: #1660eb;
+      margin: 0;
+    }
+    .item-original-price {
+      font-size: 12px;
+      color: #cbd5e1;
+      text-decoration: line-through;
+      margin-left: 6px;
+    }
+    .item-qty {
+      font-size: 12px;
+      color: #64748b;
+      margin: 0;
+    }
+
+    /* Summary rows */
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .summary-row:last-child { border-bottom: none; }
+    .summary-label { font-size: 14px; color: #64748b; margin: 0; }
+    .summary-value { font-size: 14px; font-weight: 600; color: #0d1a42; margin: 0; }
+    .summary-total-label { font-size: 15px; font-weight: 700; color: #0d1a42; margin: 0; }
+    .summary-total-value { font-size: 18px; font-weight: 800; color: #0d1a42; margin: 0; }
+
+    @media only screen and (max-width: 600px) {
+      .email-wrapper { padding: 16px !important; }
+      .card-body     { padding: 24px 18px !important; }
+      .header-pad    { padding: 28px 20px !important; }
+      .order-item    { flex-wrap: wrap; }
+      .item-thumb, .item-thumb-placeholder { width: 44px !important; height: 44px !important; }
+    }
+  </style>
+</head>
+
+<body style="margin:0;padding:0;background-color:#f1f5f9;font-family:'Segoe UI',Helvetica,Arial,sans-serif;">
+
+  <%#
+    ════════════════════════════════════════════════════════
+    DATA PASSED TO THIS TEMPLATE:
+    ════════════════════════════════════════════════════════
+    {
+      order: Order & {
+        User:  User,              ← required (customer name, email, county)
+        Items: Array<OrderItem & {
+          Product: Product & {
+            Images?: ProductImage[],  ← optional, first image used as thumbnail
+            Category?: Category       ← optional, shown as subtitle
+          }
+        }>,
+        Payments?: Payment[]      ← optional, used for M-Pesa ref display
+      }
+    }
+
+    Prisma query to populate this:
+    ─────────────────────────────
+    const order = await prisma.order.findUnique({
+      where: { OrderId: id },
+      include: {
+        User: true,
+        Items: {
+          include: {
+            Product: {
+              include: {
+                Images:   { take: 1 },
+                Category: true,
+              },
+            },
+          },
+        },
+        Payments: true,
+      },
+    });
+    ════════════════════════════════════════════════════════
+  %>
+
+  <%# Hidden preheader %>
+  <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;color:#f1f5f9;">
+    Order confirmed! Your Raz Technologies order #<%= order.OrderId %> has been received.
+    &nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;
+  </div>
+
+  <div class="email-wrapper" style="width:100%;padding:32px 16px;">
+    <div style="max-width:620px;margin:0 auto;">
+      <div style="background:#ffffff;border-radius:20px;overflow:hidden;box-shadow:0 4px 24px rgba(13,26,66,0.10);">
+
+        <%# ── HEADER ── %>
+        <div class="header-pad" style="background:linear-gradient(135deg,#0d1a42 0%,#1660eb 100%);padding:36px 40px;position:relative;overflow:hidden;">
+          <div style="position:absolute;top:-20px;right:-20px;width:100px;height:100px;background:rgba(255,255,255,0.05);border-radius:50%;"></div>
+          <div style="position:absolute;bottom:-25px;left:30px;width:70px;height:70px;background:rgba(245,158,11,0.10);border-radius:50%;"></div>
+
+          <div style="position:relative;z-index:1;display:flex;align-items:center;gap:14px;">
+            <div style="width:52px;height:52px;background:rgba(255,255,255,0.15);border-radius:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <span style="font-size:26px;line-height:1;">📦</span>
+            </div>
+            <div>
+              <p style="font-size:11px;font-weight:600;color:rgba(255,255,255,0.60);text-transform:uppercase;letter-spacing:2px;margin:0 0 3px;">
+                Order Confirmation
+              </p>
+              <h1 style="font-size:22px;font-weight:800;color:#ffffff;margin:0;line-height:1.2;">
+                Your order is confirmed!
+              </h1>
+            </div>
+          </div>
+
+          <%# Order ID + date badge %>
+          <%
+            var orderDate = new Date(order.CreatedAt).toLocaleDateString('en-KE', {
+              dateStyle: 'long',
+              timeZone:  'Africa/Nairobi'
+            });
+          %>
+          <div style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap;">
+            <div style="background:rgba(255,255,255,0.12);border-radius:8px;padding:7px 14px;">
+              <p style="font-size:12px;color:rgba(255,255,255,0.60);margin:0 0 1px;">Order ID</p>
+              <p style="font-size:13px;font-weight:700;color:#ffffff;margin:0;font-family:monospace;letter-spacing:0.5px;"><%= order.OrderId %></p>
+            </div>
+            <div style="background:rgba(255,255,255,0.12);border-radius:8px;padding:7px 14px;">
+              <p style="font-size:12px;color:rgba(255,255,255,0.60);margin:0 0 1px;">Date</p>
+              <p style="font-size:13px;font-weight:700;color:#ffffff;margin:0;"><%= orderDate %></p>
+            </div>
+            <%
+              var statusColors = {
+                AwaitingPayment: '#f59e0b',
+                Paid:            '#3b82f6',
+                Processing:      '#f97316',
+                Delivered:       '#10b981',
+                Cancelled:       '#ef4444'
+              };
+              var statusColor = statusColors[order.Status] || '#94a3b8';
+            %>
+            <div style="background:rgba(255,255,255,0.12);border-radius:8px;padding:7px 14px;">
+              <p style="font-size:12px;color:rgba(255,255,255,0.60);margin:0 0 1px;">Status</p>
+              <p style="font-size:13px;font-weight:700;color:#94a3b8;margin:0;"><%= order.Status %></p>
+            </div>
+          </div>
+        </div>
+
+        <%# ── BODY ── %>
+        <div class="card-body" style="padding:36px 40px 32px;">
+
+          <%# Greeting %>
+          <p style="font-size:15px;color:#475569;line-height:1.8;margin:0 0 28px;">
+            Hi <strong style="color:#0d1a42;"><%= order.User.FirstName %></strong>, thank you for your order!
+            We've received it and our team is on it. You'll receive updates as your order progresses.
+          </p>
+
+          <%# ── ORDER ITEMS ── %>
+          <p style="font-size:12px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:1.5px;margin:0 0 4px;">
+            Items Ordered
+            <span style="font-size:12px;font-weight:500;color:#94a3b8;text-transform:none;letter-spacing:0;">
+              (<%= order.Items.length %> item<%= order.Items.length !== 1 ? 's' : '' %>)
+            </span>
+          </p>
+
+          <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:6px 20px;margin-bottom:24px;">
+            <%
+              order.Items.forEach(function(item) {
+                var product         = item.Product;
+                var productName     = product ? product.Name        : 'Product';
+                var categoryName    = (product && product.Category) ? product.Category.Name : null;
+                var thumbUrl        = (product && product.Images && product.Images.length > 0)
+                                        ? product.Images[0].ImageUrl
+                                        : null;
+                var unitPrice       = item.PriceAtPurchase;
+                var lineTotal       = unitPrice * item.Quantity;
+                var originalPrice   = (product && product.OnOffer && product.Price > unitPrice)
+                                        ? product.Price
+                                        : null;
+            %>
+            <div class="order-item">
+
+              <%# Thumbnail — show image if available, else emoji placeholder %>
+              <% if (thumbUrl) { %>
+                <img class="item-thumb" src="<%= thumbUrl %>" alt="<%= productName %>" width="56" height="56" />
+              <% } else { %>
+                <div class="item-thumb-placeholder">📦</div>
+              <% } %>
+
+              <%# Item details %>
+              <div style="flex:1;min-width:0;">
+                <p class="item-name"><%= productName %></p>
+                <% if (categoryName) { %>
+                  <p class="item-meta"><%= categoryName %></p>
+                <% } %>
+                <p class="item-qty">Qty: <%= item.Quantity %></p>
+              </div>
+
+              <%# Pricing — flush right %>
+              <div style="text-align:right;flex-shrink:0;">
+                <p class="item-price">
+                  KES <%= lineTotal.toLocaleString('en-KE') %>
+                </p>
+                <% if (originalPrice) { %>
+                  <p style="font-size:11px;color:#cbd5e1;text-decoration:line-through;margin:2px 0 0;">
+                    KES <%= (originalPrice * item.Quantity).toLocaleString('en-KE') %>
+                  </p>
+                <% } %>
+                <p style="font-size:11px;color:#94a3b8;margin:2px 0 0;">
+                  KES <%= unitPrice.toLocaleString('en-KE') %> each
+                </p>
+              </div>
+
+            </div>
+            <% }); %>
+          </div>
+
+          <%# ── ORDER SUMMARY ── %>
+          <p style="font-size:12px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:1.5px;margin:0 0 4px;">
+            Order Summary
+          </p>
+
+          <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:6px 20px;margin-bottom:28px;">
+            <%
+              // Subtotal = sum of all line totals
+              var subtotal = order.Items.reduce(function(sum, item) {
+                return sum + (item.PriceAtPurchase * item.Quantity);
+              }, 0);
+
+              // Savings = difference between original prices and purchase prices
+              var savings = order.Items.reduce(function(sum, item) {
+                var orig = (item.Product && item.Product.OnOffer && item.Product.Price > item.PriceAtPurchase)
+                             ? item.Product.Price
+                             : item.PriceAtPurchase;
+                return sum + ((orig - item.PriceAtPurchase) * item.Quantity);
+              }, 0);
+
+              // Payment reference (first completed payment if available)
+              var mpesaRef = null;
+              if (order.Payments && order.Payments.length > 0) {
+                var completedPayment = order.Payments.find(function(p) { return p.Status === 'Completed'; });
+                if (completedPayment) mpesaRef = completedPayment.MpesaReferenceCode;
+              }
+            %>
+
+            <div class="summary-row">
+              <p class="summary-label">Subtotal (<%= order.Items.length %> item<%= order.Items.length !== 1 ? 's' : '' %>)</p>
+              <p class="summary-value">KES <%= subtotal.toLocaleString('en-KE') %></p>
+            </div>
+
+            <% if (savings > 0) { %>
+            <div class="summary-row">
+              <p class="summary-label" style="color:#10b981;">You saved</p>
+              <p class="summary-value" style="color:#10b981;">− KES <%= savings.toLocaleString('en-KE') %></p>
+            </div>
+            <% } %>
+
+            <div class="summary-row" style="padding-top:14px;border-top:2px solid #e2e8f0;border-bottom:none;margin-top:6px;">
+              <p class="summary-total-label">Total Paid</p>
+              <p class="summary-total-value">KES <%= order.TotalAmount.toLocaleString('en-KE') %></p>
+            </div>
+
+            <% if (mpesaRef) { %>
+            <div style="margin-top:12px;padding-top:12px;border-top:1px solid #f1f5f9;">
+              <p style="font-size:12px;color:#64748b;margin:0;">
+                M-Pesa Reference:
+                <strong style="font-family:monospace;color:#0d1a42;letter-spacing:0.5px;"><%= mpesaRef %></strong>
+              </p>
+            </div>
+            <% } %>
+          </div>
+
+          <%# ── DELIVERY INFO ── %>
+          <div style="background:#eff6ff;border:1.5px solid #bfdbfe;border-radius:12px;padding:16px 20px;margin-bottom:28px;">
+            <div style="display:flex;align-items:flex-start;gap:10px;">
+              <span style="font-size:18px;flex-shrink:0;">📍</span>
+              <div>
+                <p style="font-size:13px;font-weight:700;color:#1e40af;margin:0 0 4px;">Delivery / Service Location</p>
+                <p style="font-size:13px;color:#3b82f6;margin:0;line-height:1.5;">
+                  <strong><%= order.User.County %> County</strong>
+                  <% if (order.User.LocationDescription) { %>
+                    &mdash; <%= order.User.LocationDescription %>
+                  <% } %>
+                </p>
+                <p style="font-size:12px;color:#93c5fd;margin:4px 0 0;">
+                  Our team will contact you at <strong><%= order.User.Phone %></strong> to confirm delivery or installation details.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <%# ── WHAT HAPPENS NEXT ── %>
+          <p style="font-size:13px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:1.5px;margin:0 0 14px;">
+            What happens next?
+          </p>
+
+          <div style="margin-bottom:32px;">
+            <%
+              var steps = [
+                { icon:'✅', title:'Order Confirmed',     desc:'Your order has been received and is being reviewed by our team.' },
+                { icon:'📞', title:'We\'ll Contact You',  desc:'Our team will call you within 2 hours to confirm details and schedule delivery or installation.' },
+                { icon:'🚚', title:'Delivery or Install', desc:'Products will be delivered, or our technicians will arrive at your location on the agreed date.' },
+                { icon:'⭐', title:'Share Your Feedback', desc:'We\'d love to hear from you! Leave a review on the product to help other customers.' },
+              ];
+              steps.forEach(function(step, idx) {
+            %>
+            <div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:14px;">
+              <div style="width:36px;height:36px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;">
+                <%= step.icon %>
+              </div>
+              <div>
+                <p style="font-size:14px;font-weight:600;color:#0d1a42;margin:0 0 2px;"><%= step.title %></p>
+                <p style="font-size:13px;color:#64748b;margin:0;line-height:1.5;"><%= step.desc %></p>
+              </div>
+            </div>
+            <% }); %>
+          </div>
+
+          <%# ── CTA ── %>
+          <div style="text-align:center;margin-bottom:28px;">
+            <a href="https://raztechnologies.co.ke/orders"
+              style="display:inline-block;background:linear-gradient(135deg,#1660eb,#0d1a42);
+                     color:#ffffff;font-size:14px;font-weight:700;padding:13px 32px;
+                     border-radius:11px;text-decoration:none;">
+              📋&nbsp; View My Orders
+            </a>
+          </div>
+
+          <%# Support note %>
+          <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:16px 20px;text-align:center;">
+            <p style="font-size:13px;color:#64748b;margin:0;line-height:1.6;">
+              Questions about your order?<br />
+              <a href="tel:+254700000000" style="color:#1660eb;font-weight:700;">📞 +254 700 000 000</a>
+              &nbsp;&bull;&nbsp;
+              <a href="mailto:support@raztechnologies.co.ke" style="color:#1660eb;font-weight:700;">✉️ support@raztechnologies.co.ke</a>
+            </p>
+          </div>
+
+        </div>
+        <%# /BODY %>
+
+        <%# DIVIDER %>
+        <div style="height:1px;background:#e2e8f0;margin:0 40px;"></div>
+
+        <%# ── FOOTER ── %>
+        <div style="padding:24px 40px 32px;text-align:center;">
+          <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:12px;">
+            <div style="width:26px;height:26px;background:linear-gradient(135deg,#1660eb,#0d1a42);border-radius:6px;display:flex;align-items:center;justify-content:center;">
+              <span style="font-size:13px;line-height:1;">⚡</span>
+            </div>
+            <p style="font-size:13px;font-weight:700;color:#0d1a42;margin:0;">Raz Technologies</p>
+          </div>
+          <p style="font-size:12px;color:#94a3b8;margin:0 0 8px;">
+            <a href="https://raztechnologies.co.ke" style="color:#64748b;font-weight:500;">Home</a>
+            &nbsp;&bull;&nbsp;
+            <a href="https://raztechnologies.co.ke/orders" style="color:#64748b;font-weight:500;">My Orders</a>
+            &nbsp;&bull;&nbsp;
+            <a href="https://raztechnologies.co.ke/#contact" style="color:#64748b;font-weight:500;">Support</a>
+            &nbsp;&bull;&nbsp;
+            <a href="https://raztechnologies.co.ke/privacy" style="color:#64748b;font-weight:500;">Privacy</a>
+          </p>
+          <p style="font-size:12px;color:#cbd5e1;margin:0 0 4px;">
+            &copy; <%= new Date().getFullYear() %> Raz Technologies. All rights reserved.
+          </p>
+          <p style="font-size:12px;color:#cbd5e1;margin:0;">Nairobi, Kenya &mdash; Serving All Counties</p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
