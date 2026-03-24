@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useSearchParams, Link } from "react-router-dom";
+import { useSearchParams, Link, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import {
@@ -30,6 +30,7 @@ import Footer from "./home/Footer";
 import { CreateCartItemDto } from "../dtos/dto";
 import { CartItemService } from "../services/cart.item.service";
 import { ServiceRequestService } from "../services/service.request.service";
+import { useAuth } from "../context/AuthContext";
 
 const formatKES = (v: number) => `KES ${v.toLocaleString("en-KE")}`;
 
@@ -52,6 +53,9 @@ const ServiceBookingModal: React.FC<{
 }> = ({ service, onClose }) => {
   const toast = useToast();
   const [loading, setLoading] = useState(false);
+  const {user} = useAuth();
+  const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
@@ -67,6 +71,11 @@ const ServiceBookingModal: React.FC<{
     }`;
 
   const onSubmit = async (data: BookingForm) => {
+    if (!user) {
+      navigate("/login", { replace: true });
+      return;
+    }
+        
     setLoading(true);
     try {
       let result = await ServiceRequestService.Create({

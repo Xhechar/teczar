@@ -265,7 +265,7 @@ const HeroSection: React.FC = () => {
                 <ArrowRight className="w-5 h-5" />
               </Link>
               <a
-                href="tel:+254700000000"
+                href="tel:+254746430693"
                 className="btn-outline text-base px-8 py-4"
               >
                 <Phone className="w-5 h-5" />

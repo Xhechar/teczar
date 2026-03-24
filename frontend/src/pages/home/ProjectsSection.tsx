@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { MapPin, CheckCircle, ArrowRight, ChevronDown } from "lucide-react";
+import { useScrollReveal } from "../../hooks/Helper";
 
 interface Project {
   id: string;

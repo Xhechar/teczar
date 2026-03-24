@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import {
   ShoppingCart,
@@ -21,6 +21,7 @@ import { queryClient } from "../..";
 import { toastResult, useToast } from "../../components/Toast";
 import { CreateCartItemDto } from "../../dtos/dto";
 import { CartItemService } from "../../services/cart.item.service";
+import { useAuth } from "../../context/AuthContext";
 
 const formatKES = (n: number) => `KES ${n.toLocaleString("en-KE")}`;
 
@@ -57,6 +58,8 @@ const ProductCard: React.FC<{ product: Product; index: number }> = ({
   index,
 }) => {
   const toast = useToast();
+  const {user} = useAuth();
+  const navigate = useNavigate();
 
   const mainImage =
     product.Images?.[0]?.ImageUrl ??
@@ -64,6 +67,11 @@ const ProductCard: React.FC<{ product: Product; index: number }> = ({
 
     const handleAddToCart = async (dto: CreateCartItemDto) => {
       try {
+        if(!user) {
+          navigate('/login', {replace: true});
+          return;
+        }
+        
         let result = await CartItemService.Create(dto);
         toastResult(result, toast);
         if (result.Success)

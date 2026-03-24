@@ -18,13 +18,15 @@ import {
   X,
   Loader2,
 } from "lucide-react";
-import { Link } from "react-router-dom";
-import { useToast } from "../../components/Toast";
+import { Link, useNavigate } from "react-router-dom";
+import { toastResult, useToast } from "../../components/Toast";
 import { ModelType } from "../../enums/enums";
 import { useScrollReveal } from "../../hooks/Helper";
 import { useSocketInvalidation } from "../../hooks/socket.hook";
 import { Service } from "../../interfaces/interfaces";
 import { ServicesService } from "../../services/service.service";
+import { ServiceRequestService } from "../../services/service.request.service";
+import { useAuth } from "../../context/AuthContext";
 
 // ─── Service request form DTO ─────────────────────────────────────
 interface BookingForm {
@@ -78,29 +80,41 @@ interface BookingModalProps {
 const BookingModal: React.FC<BookingModalProps> = ({ service, onClose }) => {
   const toast = useToast();
   const [loading, setLoading] = useState(false);
+  const {user} = useAuth();
+  const navigate = useNavigate();
 
   const {
     register,
     handleSubmit,
     formState: { errors },
+    reset
   } = useForm<BookingForm>();
 
   const onSubmit = async (data: BookingForm) => {
-    setLoading(true);
-    try {
-      // TODO: replace with api.post('/service-requests', { ServiceId: service.ServiceId, ...data })
-      await new Promise((r) => setTimeout(r, 600));
-      toast.success(
-        "Booking Submitted!",
-        `We'll contact you to confirm your ${service.Title} appointment.`,
-      );
-      onClose();
-    } catch {
-      toast.error("Booking Failed", "Please try again or call us directly.");
-    } finally {
-      setLoading(false);
-    }
-  };
+
+      if (!user) {
+        navigate("/login", { replace: true });
+        return;
+      }
+        
+      setLoading(true);
+      try {
+        let result = await ServiceRequestService.Create({
+          ServiceId: service.ServiceId,
+          LocationDescription: data.LocationDescription,
+          PreferredDate: new Date(`${data.PreferredDate}T00:00:00Z`),
+        });
+        toastResult(result, toast);
+        if(result.Success) {
+          reset();
+          onClose();
+        }
+      } catch (error: any) {
+        toast.error(error?.response?.data?.Title ?? "Booking Failed", error?.response?.data?.ErrorMessage ?? "Please try again or call us.");
+      } finally {
+        setLoading(false);
+      }
+    };
 
   const inputCls = (hasErr = false) =>
     `w-full px-4 py-3 rounded-xl border text-sm transition-all focus:outline-none focus:ring-2 ${
