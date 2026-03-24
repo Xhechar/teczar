@@ -106,7 +106,7 @@ export class ServiceRequestService extends BaseService implements IService<Fetch
 
     let deleteRequest = await prisma.serviceRequest.delete({
       where: {
-        RequestId: id,
+        RequestId: id, 
       },
     });
 

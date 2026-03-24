@@ -30,6 +30,7 @@ const SettingsPage: React.FC = () => {
     handleSubmit,
     watch,
     formState: { errors },
+    reset
   } = useForm<PasswordForm>({ mode: "onTouched" });
   const newPw = watch("NewPassword");
 
@@ -39,6 +40,7 @@ const SettingsPage: React.FC = () => {
         OldPassword: data.CurrentPassword,
         NewPassword: data.NewPassword,
       });
+      if(result.Success) {reset()};
       toastResult(result, toast);
     } catch (error: any) {
       toast.error(

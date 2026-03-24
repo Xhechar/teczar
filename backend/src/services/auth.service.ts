@@ -10,14 +10,13 @@ import { ErrorType, UserRole } from "../enums/enums.js";
 import type { TokenDetails, User } from "../interfaces/interfaces.js";
 import { ServiceResponse } from "../interfaces/repository/service.response.js";
 import type { ServiceResult } from "../interfaces/result/service.result.js";
-import { loginSchema, resetPasswordSchema } from "../validators/validators.js";
+import { changePasswordSchema, loginSchema, resetPasswordSchema } from "../validators/validators.js";
 import { Logger } from "../logs/logger.js";
 import { SendMail } from "../emails/config/email.config.js";
 import { BaseService } from "../contracts/base.contract.js";
 
 export class AuthService extends BaseService {
   async LoginUser(loginDto: LoginDto): Promise<ServiceResult<object>> {
-    console.log("here....")
     let { error } = loginSchema.validate(loginDto);
 
     if (error) {
@@ -26,7 +25,6 @@ export class AuthService extends BaseService {
         error.details[0]?.message as string,
       );
     }
-    console.log("After error validation, login data is : ",loginDto);
 
     let EmailExists = await prisma.user.findUnique({
       where: {
@@ -40,7 +38,6 @@ export class AuthService extends BaseService {
         "Email provided not found. Kindly register instead.",
       );
     }
-    console.log("We have user now",EmailExists);
 
     if (!EmailExists.IsActive) {
       return ServiceResponse.Failure<object>(
@@ -53,7 +50,6 @@ export class AuthService extends BaseService {
       loginDto.Password,
       EmailExists.PasswordHash,
     );
-    console.log("passwords match", PasswordMatches);
 
     if (!PasswordMatches) {
       return ServiceResponse.Failure<object>(
@@ -85,15 +81,12 @@ export class AuthService extends BaseService {
         expiresIn: "1d",
       },
     );
-    console.log("access and refres created: ", AccessToken, " ---", RefreshToken)
 
     let refreshExists = await prisma.refreshToken.findFirst({
       where: {
         UserId: EmailExists.UserId,
       },
     });
-
-    console.log("refresh data: ", refreshExists);
 
     if (refreshExists) {
       let saveRefresh = await prisma.refreshToken.update({
@@ -107,7 +100,6 @@ export class AuthService extends BaseService {
             .digest("hex"),
         },
       });
-      console.log(" save refresh data: ", saveRefresh);
 
       if (!saveRefresh){
         return ServiceResponse.Failure<object>(
@@ -115,7 +107,6 @@ export class AuthService extends BaseService {
           "An error occured during login, kindly try again later.",
         );
       }
-        console.log("about to succeed");
         
       return ServiceResponse.AuthSuccess<object>(
         AccessToken,
@@ -264,7 +255,7 @@ export class AuthService extends BaseService {
     }
 
     await ejs.renderFile(
-      "../../templates/verify_mail.ejs",
+      "templates/verify_mail.ejs",
       { emailExists: EmailExists, recovery },
       async (err, data) => {
         if (err) {
@@ -367,7 +358,7 @@ export class AuthService extends BaseService {
       );
     }
 
-    let { error } = resetPasswordSchema.validate(changePassword);
+    let { error } = changePasswordSchema.validate(changePassword);
 
     if (error) {
       return ServiceResponse.Failure(

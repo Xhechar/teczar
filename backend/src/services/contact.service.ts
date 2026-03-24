@@ -16,7 +16,7 @@ export class ContactService {
     }
 
     try {
-      ejs.renderFile('../../templates/contact_form.ejs', {formData}, async(error, data) => {
+      ejs.renderFile('templates/contact_form.ejs', {formData}, async(error, data) => {
         if(error) {
           Logger.error(error instanceof Error ? error.message : "Unable to send contact form mail");
         } else {

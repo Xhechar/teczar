@@ -50,8 +50,8 @@ export class JobService {
     return result.data;
   }
 
-  public static async FetchActive(): Promise<ServiceResult<FetchJobDto>> {
-    let result = await api.get<ServiceResult<FetchJobDto>>(
+  public static async FetchActive(): Promise<ServiceResult<Job>> {
+    let result = await api.get<ServiceResult<Job>>(
       `${this.ApiUrl}/get-active`,
     );
     return result.data;

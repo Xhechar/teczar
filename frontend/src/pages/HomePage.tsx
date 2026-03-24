@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import Navbar from "../components/Navbar";
 import { useScrollReveal } from "../hooks/Helper";
 import AboutSection from "./home/AboutSection";
@@ -12,24 +12,7 @@ import ReviewsSection from "./home/ReviewsSection";
 import ServicesSection from "./home/ServicesSection";
 
 const HomePage: React.FC = () => {
-  // Initialize scroll reveal animations
-  useScrollReveal();
-
-  // Re-run reveal on any content change
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      const els = document.querySelectorAll(
-        ".reveal, .reveal-left, .reveal-right",
-      );
-      els.forEach((el) => {
-        const rect = el.getBoundingClientRect();
-        if (rect.top < window.innerHeight * 0.9) {
-          el.classList.add("visible");
-        }
-      });
-    }, 300);
-    return () => clearTimeout(timer);
-  }, []);
+  useScrollReveal([]);
 
   return (
     <div className="min-h-screen">

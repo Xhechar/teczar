@@ -31,12 +31,17 @@ interface Props {
 const CustomerLayout: React.FC<Props> = ({ children, title, subtitle }) => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
 
   const handleLogout = async () => {
     await logout();
     navigate("/login", { replace: true });
   };
+
+  const initials = [
+    (user?.FirstName ?? "?")[0],
+    (user?.SecondName ?? "")[0],
+  ].join("").toUpperCase();
 
   return (
     <div className="min-h-screen bg-surface-50">
@@ -71,10 +76,10 @@ const CustomerLayout: React.FC<Props> = ({ children, title, subtitle }) => {
               {/* User card */}
               <div className="p-5 bg-gradient-to-br from-primary-600 to-navy-800">
                 <div className="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center text-white text-xl font-bold mb-3">
-                  JK
+                  {initials}
                 </div>
-                <p className="font-700 text-white">James Kamau</p>
-                <p className="text-white/60 text-xs">Customer</p>
+                <p className="font-700 text-white"> {user?.FirstName} {" "} {user?.SecondName} </p>
+                <p className="text-white/60 text-xs">{user?.Role}</p>
               </div>
 
               {/* Nav links */}

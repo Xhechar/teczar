@@ -29,19 +29,29 @@ const CartPage: React.FC = () => {
   let items = data?.Data?.Items ?? [];
 
   const updateQty = async (id: string, delta: number) => {
-    let result = await CartItemService.Update(id, {Quantity: delta});
-    toastResult(result, toast);
-    if(result.Success) queryClient.invalidateQueries({
-      queryKey: [`user${ModelType.Cart.toLowerCase}`],
-    });
+    try {
+      let result = await CartItemService.Update(id, {Quantity: delta});
+      toastResult(result, toast);
+      if(result.Success) queryClient.invalidateQueries({
+        queryKey: [`user${ModelType.Cart.toLowerCase}`],
+      });
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.ErrorMessage ?? "Unable to update cart.");
+    }
   };
 
   const remove = async (id: string) => {
-    let result = await CartItemService.Delete(id);
-    toastResult(result, toast);
-    if(result.Success) queryClient.invalidateQueries({
-      queryKey: [`user${ModelType.Cart.toLowerCase}`],
-    });
+    try {
+      let result = await CartItemService.Delete(id);
+      toastResult(result, toast);
+      if(result.Success) queryClient.invalidateQueries({
+        queryKey: [`user${ModelType.Cart.toLowerCase}`],
+      });
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.ErrorMessage ?? "Unable to remove item from cart.");
+    }
   }
 
   const subtotal = items.reduce((acc, i) => acc + i.Price * i.Quantity, 0);

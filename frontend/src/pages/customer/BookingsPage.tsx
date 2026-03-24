@@ -72,7 +72,7 @@ const BookingsPage: React.FC = () => {
                   </span>
                 </div>
                 <span className="text-xs text-slate-400">
-                  Ref: {booking.RequestId}
+                  Ref: {booking.RequestId.substring(0, 6)}{" ..."}
                 </span>
               </div>
             </div>
@@ -80,9 +80,9 @@ const BookingsPage: React.FC = () => {
               <div className="flex items-center gap-2 text-sm text-slate-500">
                 <Clock className="w-4 h-4 text-slate-300" />
                 Preferred:{" "}
-                {(booking.PreferredDate ?? new Date()).toLocaleDateString("en-KE", {
-                  dateStyle: "long",
-                })}
+                {new Date(booking.PreferredDate!).toLocaleDateString("en-KE", {
+                dateStyle: "medium",
+              })}
               </div>
               <div className="flex items-center gap-2 text-sm text-slate-500">
                 <MapPin className="w-4 h-4 text-slate-300" />

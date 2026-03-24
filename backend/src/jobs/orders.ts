@@ -4,7 +4,6 @@ import { Logger } from "../logs/logger.js";
 import { prisma } from "../lib/prisma.js";
 import { SendMail } from "../emails/config/email.config.js";
 
-
 export class OrdersService {
   static async SendOrderNotification(): Promise<void> {
     let orders = await prisma.order.findMany({
@@ -39,7 +38,7 @@ export class OrdersService {
 
     for (let order of orders) {
       ejs.renderFile(
-        "../../templates/welcome_mail.ejs",
+        "templates/order_confirmation.mail.ejs",
         { order },
         async (error, data) => {
           if (error) {

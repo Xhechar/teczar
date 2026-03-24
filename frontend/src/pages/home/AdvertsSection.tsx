@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronLeft, ChevronRight, Play, Loader2 } from "lucide-react";
 import { ModelType } from "../../enums/enums";
+import { useScrollReveal } from "../../hooks/Helper";
 import { useSocketInvalidation } from "../../hooks/socket.hook";
 import { AdvertService } from "../../services/advert.service";
 
@@ -12,25 +13,37 @@ const AdvertsSection: React.FC = () => {
 
   const { data, isLoading } = useQuery({
     queryKey: [ModelType.Advert.toLowerCase()],
-    queryFn: () => AdvertService.FetchActiveAdverts()
+    queryFn: () => AdvertService.FetchActiveAdverts(),
   });
 
   const adverts = data?.DataList ?? [];
+
+  // Reveal section content once adverts have loaded
+  useScrollReveal([adverts.length]);
 
   const prev = () =>
     setCurrent((c) => (c - 1 + adverts.length) % adverts.length);
   const next = () => setCurrent((c) => (c + 1) % adverts.length);
 
+  // While loading — show skeleton placeholder so layout doesn't collapse
   if (isLoading) {
     return (
-      <section className="section-padding bg-navy-950">
-        <div className="flex justify-center py-16">
-          <Loader2 className="w-8 h-8 animate-spin text-white/50" />
+      <section className="section-padding" style={{ background: "#080f28" }}>
+        <div className="container-custom">
+          <div className="text-center mb-12">
+            <div className="skeleton h-8 w-32 rounded-full mx-auto mb-4 opacity-20" />
+            <div className="skeleton h-10 w-64 rounded-xl mx-auto mb-3 opacity-20" />
+            <div className="skeleton h-4 w-80 rounded-lg mx-auto opacity-20" />
+          </div>
+          <div className="max-w-4xl mx-auto">
+            <div className="skeleton rounded-3xl aspect-video opacity-10" />
+          </div>
         </div>
       </section>
     );
   }
 
+  // No adverts configured — hide section entirely
   if (adverts.length === 0) return null;
 
   const activeAdvert = adverts[current];
@@ -55,13 +68,12 @@ const AdvertsSection: React.FC = () => {
           </p>
         </div>
 
-        {/* Video player */}
+        {/* Player */}
         <div className="reveal max-w-4xl mx-auto">
           <div
             className="relative rounded-3xl overflow-hidden shadow-2xl bg-navy-900"
             style={{ boxShadow: "0 0 80px rgba(22,96,235,0.2)" }}
           >
-            {/* Video */}
             <div className="relative aspect-video">
               <iframe
                 key={activeAdvert.AdvertId}
@@ -74,7 +86,6 @@ const AdvertsSection: React.FC = () => {
               />
             </div>
 
-            {/* Title bar */}
             {activeAdvert.Title && (
               <div className="px-6 py-4 bg-navy-900/95 flex items-center justify-between">
                 <div>
@@ -85,18 +96,12 @@ const AdvertsSection: React.FC = () => {
                     {current + 1} of {adverts.length}
                   </p>
                 </div>
-
-                {/* Dot indicators */}
                 <div className="flex gap-2">
                   {adverts.map((_, i) => (
                     <button
                       key={i}
                       onClick={() => setCurrent(i)}
-                      className={`rounded-full transition-all duration-300 ${
-                        i === current
-                          ? "w-6 h-2 bg-primary-500"
-                          : "w-2 h-2 bg-white/20 hover:bg-white/40"
-                      }`}
+                      className={`rounded-full transition-all duration-300 ${i === current ? "w-6 h-2 bg-primary-500" : "w-2 h-2 bg-white/20 hover:bg-white/40"}`}
                       aria-label={`Go to video ${i + 1}`}
                     />
                   ))}
@@ -105,22 +110,19 @@ const AdvertsSection: React.FC = () => {
             )}
           </div>
 
-          {/* Navigation buttons */}
           {adverts.length > 1 && (
             <div className="flex items-center justify-center gap-4 mt-8">
               <button
                 onClick={prev}
                 className="flex items-center gap-2 px-6 py-3 rounded-xl glass text-white hover:bg-white/15 transition-all duration-200"
               >
-                <ChevronLeft className="w-5 h-5" />
-                Previous
+                <ChevronLeft className="w-5 h-5" /> Previous
               </button>
               <button
                 onClick={next}
                 className="flex items-center gap-2 px-6 py-3 rounded-xl glass text-white hover:bg-white/15 transition-all duration-200"
               >
-                Next
-                <ChevronRight className="w-5 h-5" />
+                Next <ChevronRight className="w-5 h-5" />
               </button>
             </div>
           )}

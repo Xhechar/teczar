@@ -11,8 +11,8 @@ import {
   Youtube,
   ArrowRight,
   Heart,
+  Music2
 } from "lucide-react";
-import {SiTiktok} from 'react-icons/si'
 
 const Footer: React.FC = () => {
   const year = new Date().getFullYear();
@@ -119,7 +119,7 @@ const Footer: React.FC = () => {
                     href: "https://www.facebook.com/raztechnologies",
                   },
                   {
-                    icon: SiTiktok,
+                    icon: Music2,
                     href: "https://www.tiktok.com/@raztechnologies",
                   },
                   {

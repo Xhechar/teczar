@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
 import { MapPin, CheckCircle, ArrowRight, ChevronDown } from "lucide-react";
 
 interface Project {
@@ -19,24 +18,17 @@ const ALL_PROJECTS: Project[] = [
     title: "10KVA Solar Installation",
     subtitle: "Bungalow House",
     county: "Kakamega County",
-    image:
-      "https://images.unsplash.com/photo-1509391366360-2e959784a276?w=700&q=80",
+    image: "https://images.unsplash.com/photo-1509391366360-2e959784a276?w=700&q=80",
     tag: "Solar",
     tagColor: "bg-amber-400 text-white",
-    details: [
-      "10KW System",
-      "Lithium Batteries",
-      "Grid-tie Inverter",
-      "Monitoring App",
-    ],
+    details: ["10KW System", "Lithium Batteries", "Grid-tie Inverter", "Monitoring App"],
   },
   {
     id: "proj-002",
     title: "IP Camera Installation",
     subtitle: "Commercial Complex",
     county: "Eldoret Town",
-    image:
-      "https://images.unsplash.com/photo-1557597774-9d273605dfa9?w=700&q=80",
+    image: "https://images.unsplash.com/photo-1557597774-9d273605dfa9?w=700&q=80",
     tag: "CCTV",
     tagColor: "bg-primary-600 text-white",
     details: ["32-Channel NVR", "IP Cameras", "Alarm System", "Remote Access"],
@@ -46,78 +38,50 @@ const ALL_PROJECTS: Project[] = [
     title: "20KVA Solar Back-Up System",
     subtitle: "Apartment Complex",
     county: "Kilifi County",
-    image:
-      "https://images.unsplash.com/photo-1613665813446-82a78c468a1d?w=700&q=80",
+    image: "https://images.unsplash.com/photo-1613665813446-82a78c468a1d?w=700&q=80",
     tag: "Solar",
     tagColor: "bg-amber-400 text-white",
-    details: [
-      "20KW System",
-      "3-Phase Inverter",
-      "Battery Storage",
-      "24hr Backup",
-    ],
+    details: ["20KW System", "3-Phase Inverter", "Battery Storage", "24hr Backup"],
   },
   {
     id: "proj-004",
     title: "Flat Plate Water Heater",
     subtitle: "Residential Home",
     county: "Nairobi County",
-    image:
-      "https://images.unsplash.com/photo-1560472355-536de3962603?w=700&q=80",
+    image: "https://images.unsplash.com/photo-1560472355-536de3962603?w=700&q=80",
     tag: "Plumbing",
     tagColor: "bg-teal-500 text-white",
-    details: [
-      "300L Capacity",
-      "Flat Plate System",
-      "Hot Water All Day",
-      "10yr Warranty",
-    ],
+    details: ["300L Capacity", "Flat Plate System", "Hot Water All Day", "10yr Warranty"],
   },
   {
     id: "proj-005",
     title: "Electrical Installation",
     subtitle: "Full House Wiring",
     county: "Homabay County",
-    image:
-      "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=700&q=80",
+    image: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=700&q=80",
     tag: "Electrical",
     tagColor: "bg-yellow-500 text-white",
-    details: [
-      "Complete Wiring",
-      "Sockets & Lights",
-      "Shower Heads",
-      "DB Board",
-    ],
+    details: ["Complete Wiring", "Sockets & Lights", "Shower Heads", "DB Board"],
   },
   {
     id: "proj-006",
     title: "5KVA Solar Installation",
     subtitle: "Family Home",
     county: "Kisumu County",
-    image:
-      "https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?w=700&q=80",
+    image: "https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?w=700&q=80",
     tag: "Solar",
     tagColor: "bg-amber-400 text-white",
-    details: [
-      "5KW System",
-      "Lithium Battery",
-      "Hybrid Inverter",
-      "App Monitoring",
-    ],
+    details: ["5KW System", "Lithium Battery", "Hybrid Inverter", "App Monitoring"],
   },
 ];
 
 const PREVIEW_COUNT = 4;
 
-const ProjectCard: React.FC<{ project: Project; index: number }> = ({
-  project,
-  index,
-}) => (
+const ProjectCard: React.FC<{ project: Project; index: number; animate?: boolean }> = ({ project, index, animate = true }) => (
   <div
-    className="reveal group relative overflow-hidden rounded-2xl shadow-card hover:shadow-card-hover transition-all duration-400"
-    style={{ transitionDelay: `${(index % 4) * 0.1}s` }}
+    className={`${animate ? "reveal" : ""} group relative overflow-hidden rounded-2xl shadow-card hover:shadow-card-hover transition-all duration-400`}
+    style={animate ? { transitionDelay: `${(index % 4) * 0.08}s` } : undefined}
   >
-    {/* Image */}
     <div className="relative h-56 overflow-hidden">
       <img
         src={project.image}
@@ -126,35 +90,23 @@ const ProjectCard: React.FC<{ project: Project; index: number }> = ({
         loading="lazy"
       />
       <div className="absolute inset-0 bg-gradient-to-t from-navy-900/80 via-navy-900/30 to-transparent" />
-
-      {/* Tag */}
-      <span
-        className={`absolute top-4 right-4 text-xs font-bold px-3 py-1 rounded-full ${project.tagColor}`}
-      >
+      <span className={`absolute top-4 right-4 text-xs font-bold px-3 py-1 rounded-full ${project.tagColor}`}>
         {project.tag}
       </span>
-
-      {/* Bottom content overlay */}
       <div className="absolute bottom-0 left-0 right-0 p-5">
         <div className="flex items-center gap-1.5 text-white/70 text-xs mb-1.5">
           <MapPin className="w-3.5 h-3.5 text-amber-400" />
           {project.county}
         </div>
-        <h3 className="font-display font-700 text-white text-lg leading-tight">
-          {project.title}
-        </h3>
+        <h3 className="font-display font-700 text-white text-lg leading-tight">{project.title}</h3>
         <p className="text-white/70 text-sm">{project.subtitle}</p>
       </div>
     </div>
-
-    {/* Details strip */}
     <div className="bg-white p-4">
       <div className="flex flex-wrap gap-2">
         {project.details.map((detail) => (
-          <span
-            key={detail}
-            className="flex items-center gap-1 text-xs text-slate-600 bg-slate-50 rounded-full px-2.5 py-1"
-          >
+          <span key={detail}
+            className="flex items-center gap-1 text-xs text-slate-600 bg-slate-50 rounded-full px-2.5 py-1">
             <CheckCircle className="w-3 h-3 text-green-500" />
             {detail}
           </span>
@@ -166,7 +118,20 @@ const ProjectCard: React.FC<{ project: Project; index: number }> = ({
 
 const ProjectsSection: React.FC = () => {
   const [showAll, setShowAll] = useState(false);
-  const visible = showAll ? ALL_PROJECTS : ALL_PROJECTS.slice(0, PREVIEW_COUNT);
+
+  const initialCards = ALL_PROJECTS.slice(0, PREVIEW_COUNT);
+  const extraCards   = ALL_PROJECTS.slice(PREVIEW_COUNT);
+
+  useScrollReveal([]);
+
+  const handleGetQuote = () => {
+    const el = document.getElementById("contact");
+    if (el) {
+      const navbarHeight = 72;
+      const top = el.getBoundingClientRect().top + window.scrollY - navbarHeight;
+      window.scrollTo({ top, behavior: "smooth" });
+    }
+  };
 
   return (
     <section id="projects" className="section-padding bg-surface-50">
@@ -187,16 +152,30 @@ const ProjectsSection: React.FC = () => {
           </p>
         </div>
 
-        {/* Grid */}
+        {/* Grid — initial 4 animate in on scroll, extras appear instantly */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-          {visible.map((project, i) => (
-            <ProjectCard key={project.id} project={project} index={i} />
+          {initialCards.map((project, i) => (
+            <ProjectCard
+              key={project.id}
+              project={project}
+              index={i}
+              animate={true}
+            />
           ))}
+          {showAll &&
+            extraCards.map((project, i) => (
+              <ProjectCard
+                key={project.id}
+                project={project}
+                index={i}
+                animate={false}
+              />
+            ))}
         </div>
 
-        {/* Toggle */}
+        {/* View More toggle */}
         {!showAll && ALL_PROJECTS.length > PREVIEW_COUNT && (
-          <div className="text-center">
+          <div className="text-center mb-4">
             <button
               onClick={() => setShowAll(true)}
               className="inline-flex items-center gap-2 px-8 py-3 rounded-xl border-2 border-primary-600 text-primary-600 font-semibold hover:bg-primary-600 hover:text-white transition-all duration-300"
@@ -224,11 +203,12 @@ const ProjectsSection: React.FC = () => {
               assessment and personalized quote today.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/#contact" className="btn-amber">
-                Get a Free Quote
+              {/* Scroll to contact section programmatically */}
+              <button onClick={handleGetQuote} className="btn-amber">
+                Get a Free Consultation
                 <ArrowRight className="w-4 h-4" />
-              </Link>
-              <a href="tel:+254700000000" className="btn-outline">
+              </button>
+              <a href="tel:+254746430693" className="btn-outline">
                 Call Us Now
               </a>
             </div>
