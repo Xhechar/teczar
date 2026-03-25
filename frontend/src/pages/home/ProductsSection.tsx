@@ -23,7 +23,7 @@ import { useAuth } from "../../context/AuthContext";
 
 const formatKES = (n: number) => `KES ${n.toLocaleString("en-KE")}`;
 
-const WHATSAPP_NUMBER = "254700000000"; // admin WhatsApp — update with real number
+const WHATSAPP_NUMBER = "254746430693"; // admin WhatsApp — update with real number
 
 function whatsappUrl(productName: string) {
   const msg = encodeURIComponent(
@@ -32,7 +32,6 @@ function whatsappUrl(productName: string) {
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`;
 }
 
-// ─── Skeleton card ────────────────────────────────────────────────
 const ProductSkeleton: React.FC = () => (
   <div className="product-card flex flex-col overflow-hidden">
     <div className="skeleton h-52 w-full" />

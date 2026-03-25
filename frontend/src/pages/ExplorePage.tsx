@@ -241,7 +241,7 @@ const ServiceExploreCard: React.FC<{
           <Calendar className="w-4 h-4" /> Book Service
         </button>
         <a
-          href="tel:+254700000000"
+          href="tel:+254746430693"
           className="flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-semibold border-2 border-slate-200 text-slate-600 hover:border-primary-400 hover:text-primary-600 transition-all duration-200"
         >
           <Phone className="w-4 h-4" />

@@ -90,6 +90,17 @@ const HeroSection: React.FC = () => {
     return () => clearTimeout(t);
   }, []);
 
+  const handleGetQuote = (link: string) => {
+    if(!link.includes("#contact")) return;
+    const el = document.getElementById("contact");
+    if (el) {
+      const navbarHeight = 72;
+      const top =
+        el.getBoundingClientRect().top + window.scrollY - navbarHeight;
+      window.scrollTo({ top, behavior: "smooth" });
+    }
+  };
+
   // ── Navigate to a specific slide ──
   const goTo = useCallback(
     (index: number) => {
@@ -258,6 +269,7 @@ const HeroSection: React.FC = () => {
               className={`flex flex-col sm:flex-row gap-4 mb-16 transition-all duration-500 delay-200 ${loaded && textVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-5"}`}
             >
               <Link
+                onSubmit={() => handleGetQuote(slide.CtaLink)}
                 to={slide.CtaLink}
                 className="btn-primary text-base px-8 py-4"
               >

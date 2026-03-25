@@ -209,10 +209,10 @@ const BookingModal: React.FC<BookingModalProps> = ({ service, onClose }) => {
             <strong className="text-slate-600">2 hours</strong> to confirm the
             appointment. You can also reach us at{" "}
             <a
-              href="tel:+254700000000"
+              href="tel:+254746430693"
               className="text-primary-600 font-semibold"
             >
-              +254 700 000 000
+              +254 746 430 693
             </a>
             .
           </p>

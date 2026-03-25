@@ -216,8 +216,8 @@ const ApplyModal: React.FC<{ job: Job; onClose: () => void }> = ({
                   {...register("Phone", {
                     required: "Phone is required",
                     pattern: {
-                      value: /^(\+254|0)[7][0-9]{8}$/,
-                      message: "Enter a valid Kenyan number",
+                      value: /^(\+254|0)(7\d{2}|1\d{2})[\s-]?\d{3}[\s-]?\d{3}$/,
+                      message: "Enter a valid Kenyan phone number (e.g. 0712345678, 0112345678, +254712345678, or +254112345678)",
                     },
                   })}
                   className={`${inputCls(!!errors.Phone)} pl-10`}

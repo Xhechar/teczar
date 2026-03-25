@@ -129,18 +129,27 @@ const onSubmit = async (data: ProfileForm) => {
   const displayName = `${currentUser?.FirstName ?? ""} ${currentUser?.SecondName ?? ""}`.trim();
 
   return (
-    <CustomerLayout title="My Profile" subtitle="Manage your personal information">
+    <CustomerLayout
+      title="My Profile"
+      subtitle="Manage your personal information"
+    >
       <div className="bg-white rounded-2xl shadow-card p-6 md:p-8">
-
         {/* Avatar header */}
         <div className="flex items-center gap-4 mb-8 pb-6 border-b border-slate-100">
           <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary-500 to-navy-600 flex items-center justify-center text-white text-2xl font-900 shrink-0">
             {initials}
           </div>
           <div>
-            <h2 className="font-display text-xl font-700 text-navy-900">{displayName}</h2>
-            <p className="text-slate-400 text-sm capitalize">{currentUser.Role} Account</p>
-            <button type="button" className="mt-2 text-xs text-primary-600 font-semibold hover:underline flex items-center gap-1">
+            <h2 className="font-display text-xl font-700 text-navy-900">
+              {displayName}
+            </h2>
+            <p className="text-slate-400 text-sm capitalize">
+              {currentUser.Role} Account
+            </p>
+            <button
+              type="button"
+              className="mt-2 text-xs text-primary-600 font-semibold hover:underline flex items-center gap-1"
+            >
               <User className="w-3.5 h-3.5" />
               Change Photo
             </button>
@@ -151,30 +160,56 @@ const onSubmit = async (data: ProfileForm) => {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-600 mb-1.5">First Name</label>
+              <label className="block text-xs font-semibold text-slate-600 mb-1.5">
+                First Name
+              </label>
               <input {...register("FirstName")} className={inputCls} />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-600 mb-1.5">Last Name</label>
+              <label className="block text-xs font-semibold text-slate-600 mb-1.5">
+                Last Name
+              </label>
               <input {...register("SecondName")} className={inputCls} />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-600 mb-1.5">Email Address</label>
+            <label className="block text-xs font-semibold text-slate-600 mb-1.5">
+              Email Address
+            </label>
             <input {...register("Email")} type="email" className={inputCls} />
           </div>
 
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-600 mb-1.5">Phone Number</label>
-              <input {...register("Phone")} className={inputCls} placeholder="0712 345 678" />
+              <label className="block text-xs font-semibold text-slate-600 mb-1.5">
+                Phone Number
+              </label>
+              <input
+                {...register("Phone", {
+                  required: "Phone is required",
+                  pattern: {
+                    value: /^(\+254|0)(7\d{2}|1\d{2})[\s-]?\d{3}[\s-]?\d{3}$/,
+                    message:
+                      "Enter a valid Kenyan phone number (e.g. 0712345678, 0112345678, +254712345678, or +254112345678)",
+                  },
+                })}
+                className={inputCls}
+                placeholder="0712 345 678"
+              />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-600 mb-1.5">County</label>
-              <select {...register("County")} className={`${inputCls} cursor-pointer`}>
+              <label className="block text-xs font-semibold text-slate-600 mb-1.5">
+                County
+              </label>
+              <select
+                {...register("County")}
+                className={`${inputCls} cursor-pointer`}
+              >
                 {KENYA_COUNTIES.map((c) => (
-                  <option key={c} value={c}>{c}</option>
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
                 ))}
               </select>
             </div>
@@ -208,9 +243,15 @@ const onSubmit = async (data: ProfileForm) => {
               className="flex items-center gap-2 px-8 py-3 rounded-xl font-semibold text-white transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
               style={{ background: "linear-gradient(135deg,#1660eb,#0d1a42)" }}
             >
-              {isSubmitting
-                ? <><Loader2 className="w-4 h-4 animate-spin" /> Saving…</>
-                : <><Save className="w-4 h-4" /> Save Changes</>}
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" /> Saving…
+                </>
+              ) : (
+                <>
+                  <Save className="w-4 h-4" /> Save Changes
+                </>
+              )}
             </button>
           </div>
         </form>

@@ -53,9 +53,9 @@ export class AdvertService {
   }
 
   public static async FetchActiveAdverts(): Promise<
-    ServiceResult<FetchAdvertDto>
+    ServiceResult<Advert>
   > {
-    let result = await api.get<ServiceResult<FetchAdvertDto>>(
+    let result = await api.get<ServiceResult<Advert>>(
       `${this.ApiUrl}/get-active`,
     );
     return result.data;
