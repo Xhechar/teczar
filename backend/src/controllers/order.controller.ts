@@ -52,7 +52,7 @@ export class OrderController {
     try {
       let result = await this.orderService.UpdateOrderStatus(
         Req.params.id as string,
-        Req.body
+        Req.body.Status
       );
 
       return result.Success

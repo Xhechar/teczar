@@ -73,12 +73,26 @@ export class CategoryService extends BaseService implements IService<FetchCatego
     );
   }
   async Delete(id: string): Promise<ServiceResult<FetchCategoryDto>> {
-    let categoryExists = await this.Exists(prisma.category, "CategoryId", id);
+    let categoryExists = await prisma.category.findUnique({
+      where: {
+        CategoryId: id
+      },
+      include: {
+        Products: true,
+      }
+    })
 
-    if (!categoryExists.Success && !categoryExists.Data) {
+    if (!categoryExists) {
       return ServiceResponse.Failure<FetchCategoryDto>(
         ErrorType.NOTFOUND,
         "Category specified not found.",
+      );
+    }
+
+    if(categoryExists.Products.length > 0) {
+      return ServiceResponse.Failure<FetchCategoryDto>(
+        ErrorType.FORBIDDEN,
+        "Cannot delete category used on existing product(s).",
       );
     }
 
