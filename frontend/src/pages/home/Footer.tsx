@@ -6,7 +6,6 @@ import {
   Mail,
   MapPin,
   Facebook,
-  Twitter,
   Instagram,
   Youtube,
   ArrowRight,

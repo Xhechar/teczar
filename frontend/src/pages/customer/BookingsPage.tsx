@@ -1,17 +1,15 @@
-import React, { useEffect } from "react";
+import React from "react";
 import {
   Calendar,
   Clock,
   MapPin,
   PhoneCall,
-  Link as LinkIcon,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { ModelType, ServiceRequestStatus } from "../../enums/enums";
 import CustomerLayout from "../../layouts/CustomerLayout";
 import { useQuery } from "@tanstack/react-query";
 import { ServiceRequestService } from "../../services/service.request.service";
-import { useToast } from "../../components/Toast";
 import { useSocketInvalidation } from "../../hooks/socket.hook";
 
 const STATUS_STYLE: Record<ServiceRequestStatus, string> = {
@@ -24,9 +22,8 @@ const STATUS_STYLE: Record<ServiceRequestStatus, string> = {
 
 const BookingsPage: React.FC = () => {
   useSocketInvalidation(ModelType.ServiceRequest);
-  const toast = useToast(); 
 
-  const {data: bookings, isLoading} = useQuery({
+  const {data: bookings} = useQuery({
     queryKey: [`user${ModelType.ServiceRequest.toLowerCase()}`],
     queryFn: () => ServiceRequestService.FetchByUserId(),
     staleTime: 60000

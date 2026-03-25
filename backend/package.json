@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "start:build": "tsc -w",
-    "start:xhr": "nodemon dist/server.js",
-    "start": "concurrently npm:start:*"
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "dev": "concurrently \"tsc -w\" \"nodemon dist/server.js\""
   },
   "type": "module",
   "keywords": [],

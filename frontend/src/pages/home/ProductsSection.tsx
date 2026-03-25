@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import {
   ShoppingCart,
-  Zap,
   Tag,
   ArrowRight,
   Phone,
@@ -11,7 +10,6 @@ import {
   Star,
   MessageCircle,
 } from "lucide-react";
-import { ProductsService } from "../../dummy/dummy";
 import { ModelType } from "../../enums/enums";
 import { useScrollReveal } from "../../hooks/Helper";
 import { Product } from "../../interfaces/interfaces";

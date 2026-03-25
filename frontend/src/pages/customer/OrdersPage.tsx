@@ -1,9 +1,8 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Package, Eye } from "lucide-react";
 import { ModelType, OrderStatus } from "../../enums/enums";
 import CustomerLayout from "../../layouts/CustomerLayout";
 import { useSocketInvalidation } from "../../hooks/socket.hook";
-import { useToast } from "../../components/Toast";
 import { useQuery } from "@tanstack/react-query";
 import { OrderService } from "../../services/order.service";
 
@@ -17,9 +16,8 @@ const STATUS_STYLE: Record<OrderStatus, string> = {
 
 const OrdersPage: React.FC = () => {
   useSocketInvalidation(ModelType.Order);
-  const toast = useToast();
 
-  let {data: orders, isLoading} = useQuery({
+  let {data: orders} = useQuery({
     queryKey: [`user${ModelType.Order.toLowerCase()}`],
     queryFn: () => OrderService.FetchByUser(),
     staleTime: 60000

@@ -6,8 +6,6 @@ import {
   Plus,
   Edit,
   Trash2,
-  ToggleLeft,
-  ToggleRight,
   ArrowUp,
   ArrowDown,
   Eye,
@@ -33,8 +31,7 @@ import {
   SubmitButton,
 } from "./components/AdminUI";
 import { useToast, toastResult } from "../../components/Toast";
-import { CreateHeroSlideDto, UpdateHeroSlideDto } from "../../dtos/dto";
-import { AdminSliderService, dummyHeroSlides } from "../../dummy/dummy";
+import { CreateHeroSlideDto } from "../../dtos/dto";
 import { ModelType } from "../../enums/enums";
 import { useSocketInvalidation } from "../../hooks/socket.hook";
 import { HeroSlide } from "../../interfaces/interfaces";
@@ -245,7 +242,9 @@ const AdminSlider: React.FC = () => {
   const [confirmDel, setConfirmDel] = useState<HeroSlide | null>(null);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  // eslint-disable-next-line
   const [toggling, setToggling] = useState<string | null>(null);
+  // eslint-disable-next-line
   const [reordering, setReordering] = useState(false);
 
   const [previewData, setPreviewData] = useState<Partial<HeroSlide>>({});
@@ -258,6 +257,7 @@ const AdminSlider: React.FC = () => {
 
   React.useEffect(() => {
     if (isError) toast.error("Failed to load slides", "Please refresh.");
+    // eslint-disable-next-line
   }, [isError]);
 
   const slides = useMemo(() => {
@@ -322,20 +322,17 @@ const AdminSlider: React.FC = () => {
       const result =
         panelMode === "create"
           ? await HeroSliderService.Create(dto)
-          : await HeroSliderService.Update(
-              editSlide!.SlideId,
-              {
-                ImageUrl: dto.ImageUrl,
-                Tag: dto.Tag,
-                Title: dto.Title,
-                TitleAccent: dto.TitleAccent,
-                Description: dto.Description,
-                CtaLabel: dto.CtaLabel,
-                CtaLink: dto.CtaLink,
-                SortOrder: dto.SortOrder,
-                IsActive: dto.IsActive,
-              },
-            );
+          : await HeroSliderService.Update(editSlide!.SlideId, {
+              ImageUrl: dto.ImageUrl,
+              Tag: dto.Tag,
+              Title: dto.Title,
+              TitleAccent: dto.TitleAccent,
+              Description: dto.Description,
+              CtaLabel: dto.CtaLabel,
+              CtaLink: dto.CtaLink,
+              SortOrder: dto.SortOrder,
+              IsActive: dto.IsActive,
+            });
       toastResult(result, toast);
       if (result.Success) setPanelMode(null);
     } catch (error: any) {
@@ -352,7 +349,7 @@ const AdminSlider: React.FC = () => {
     setToggling(s.SlideId);
     try {
       const result = await HeroSliderService.ToggleActive(s.SlideId);
-      if(result.Success) {
+      if (result.Success) {
         toast.success(
           result.Title,
           `Slide "${s.Title}" is now ${s.IsActive ? "hidden" : "visible"} on the site.`,
@@ -361,8 +358,7 @@ const AdminSlider: React.FC = () => {
         toastResult(result, toast);
       }
     } catch (error: any) {
-      toast.error(
-        error?.response?.data?.ErrorMessage ?? "Toggle failed");
+      toast.error(error?.response?.data?.ErrorMessage ?? "Toggle failed");
     } finally {
       setToggling(null);
     }
@@ -380,6 +376,7 @@ const AdminSlider: React.FC = () => {
       return sl;
     });
 
+    // eslint-disable-next-line
     const orderedIds = [...newOrder]
       .sort((a, b) => a.SortOrder - b.SortOrder)
       .map((x) => x.SlideId);
@@ -397,8 +394,7 @@ const AdminSlider: React.FC = () => {
       toastResult(result, toast);
       if (result.Success) setConfirmDel(null);
     } catch (error: any) {
-      toast.error(
-        error?.response?.data?.ErrorMessage ?? "Delete failed");
+      toast.error(error?.response?.data?.ErrorMessage ?? "Delete failed");
     } finally {
       setDeleting(false);
     }

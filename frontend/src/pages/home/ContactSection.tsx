@@ -335,10 +335,10 @@ const ContactSection: React.FC = () => {
                 <p className="text-center text-xs text-slate-400">
                   Or call us directly:{" "}
                   <a
-                    href="tel:+254700000000"
+                    href="tel:+254746430693"
                     className="text-primary-500 font-semibold hover:underline"
                   >
-                    +254 700 000 000
+                    +254 746 430 693
                   </a>
                 </p>
               </form>

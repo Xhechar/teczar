@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { ChevronLeft, ChevronRight, Play, Loader2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, Play } from "lucide-react";
 import { ModelType } from "../../enums/enums";
 import { useScrollReveal } from "../../hooks/Helper";
 import { useSocketInvalidation } from "../../hooks/socket.hook";

@@ -1,7 +1,6 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Star, Quote, Loader2, MapPin } from "lucide-react";
-import { ReviewsService } from "../../dummy/dummy";
 import { ModelType } from "../../enums/enums";
 import { useSocketInvalidation } from "../../hooks/socket.hook";
 import { Review } from "../../interfaces/interfaces";

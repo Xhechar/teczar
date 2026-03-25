@@ -3,7 +3,6 @@ import {
   Award,
   Users,
   MapPin,
-  Clock,
   CheckCircle,
   TrendingUp,
 } from "lucide-react";

@@ -26,7 +26,6 @@ import {
   Mail,
   DollarSign,
   PlayCircle,
-  ImageIcon,
 } from "lucide-react";
 import {
   PageHeader,
@@ -44,17 +43,15 @@ import {
   FormField,
   inputCls,
   CloudinaryUpload,
-  SectionDivider,
   SubmitButton,
 } from "./components/AdminUI";
 import { useToast, toastResult } from "../../components/Toast";
 import { ModelType, OrderStatus, PaymentStatus, ReviewStatus, MediaType, ServiceRequestStatus, JobApplicationStatus } from "../../enums/enums";
 import { useSocketInvalidation } from "../../hooks/socket.hook";
-import { Service, Category, Order, Payment, Review, Advert, ServiceRequest, Job, JobApplication } from "../../interfaces/interfaces";
+import { Service, Category, Payment, Review, Advert, ServiceRequest, Job, JobApplication } from "../../interfaces/interfaces";
 import AdminLayout from "./layouts/AdminLayout";
 import { User as UserType } from "../../interfaces/interfaces";
 import { ServicesService } from "../../services/service.service";
-import { FetchServiceDto } from "../../dtos/dto";
 import { CategoryService } from "../../services/category.service";
 import { OrderService } from "../../services/order.service";
 import { ReviewService } from "../../services/review.service";
@@ -85,6 +82,7 @@ export const AdminServices: React.FC = () => {
   });
   React.useEffect(() => {
     if (isError) toast.error("Failed to load services");
+    // eslint-disable-next-line
   }, [isError]);
 
   const services = useMemo(() => {
@@ -318,6 +316,7 @@ export const AdminCategories: React.FC = () => {
   });
   React.useEffect(() => {
     if (isError) toast.error("Failed to load categories");
+    // eslint-disable-next-line
   }, [isError]);
 
   const cats = data?.DataList ?? [];
@@ -490,6 +489,7 @@ export const AdminOrders: React.FC = () => {
   });
   React.useEffect(() => {
     if (isError) toast.error("Failed to load orders");
+    // eslint-disable-next-line
   }, [isError]);
 
   const orders = useMemo(() => {
@@ -622,6 +622,7 @@ export const AdminPayments: React.FC = () => {
   });
   React.useEffect(() => {
     if (isError) toast.error("Failed to load payments");
+    // eslint-disable-next-line
   }, [isError]);
 
   const payments = useMemo(() => {
@@ -862,6 +863,7 @@ export const AdminReviews: React.FC = () => {
   });
   React.useEffect(() => {
     if (isError) toast.error("Failed to load reviews");
+    // eslint-disable-next-line
   }, [isError]);
 
   const reviews = useMemo(() => {
@@ -1025,6 +1027,7 @@ export const AdminAdverts: React.FC = () => {
   });
   React.useEffect(() => {
     if (isError) toast.error("Failed to load adverts");
+    // eslint-disable-next-line
   }, [isError]);
 
   const adverts = useMemo(() => {
@@ -1039,7 +1042,6 @@ export const AdminAdverts: React.FC = () => {
     handleSubmit,
     reset,
     watch,
-    formState: { errors },
   } = useForm<Partial<Advert>>();
   const mediaType = watch("MediaType") as MediaType;
 
@@ -1269,6 +1271,7 @@ export const AdminServiceRequests: React.FC = () => {
   });
   React.useEffect(() => {
     if (isError) toast.error("Failed to load service requests");
+    // eslint-disable-next-line
   }, [isError]);
 
   const requests = useMemo(() => {
@@ -1448,6 +1451,7 @@ export const AdminJobs: React.FC = () => {
   });
   React.useEffect(() => {
     if (isError) toast.error("Failed to load jobs");
+    // eslint-disable-next-line
   }, [isError]);
 
   const jobs = useMemo(() => {
@@ -1699,6 +1703,7 @@ export const AdminJobApplications: React.FC = () => {
   });
   React.useEffect(() => {
     if (isError) toast.error("Failed to load applications");
+    // eslint-disable-next-line
   }, [isError]);
 
   const apps = useMemo(() => {

@@ -253,6 +253,7 @@ const ResetPasswordStep: React.FC<Step2Props> = ({
   // Start countdown immediately on mount
   useEffect(() => {
     start();
+    // eslint-disable-next-line
   }, []);
 
   interface ResetForm {

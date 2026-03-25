@@ -1,8 +1,7 @@
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { Save, User, Loader2 } from "lucide-react";
-import { isError } from "util";
 import { queryClient } from "..";
 import { useToast, toastResult } from "../components/Toast";
 import { useAuth } from "../context/AuthContext";

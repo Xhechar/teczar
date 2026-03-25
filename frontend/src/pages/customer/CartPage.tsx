@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {  } from "react";
 import {
   ShoppingCart,
   Plus,
@@ -10,7 +10,6 @@ import {
 import { Link } from "react-router-dom";
 import CustomerLayout from "../../layouts/CustomerLayout";
 import { useQuery } from "@tanstack/react-query";
-import { useSocketInvalidation } from "../../hooks/socket.hook";
 import { ModelType } from "../../enums/enums";
 import { CartService } from "../../services/cart.service";
 import { CartItemService } from "../../services/cart.item.service";

@@ -4,11 +4,9 @@ import {
   LayoutDashboard,
   Users,
   Package,
-  Settings,
   Briefcase,
   Star,
   CreditCard,
-  FileText,
   Folder,
   Wrench,
   Megaphone,
@@ -19,7 +17,6 @@ import {
   Zap,
   Bell,
   Menu,
-  X,
   ClipboardList,
   UserCheck,
   Images,
@@ -232,63 +229,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   );
 };
 
-// ─── TOP BAR ──────────────────────────────────────────────────────
-interface TopBarProps {
-  sidebarCollapsed: boolean;
-  onMobileMenuOpen: () => void;
-  title: string;
-}
 
-const TopBar: React.FC<TopBarProps> = ({
-  sidebarCollapsed,
-  onMobileMenuOpen,
-  title,
-}) => (
-  <header
-    className={`fixed top-0 right-0 z-[80] bg-white/95 backdrop-blur-lg border-b border-slate-100 shadow-sm transition-all duration-300 ${
-      sidebarCollapsed ? "left-[70px]" : "left-[240px]"
-    } left-0 lg:left-auto`}
-    style={{ left: undefined }}
-  >
-    <div
-      className="flex items-center justify-between px-5 py-3.5"
-      style={{ marginLeft: sidebarCollapsed ? "70px" : "240px" }}
-    >
-      <div className="flex items-center gap-3">
-        <button
-          onClick={onMobileMenuOpen}
-          className="lg:hidden p-2 rounded-xl hover:bg-slate-100 text-slate-600 transition-all"
-        >
-          <Menu className="w-5 h-5" />
-        </button>
-        <h2 className="font-display font-700 text-slate-900 text-base">
-          {title}
-        </h2>
-      </div>
-      <div className="flex items-center gap-2">
-        <button className="relative w-9 h-9 rounded-xl hover:bg-slate-100 flex items-center justify-center text-slate-500 transition-all">
-          <Bell
-            className="w-4.5 h-4.5"
-            style={{ width: "18px", height: "18px" }}
-          />
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white" />
-        </button>
-        {/* Admin avatar */}
-        <div className="flex items-center gap-2.5 pl-2 border-l border-slate-200">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-500 to-navy-600 flex items-center justify-center text-white text-xs font-bold">
-            AU
-          </div>
-          <div className="hidden sm:block">
-            <p className="text-xs font-700 text-slate-800 leading-tight">
-              Admin User
-            </p>
-            <p className="text-[10px] text-slate-400">Administrator</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </header>
-);
 
 // ─── ADMIN LAYOUT ─────────────────────────────────────────────────
 interface AdminLayoutProps {

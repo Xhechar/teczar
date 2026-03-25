@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import {
   Package,
@@ -8,8 +8,6 @@ import {
   Trash2,
   Star,
   Tag,
-  CheckCircle,
-  XCircle,
 } from "lucide-react";
 import {
   PageHeader,
@@ -38,9 +36,7 @@ import { Product } from "../../interfaces/interfaces";
 import AdminLayout from "./layouts/AdminLayout";
 import { ProductService } from "../../services/product.service";
 import { CategoryService } from "../../services/category.service";
-import { CreateProductDto } from "../../dtos/dto";
 import { ProductImageService } from "../../services/product.image.service";
-import { log } from "console";
 
 const fmtKES = (n: number) => `KES ${n.toLocaleString("en-KE")}`;
 const toManaged = (p: Product): ManagedImage[] =>
@@ -168,6 +164,7 @@ const AdminProducts: React.FC = () => {
 
   React.useEffect(() => {
     if (isError) toast.error("Failed to load products");
+    // eslint-disable-next-line 
   }, [isError]);
 
   const products = useMemo(() => {

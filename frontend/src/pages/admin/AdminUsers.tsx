@@ -21,7 +21,6 @@ import {
   SearchBar,
   FilterSelect,
   IconButton,
-  ActionButton,
   ConfirmModal,
   EmptyState,
   SlideOver,
@@ -107,6 +106,7 @@ const AdminUsers: React.FC = () => {
 
   React.useEffect(() => {
     if (isError) toast.error("Failed to load users");
+    // eslint-disable-next-line
   }, [isError]);
 
   const users = useMemo(() => {

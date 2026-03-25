@@ -109,6 +109,7 @@ const RegisterPage: React.FC = () => {
       toastResult(result, toast);
 
       if(result.Success) {
+        reset();
         setTimeout(() => {
           navigate("/login");
         }, 3000);
