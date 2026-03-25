@@ -16,7 +16,6 @@ import {
 import AdminProducts from "./pages/admin/AdminProducts";
 import AdminUsers from "./pages/admin/AdminUsers";
 import { ToastProvider } from "./components/Toast";
-import { UserRole } from "./enums/enums";
 import AdminSlider from "./pages/admin/AdminSlider";
 import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
 import { AuthProvider } from "./context/AuthContext";

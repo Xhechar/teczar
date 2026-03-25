@@ -6,9 +6,6 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { UserRole } from "../enums/enums";
-import { ServiceResult } from "../interfaces/result/service.result";
-import { api } from "../middleware/middleware";
 import { AuthService } from "../services/auth.service";
 import { FetchUserDto } from "../dtos/dto";
 

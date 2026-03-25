@@ -236,6 +236,7 @@ export const useToast = (): ToastContextValue => {
  * Helper: call after any service action.
  * Reads ServiceResult<T> and fires the appropriate toast.
  */
+// eslint-disable-next-line
 export function toastResult<T>(
   result: any,
   toast: ToastContextValue,
