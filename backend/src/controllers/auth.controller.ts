@@ -10,31 +10,22 @@ export class AuthController {
   async LoginUser(Req: Request, Res: Response) {
     try {
       let result = await this.authService.LoginUser(Req.body);
-      console.log("got result", result);
       
       if (result.Success) {
         Res.cookie("accessToken", result.AccessToken as string, {
           signed: true,
           httpOnly: true,
-          sameSite: "strict",
+          sameSite: "none",
           path: "/",
-          secure:
-            (process.env.APP_ENVIRONMENT as string).toLocaleLowerCase() ===
-            "development"
-              ? false
-              : true,
+          secure: true,
         });
 
         Res.cookie("refreshToken", result.RefreshToken as string, {
           httpOnly: true,
           signed: true,
-          sameSite: "strict",
+          sameSite: "none",
           path: "/",
-          secure:
-            (process.env.APP_ENVIRONMENT as string).toLocaleLowerCase() ===
-            "development"
-              ? false
-              : true,
+          secure: true,
         });
 
         return Res.status(200).json(
@@ -70,25 +61,17 @@ export class AuthController {
         Res.cookie("accessToken", result.AccessToken as string, {
           signed: true,
           httpOnly: true,
-          sameSite: "strict",
+          sameSite: "none",
           path: "/",
-          secure:
-            (process.env.APP_ENVIRONMENT as string).toLocaleLowerCase() ===
-            "development"
-              ? false
-              : true,
+          secure: true,
         });
 
         Res.cookie("refreshToken", result.RefreshToken as string, {
           httpOnly: true,
           signed: true,
-          sameSite: "strict",
+          sameSite: "none",
           path: "/",
-          secure:
-            (process.env.APP_ENVIRONMENT as string).toLocaleLowerCase() ===
-            "development"
-              ? false
-              : true,
+          secure: true,
         });
 
         return Res.status(200).json(

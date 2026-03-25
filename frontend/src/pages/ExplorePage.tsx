@@ -324,11 +324,19 @@ const ServicesList: React.FC = () => {
 // ─── Product card ─────────────────────────────────────────────────
 const ProductExploreCard: React.FC<{ product: Product }> = ({ product }) => { 
   const toast = useToast();
+  const {user} = useAuth();
+  const navigate = useNavigate();
+  
   const image =
     product.Images?.[0]?.ImageUrl ??
     "https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&q=80";
 
     async function handleAddToCart(data: CreateCartItemDto): Promise<void> {
+      if(!user) {
+        navigate('/login', {replace: true});
+        return;
+      }
+
       try {
         let result = await CartItemService.Create(data);
         toastResult(result, toast);
