@@ -1,4 +1,4 @@
-import { CreatePaymentDto, FetchPaymentDto } from "../dtos/dto";
+import { FetchPaymentDto } from "../dtos/dto";
 import { Payment } from "../interfaces/interfaces";
 import { ServiceResult } from "../interfaces/result/service.result";
 import { api } from "../middleware/middleware";
