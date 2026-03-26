@@ -1263,7 +1263,6 @@ export const AdminAdverts: React.FC = () => {
     handleSubmit,
     reset,
     watch,
-    formState: { errors },
   } = useForm<Partial<Advert>>();
   const mediaType = watch("MediaType") as MediaType;
 
@@ -1489,13 +1488,13 @@ export const AdminServiceRequests: React.FC = () => {
   const [expanded, setExpanded] = useState<string | null>(null);
 
   const { data, isLoading, isError } = useQuery({
-      queryKey: [ModelType.ServiceRequest.toLowerCase()],
-      queryFn: () => ServiceRequestService.FetchAll(),
-    });
-    React.useEffect(() => {
-      if (isError) toast.error("Failed to load service requests");
-      // eslint-disable-next-line
-    }, [isError]);
+    queryKey: [ModelType.ServiceRequest.toLowerCase()],
+    queryFn: () => ServiceRequestService.FetchAll(),
+  });
+  React.useEffect(() => {
+    if (isError) toast.error("Failed to load service requests");
+    // eslint-disable-next-line
+  }, [isError]);
 
   const requests = useMemo(() => {
     let list = data?.DataList ?? [];
@@ -1520,39 +1519,30 @@ export const AdminServiceRequests: React.FC = () => {
   }, [data, statusFilter, search]);
 
   const updateStatus = async (id: string, status: ServiceRequestStatus) => {
-      setUpdating(id);
-      try {
-        const r = await ServiceRequestService.UpdateStatus(id, status);
-        toastResult(r, toast, { successMsg: `Request updated to ${status}.` });
-      } catch (error) {
-        toast.error( error instanceof Error ? error.message : "Update failed");
-      } finally {
-        setUpdating(null);
-      }
-    };
-    const doDelete = async () => {
-      setDeleting(true);
-      try {
-        const r = await ServiceRequestService.Delete(
-          confirmDel!.RequestId,
-        );
-        toastResult(r, toast);
-        if (r.Success) setConfirmDel(null);
-      } catch (error) {
-        toast.error( error instanceof Error ? error.message : "Delete failed");
-      } finally {
-        setDeleting(false);
-      }
-    };
-
-  // Status colour dots for the timeline feel
-  const statusDot: Record<string, string> = {
-    Pending: "bg-yellow-400",
-    Contacted: "bg-blue-400",
-    Scheduled: "bg-purple-400",
-    Completed: "bg-emerald-500",
-    Cancelled: "bg-red-400",
+    setUpdating(id);
+    try {
+      const r = await ServiceRequestService.UpdateStatus(id, status);
+      toastResult(r, toast, { successMsg: `Request updated to ${status}.` });
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Update failed");
+    } finally {
+      setUpdating(null);
+    }
   };
+  const doDelete = async () => {
+    setDeleting(true);
+    try {
+      const r = await ServiceRequestService.Delete(confirmDel!.RequestId);
+      toastResult(r, toast);
+      if (r.Success) setConfirmDel(null);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Delete failed");
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  // eslint-disable-next-line
 
   return (
     <AdminLayout title="Service Requests">
