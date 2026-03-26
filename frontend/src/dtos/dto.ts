@@ -197,15 +197,26 @@ export interface FetchOrderDto {
   Status: string;
   TotalAmount: number;
   Items: {
+    OrderItemId: string;
     ProductId: string;
     Name: string;
     Quantity: number;
     Price: number;
+    Product: {
+      Name: string;
+      Category: {
+        CategoryId: string;
+        Name: string;
+      };
+    };
   }[];
   CreatedAt: Date;
   User: {
     FirstName: string;
     SecondName: string;
+    Phone: string;
+    Email: string;
+    County: string;
   };
 }
 

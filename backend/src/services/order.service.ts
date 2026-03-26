@@ -29,7 +29,11 @@ export class OrderService extends BaseService implements IService<FetchOrderDto,
       include: {
         Items: {
           include: {
-            Product: true
+            Product: {
+              include: {
+                Category: true
+              }
+            }
           }
         },
         User: true
@@ -48,15 +52,26 @@ export class OrderService extends BaseService implements IService<FetchOrderDto,
         Status: o.Status,
         TotalAmount: o.TotalAmount.toNumber(),
         Items: o.Items.map((i) => ({
+          OrderItemId: i.OrderItemId,
           ProductId: i.ProductId,
           Name: i.Product.Name,
           Quantity: i.Product.Quantity,
           Price: i.Product.Price.toNumber(),
+          Product: {
+            Name: i.Product.Name,
+            Category: {
+              CategoryId: i.Product.Category.CategoryId,
+              Name: i.Product.Category.Name
+            }
+          }
         })),
         CreatedAt: o.CreatedAt,
         User: {
           FirstName: o.User.FirstName,
           SecondName: o.User.SecondName,
+          Phone: o.User.Phone,
+          Email: o.User.Email,
+          County: o.User.County
         },
       })),
     );
@@ -69,7 +84,11 @@ export class OrderService extends BaseService implements IService<FetchOrderDto,
       include: {
         Items: {
           include: {
-            Product: true,
+            Product: {
+              include: {
+                Category: true,
+              }
+            },
           },
         },
         User: true
@@ -91,15 +110,26 @@ export class OrderService extends BaseService implements IService<FetchOrderDto,
         Status: o.Status,
         TotalAmount: o.TotalAmount.toNumber(),
         Items: o.Items.map((i) => ({
+          OrderItemId: i.OrderItemId,
           ProductId: i.ProductId,
           Name: i.Product.Name,
           Quantity: i.Product.Quantity,
           Price: i.Product.Price.toNumber(),
+          Product: {
+            Name: i.Product.Name,
+            Category: {
+              CategoryId: i.Product.Category.CategoryId,
+              Name: i.Product.Category.Name,
+            },
+          },
         })),
         CreatedAt: o.CreatedAt,
         User: {
           FirstName: o.User.FirstName,
           SecondName: o.User.SecondName,
+          Phone: o.User.Phone,
+          Email: o.User.Email,
+          County: o.User.County,
         },
       })),
     );

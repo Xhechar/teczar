@@ -25,7 +25,7 @@ export class AuthService {
     email: string,
   ): Promise<ServiceResult<object>> {
     const result = await api.post<ServiceResult<object>>(
-      `${this.ApiUrl}/verify-mail`,
+      `${this.ApiUrl}/verify-email`,
       { Email: email },
     );
     return result.data;

@@ -14,7 +14,6 @@ import { useSocketInvalidation } from "../../hooks/socket.hook";
 import { Advert } from "../../interfaces/interfaces";
 import { AdvertService } from "../../services/advert.service";
 
-// ─── YouTube IFrame API types (not in @types/youtube by default) ──
 declare global {
   interface Window {
     YT: {
@@ -31,10 +30,9 @@ declare global {
       ) => YTPlayer;
       PlayerState: { PLAYING: number; PAUSED: number; ENDED: number };
     };
-    onYouTubeIframeAPIReady: () => void;
+    onYouTubeIframeAPIReady?: () => void;
   }
 }
-
 interface YTPlayer {
   playVideo(): void;
   pauseVideo(): void;
@@ -45,167 +43,132 @@ interface YTPlayer {
   destroy(): void;
 }
 
-// ─── Load the YouTube IFrame API script once ─────────────────────
+// ─── Load YouTube IFrame API script exactly once ──────────────────
 function loadYouTubeAPI(): Promise<void> {
   return new Promise((resolve) => {
-    // Already loaded
-    if (window.YT && window.YT.Player) {
+    if (window.YT?.Player) {
       resolve();
       return;
     }
 
-    // Already injected but not ready yet
-    if (document.getElementById("yt-api-script")) {
-      const existing = window.onYouTubeIframeAPIReady;
-      window.onYouTubeIframeAPIReady = () => {
-        existing?.();
-        resolve();
-      };
-      return;
-    }
+    const prev = window.onYouTubeIframeAPIReady;
+    window.onYouTubeIframeAPIReady = () => {
+      prev?.();
+      resolve();
+    };
 
-    window.onYouTubeIframeAPIReady = resolve;
-    const script = document.createElement("script");
-    script.id = "yt-api-script";
-    script.src = "https://www.youtube.com/iframe_api";
-    document.head.appendChild(script);
+    if (!document.getElementById("yt-api-script")) {
+      const s = document.createElement("script");
+      s.id = "yt-api-script";
+      s.src = "https://www.youtube.com/iframe_api";
+      document.head.appendChild(s);
+    }
   });
 }
 
-// ─── Extract YouTube video ID from any embed or watch URL ────────
+// ─── Extract video ID from any YouTube URL format ─────────────────
 function extractVideoId(url: string): string | null {
   try {
     const u = new URL(url);
-    // https://www.youtube.com/embed/VIDEO_ID
     if (u.pathname.startsWith("/embed/"))
       return u.pathname.split("/embed/")[1].split("?")[0];
-    // https://www.youtube.com/watch?v=VIDEO_ID
     if (u.searchParams.get("v")) return u.searchParams.get("v");
-    // https://youtu.be/VIDEO_ID
     if (u.hostname === "youtu.be") return u.pathname.slice(1).split("?")[0];
-    return null;
-  } catch {
-    return null;
-  }
+  } catch {}
+  return null;
 }
 
-// ─── YouTube Player hook ─────────────────────────────────────────
-function useYouTubePlayer(
-  containerRef: React.RefObject<HTMLDivElement>,
-  videoId: string | null,
-  onStateChange?: (state: number) => void,
-) {
-  const playerRef = useRef<YTPlayer | null>(null);
-  const [ready, setReady] = useState(false);
-
-  useEffect(() => {
-    if (!containerRef.current || !videoId) return;
-
-    let destroyed = false;
-
-    loadYouTubeAPI().then(() => {
-      if (destroyed || !containerRef.current) return;
-
-      // Destroy previous player on the same container before creating a new one
-      if (playerRef.current) {
-        try {
-          playerRef.current.destroy();
-        } catch {}
-        playerRef.current = null;
-      }
-
-      playerRef.current = new window.YT.Player(containerRef.current, {
-        videoId,
-        playerVars: {
-          autoplay: 0, // ← start paused
-          mute: 0, // ← not muted — user controls this
-          rel: 0, // no related videos at the end
-          modestbranding: 1,
-          controls: 1, // show YouTube native controls
-          playsinline: 1,
-        },
-        events: {
-          onReady: () => {
-            setReady(true);
-          },
-          onStateChange: (e) => {
-            onStateChange?.(e.data);
-          },
-        },
-      });
-    });
-
-    return () => {
-      destroyed = true;
-      setReady(false);
-      if (playerRef.current) {
-        try {
-          playerRef.current.destroy();
-        } catch {}
-        playerRef.current = null;
-      }
-    };
-    // Intentionally not including onStateChange in deps to avoid re-creating player on every render
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [videoId]);
-
-  return { player: playerRef, ready };
+function ytThumbnail(videoId: string) {
+  return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
 }
 
-// ─── Single video player card ─────────────────────────────────────
 interface VideoPlayerProps {
   advert: Advert;
   onEnded?: () => void;
 }
 
 const VideoPlayer: React.FC<VideoPlayerProps> = ({ advert, onEnded }) => {
+  const videoId = extractVideoId(advert.MediaUrl);
   const containerRef = useRef<HTMLDivElement>(null);
+  const playerRef = useRef<YTPlayer | null>(null);
+
+  // hasStarted = user has clicked play at least once → show the iframe
+  const [hasStarted, setHasStarted] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
-  const [showOverlay, setShowOverlay] = useState(true);
+  const [playerReady, setPlayerReady] = useState(false);
 
-  const videoId = extractVideoId(advert.MediaUrl);
+  // Build the player only after the user clicks play
+  useEffect(() => {
+    if (!hasStarted || !videoId || !containerRef.current) return;
 
-  const { player, ready } = useYouTubePlayer(
-    containerRef as React.RefObject<HTMLDivElement>,
-    videoId,
-    useCallback(
-      (state: number) => {
-        if (!window.YT) return;
-        setIsPlaying(state === window.YT.PlayerState.PLAYING);
-        if (state === window.YT.PlayerState.PLAYING) setShowOverlay(false);
-        if (state === window.YT.PlayerState.PAUSED) setShowOverlay(false);
-        if (state === window.YT.PlayerState.ENDED) {
-          setShowOverlay(true);
-          onEnded?.();
-        }
-      },
-      [onEnded],
-    ),
-  );
+    let cancelled = false;
+
+    loadYouTubeAPI().then(() => {
+      if (cancelled || !containerRef.current) return;
+
+      playerRef.current = new window.YT.Player(containerRef.current, {
+        videoId,
+        playerVars: {
+          autoplay: 1, // user already clicked — start playing
+          mute: 0,
+          rel: 0,
+          modestbranding: 1,
+          controls: 1,
+          playsinline: 1,
+        },
+        events: {
+          onReady: ({ target }) => {
+            if (cancelled) return;
+            setPlayerReady(true);
+            target.playVideo();
+            setIsPlaying(true);
+          },
+          onStateChange: ({ data }) => {
+            if (!window.YT || cancelled) return;
+            setIsPlaying(data === window.YT.PlayerState.PLAYING);
+            if (data === window.YT.PlayerState.ENDED) onEnded?.();
+          },
+        },
+      });
+    });
+
+    return () => {
+      cancelled = true;
+      if (playerRef.current) {
+        try {
+          playerRef.current.destroy();
+        } catch {}
+        playerRef.current = null;
+        setPlayerReady(false);
+        setIsPlaying(false);
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasStarted, videoId]);
+
+  const handleFirstPlay = () => {
+    if (!videoId) return;
+    setHasStarted(true); // mounts the container → triggers useEffect above
+  };
 
   const togglePlay = () => {
-    if (!player.current || !ready) return;
-    if (isPlaying) {
-      player.current.pauseVideo();
-    } else {
-      player.current.playVideo();
-      setShowOverlay(false);
-    }
+    if (!playerRef.current || !playerReady) return;
+    isPlaying ? playerRef.current.pauseVideo() : playerRef.current.playVideo();
   };
 
   const toggleMute = () => {
-    if (!player.current || !ready) return;
+    if (!playerRef.current || !playerReady) return;
     if (isMuted) {
-      player.current.unMute();
+      playerRef.current.unMute();
       setIsMuted(false);
     } else {
-      player.current.mute();
+      playerRef.current.mute();
       setIsMuted(true);
     }
   };
 
-  // If the URL isn't a YouTube link, fall back to a plain iframe
+  // Non-YouTube URL → plain iframe fallback
   if (!videoId) {
     return (
       <div className="relative aspect-video">
@@ -214,7 +177,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ advert, onEnded }) => {
           title={advert.Title ?? "Video"}
           className="w-full h-full"
           frameBorder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
         />
       </div>
@@ -223,64 +186,81 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ advert, onEnded }) => {
 
   return (
     <div className="relative aspect-video bg-black">
-      {/* YouTube player mounts here — the API replaces this div with an iframe */}
-      <div ref={containerRef} className="w-full h-full" />
+      {/* ── BEFORE FIRST CLICK: static thumbnail + play overlay ── */}
+      {!hasStarted && (
+        <>
+          {/* YouTube thumbnail */}
+          <img
+            src={ytThumbnail(videoId)}
+            alt={advert.Title ?? "Video thumbnail"}
+            className="absolute inset-0 w-full h-full object-cover"
+            loading="lazy"
+          />
+          {/* Dark overlay */}
+          <div
+            className="absolute inset-0"
+            style={{ background: "rgba(8,15,40,0.55)" }}
+          />
 
-      {/* Custom overlay — shown before the user presses play */}
-      {showOverlay && (
-        <div
-          className="absolute inset-0 flex flex-col items-center justify-center cursor-pointer"
-          style={{
-            background: "rgba(8,15,40,0.72)",
-            backdropFilter: "blur(2px)",
-          }}
-          onClick={togglePlay}
-        >
-          <div className="w-20 h-20 rounded-full bg-white/15 border-2 border-white/40 flex items-center justify-center hover:bg-white/25 hover:scale-110 transition-all duration-200">
-            <Play className="w-8 h-8 text-white fill-white ml-1" />
-          </div>
-          {advert.Title && (
-            <p className="text-white/80 text-sm font-semibold mt-4 px-6 text-center">
-              {advert.Title}
-            </p>
-          )}
-          <p className="text-white/40 text-xs mt-1">Click to play</p>
-        </div>
+          {/* Play button */}
+          <button
+            onClick={handleFirstPlay}
+            aria-label="Play video"
+            className="absolute inset-0 flex flex-col items-center justify-center gap-3 group"
+          >
+            <div className="w-20 h-20 rounded-full bg-white/20 border-2 border-white/50 flex items-center justify-center group-hover:bg-white/30 group-hover:scale-110 transition-all duration-200">
+              <Play className="w-8 h-8 text-white fill-white ml-1" />
+            </div>
+            {advert.Title && (
+              <p className="text-white font-semibold text-sm px-6 text-center drop-shadow">
+                {advert.Title}
+              </p>
+            )}
+            <p className="text-white/60 text-xs">Click to play</p>
+          </button>
+        </>
       )}
 
-      {/* Floating controls — visible once playing or paused (overlay dismissed) */}
-      {!showOverlay && (
-        <div className="absolute bottom-3 right-3 flex items-center gap-2 z-10">
-          <button
-            onClick={togglePlay}
-            title={isPlaying ? "Pause" : "Play"}
-            className="w-9 h-9 rounded-full bg-black/60 hover:bg-black/80 flex items-center justify-center text-white transition-all duration-150 backdrop-blur-sm"
-          >
-            {isPlaying ? (
-              <Pause className="w-4 h-4 fill-white" />
-            ) : (
-              <Play className="w-4 h-4 fill-white ml-0.5" />
-            )}
-          </button>
-          <button
-            onClick={toggleMute}
-            title={isMuted ? "Unmute" : "Mute"}
-            className="w-9 h-9 rounded-full bg-black/60 hover:bg-black/80 flex items-center justify-center text-white transition-all duration-150 backdrop-blur-sm"
-          >
-            {isMuted ? (
-              <VolumeX className="w-4 h-4" />
-            ) : (
-              <Volume2 className="w-4 h-4" />
-            )}
-          </button>
-        </div>
+      {/* ── AFTER FIRST CLICK: YouTube player mounts here ── */}
+      {hasStarted && (
+        <>
+          {/* This div is replaced by the YT iframe via the API */}
+          <div ref={containerRef} className="w-full h-full" />
+
+          {/* Floating controls */}
+          <div className="absolute bottom-3 right-3 flex items-center gap-2 z-10">
+            <button
+              onClick={togglePlay}
+              title={isPlaying ? "Pause" : "Play"}
+              className="w-9 h-9 rounded-full bg-black/60 hover:bg-black/80 flex items-center justify-center text-white backdrop-blur-sm transition-all"
+            >
+              {isPlaying ? (
+                <Pause className="w-4 h-4 fill-white" />
+              ) : (
+                <Play className="w-4 h-4 fill-white ml-0.5" />
+              )}
+            </button>
+            <button
+              onClick={toggleMute}
+              title={isMuted ? "Unmute" : "Mute"}
+              className="w-9 h-9 rounded-full bg-black/60 hover:bg-black/80 flex items-center justify-center text-white backdrop-blur-sm transition-all"
+            >
+              {isMuted ? (
+                <VolumeX className="w-4 h-4" />
+              ) : (
+                <Volume2 className="w-4 h-4" />
+              )}
+            </button>
+          </div>
+        </>
       )}
     </div>
   );
 };
 
+// ─── Section ──────────────────────────────────────────────────────
 const AdvertsSection: React.FC = () => {
- useSocketInvalidation(ModelType.Advert);
+  useSocketInvalidation(ModelType.Advert);
 
   const [current, setCurrent] = useState(0);
 
@@ -343,8 +323,11 @@ const AdvertsSection: React.FC = () => {
             className="relative rounded-3xl overflow-hidden shadow-2xl bg-navy-900"
             style={{ boxShadow: "0 0 80px rgba(22,96,235,0.2)" }}
           >
-            {/* key prop forces full unmount+remount when advert changes,
-                destroying the old YT player and creating a fresh one */}
+            {/*
+              key={activeAdvert.AdvertId} forces VideoPlayer to fully unmount
+              when switching adverts, destroying the old YT player and resetting
+              hasStarted back to false (thumbnail shown again for new video).
+            */}
             <VideoPlayer
               key={activeAdvert.AdvertId}
               advert={activeAdvert}
@@ -361,18 +344,13 @@ const AdvertsSection: React.FC = () => {
                   {current + 1} of {adverts.length}
                 </p>
               </div>
-              {/* Dot indicators */}
               {adverts.length > 1 && (
                 <div className="flex gap-2">
                   {adverts.map((_, i) => (
                     <button
                       key={i}
                       onClick={() => setCurrent(i)}
-                      className={`rounded-full transition-all duration-300 ${
-                        i === current
-                          ? "w-6 h-2 bg-primary-500"
-                          : "w-2 h-2 bg-white/20 hover:bg-white/40"
-                      }`}
+                      className={`rounded-full transition-all duration-300 ${i === current ? "w-6 h-2 bg-primary-500" : "w-2 h-2 bg-white/20 hover:bg-white/40"}`}
                       aria-label={`Go to video ${i + 1}`}
                     />
                   ))}

@@ -77,16 +77,16 @@ export const AdminServices: React.FC = () => {
   const [imageUrl, setImageUrl] = useState("");
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: [ModelType.Service.toLowerCase()],
-    queryFn: () => ServicesService.FetchAll(),
-  });
-  React.useEffect(() => {
-    if (isError) toast.error("Failed to load services");
-    // eslint-disable-next-line
-  }, [isError]);
+      queryKey: [ModelType.Service.toLowerCase()],
+      queryFn: () => ServicesService.FetchAll(),
+    });
+    React.useEffect(() => {
+      if (isError) toast.error("Failed to load services");
+      // eslint-disable-next-line
+    }, [isError]);
 
   const services = useMemo(() => {
-    let list = data?.DataList ?? [];
+    let list: Service[] = data?.DataList ?? [];
     if (offerFilter === "offer") list = list.filter((s) => s.OnOffer);
     if (offerFilter === "featured") list = list.filter((s) => s.IsFeatured);
     if (search)
@@ -116,38 +116,38 @@ export const AdminServices: React.FC = () => {
   };
 
   const onSubmit = async (v: Partial<Service>) => {
-    setSaving(true);
-    try {
-      const r =
-        panelMode === "create"
-          ? await ServicesService.Create({ Title: v.Title as string,Description: v.Description as string , ImageUrl: imageUrl })
-          : await ServicesService.Update(editItem!.ServiceId, {
-              Title: v.Title,
-              Description: v.Description,
-              OnOffer: v.OnOffer,
-              IsFeatured: v.IsFeatured,
-              ImageUrl: imageUrl,
-            });
-      toastResult(r, toast);
-      if (r.Success) setPanel(null);
-    } catch(error) {
-      toast.error( error instanceof Error ? error.message : "Save failed");
-    } finally {
-      setSaving(false);
-    }
-  };
-  const doDelete = async () => {
-    setDeleting(true);
-    try {
-      const r = await ServicesService.Delete(confirmDel!.ServiceId);
-      toastResult(r, toast);
-      if (r.Success) setConfirmDel(null);
-    } catch(error) {
-      toast.error( error instanceof Error ? error.message : "Delete failed");
-    } finally {
-      setDeleting(false);
-    }
-  };
+      setSaving(true);
+      try {
+        const r =
+          panelMode === "create"
+            ? await ServicesService.Create({ Title: v.Title as string,Description: v.Description as string , ImageUrl: imageUrl })
+            : await ServicesService.Update(editItem!.ServiceId, {
+                Title: v.Title,
+                Description: v.Description,
+                OnOffer: v.OnOffer,
+                IsFeatured: v.IsFeatured,
+                ImageUrl: imageUrl,
+              });
+        toastResult(r, toast);
+        if (r.Success) setPanel(null);
+      } catch(error) {
+        toast.error( error instanceof Error ? error.message : "Save failed");
+      } finally {
+        setSaving(false);
+      }
+    };
+    const doDelete = async () => {
+      setDeleting(true);
+      try {
+        const r = await ServicesService.Delete(confirmDel!.ServiceId);
+        toastResult(r, toast);
+        if (r.Success) setConfirmDel(null);
+      } catch(error) {
+        toast.error( error instanceof Error ? error.message : "Delete failed");
+      } finally {
+        setDeleting(false);
+      }
+    };
 
   return (
     <AdminLayout title="Services">
@@ -188,7 +188,7 @@ export const AdminServices: React.FC = () => {
         <EmptyState icon={Wrench} title="No services found" />
       ) : (
         <div className="space-y-2">
-          {services.map((s) => (
+          {services.map((s: Service) => (
             <ListCard key={s.ServiceId}>
               <div className="flex items-center gap-3 min-w-0">
                 <div className="shrink-0 w-10 h-10 rounded-lg overflow-hidden bg-slate-100 border border-slate-200">
@@ -311,13 +311,13 @@ export const AdminCategories: React.FC = () => {
   const [imageUrl, setImageUrl] = useState("");
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: [ModelType.Category.toLowerCase()],
-    queryFn: () => CategoryService.FetchAll(),
-  });
-  React.useEffect(() => {
-    if (isError) toast.error("Failed to load categories");
-    // eslint-disable-next-line
-  }, [isError]);
+      queryKey: [ModelType.Category.toLowerCase()],
+      queryFn: () => CategoryService.FetchAll(),
+    });
+    React.useEffect(() => {
+      if (isError) toast.error("Failed to load categories");
+      // eslint-disable-next-line
+    }, [isError]);
 
   const cats = data?.DataList ?? [];
   const {
@@ -340,35 +340,35 @@ export const AdminCategories: React.FC = () => {
   };
 
   const onSubmit = async (v: Partial<Category>) => {
-    setSaving(true);
-    try {
-      const r =
-        panelMode === "create"
-          ? await CategoryService.Create({ Name: v.Name as string, ImageUrl: imageUrl })
-          : await CategoryService.Update(editItem!.CategoryId, {
-              Name: v.Name,
-              ImageUrl: imageUrl,
-            });
-      toastResult(r, toast);
-      if (r.Success) setPanel(null);
-    } catch (error: any) {
-      toast.error(error?.response?.data?.ErrorMessage ?? "Save failed");
-    } finally {
-      setSaving(false);
-    }
-  };
-  const doDelete = async () => {
-    setDeleting(true);
-    try {
-      const r = await CategoryService.Delete(confirmDel!.CategoryId);
-      toastResult(r, toast);
-      if (r.Success) setConfirmDel(null);
-    } catch (error: any) {
-      toast.error(error?.response?.data?.ErrorMessage ?? "Delete failed");
-    } finally {
-      setDeleting(false);
-    }
-  };
+      setSaving(true);
+      try {
+        const r =
+          panelMode === "create"
+            ? await CategoryService.Create({ Name: v.Name as string, ImageUrl: imageUrl })
+            : await CategoryService.Update(editItem!.CategoryId, {
+                Name: v.Name,
+                ImageUrl: imageUrl,
+              });
+        toastResult(r, toast);
+        if (r.Success) setPanel(null);
+      } catch (error: any) {
+        toast.error(error?.response?.data?.ErrorMessage ?? "Save failed");
+      } finally {
+        setSaving(false);
+      }
+    };
+    const doDelete = async () => {
+      setDeleting(true);
+      try {
+        const r = await CategoryService.Delete(confirmDel!.CategoryId);
+        toastResult(r, toast);
+        if (r.Success) setConfirmDel(null);
+      } catch (error: any) {
+        toast.error(error?.response?.data?.ErrorMessage ?? "Delete failed");
+      } finally {
+        setDeleting(false);
+      }
+    };
 
   return (
     <AdminLayout title="Categories">
@@ -397,7 +397,7 @@ export const AdminCategories: React.FC = () => {
         />
       ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-          {cats.map((c) => (
+          {cats.map((c: Category) => (
             <ListCard key={c.CategoryId}>
               {c.ImageUrl && (
                 <div className="w-full h-24 rounded-lg overflow-hidden bg-slate-100 mb-3 border border-slate-100">
@@ -476,26 +476,38 @@ export const AdminCategories: React.FC = () => {
   );
 };
 
+const shortId = (id: string) => (id.length > 8 ? `${id.slice(0, 8)}…` : id);
+
 export const AdminOrders: React.FC = () => {
   useSocketInvalidation(ModelType.Order);
   const toast = useToast();
   const [search, setSearch] = useState("");
   const [statusFilter, setStat] = useState("all");
+  const [dateFilter, setDate] = useState("all");
   const [updating, setUpdating] = useState<string | null>(null);
+  const [expanded, setExpanded] = useState<string | null>(null);
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: [ModelType.Order.toLowerCase()],
-    queryFn: () => OrderService.FetchAll(),
-  });
-  React.useEffect(() => {
-    if (isError) toast.error("Failed to load orders");
-    // eslint-disable-next-line
-  }, [isError]);
+      queryKey: [ModelType.Order.toLowerCase()],
+      queryFn: () => OrderService.FetchAll(),
+    });
+    React.useEffect(() => {
+      if (isError) toast.error("Failed to load orders");
+      // eslint-disable-next-line
+    }, [isError]);
 
   const orders = useMemo(() => {
     let list = data?.DataList ?? [];
     if (statusFilter !== "all")
       list = list.filter((o) => o.Status === statusFilter);
+    if (dateFilter === "today") {
+      const t = new Date().toDateString();
+      list = list.filter((o) => new Date(o.CreatedAt).toDateString() === t);
+    }
+    if (dateFilter === "week") {
+      const wa = Date.now() - 7 * 24 * 60 * 60 * 1000;
+      list = list.filter((o) => new Date(o.CreatedAt).getTime() >= wa);
+    }
     if (search)
       list = list.filter(
         (o) =>
@@ -506,34 +518,86 @@ export const AdminOrders: React.FC = () => {
               .includes(search.toLowerCase())),
       );
     return list;
-  }, [data, statusFilter, search]);
+  }, [data, statusFilter, dateFilter, search]);
 
   const updateStatus = async (id: string, status: OrderStatus) => {
-    setUpdating(id);
-    try {
-      const r = await OrderService.UpdateOrderStatus(id, {Status: status});
-      toastResult(r, toast, { successMsg: `Order updated to ${status}.` });
-    } catch {
-      toast.error("Update failed");
-    } finally {
-      setUpdating(null);
-    }
-  };
+      setUpdating(id);
+      try {
+        const r = await OrderService.UpdateOrderStatus(id, {Status: status});
+        toastResult(r, toast, { successMsg: `Order updated to ${status}.` });
+      } catch {
+        toast.error("Update failed");
+      } finally {
+        setUpdating(null);
+      }
+    };
 
   const fmtKES = (n: number) => `KES ${n.toLocaleString("en-KE")}`;
+
+  // Summary stats
+  const stats = useMemo(
+    () => ({
+      total: (data?.DataList ?? []).length,
+      pending: (data?.DataList ?? []).filter(
+        (o) => o.Status === OrderStatus.AwaitingPayment,
+      ).length,
+      processing: (data?.DataList ?? []).filter(
+        (o) =>
+          o.Status === OrderStatus.Processing || o.Status === OrderStatus.Paid,
+      ).length,
+      delivered: (data?.DataList ?? []).filter(
+        (o) => o.Status === OrderStatus.Delivered,
+      ).length,
+    }),
+    [data],
+  );
 
   return (
     <AdminLayout title="Orders">
       <PageHeader
         title="Orders"
-        subtitle={`${orders.length} orders`}
+        subtitle={`${orders.length} order${orders.length !== 1 ? "s" : ""}`}
         breadcrumb={["Admin", "Orders"]}
       />
+
+      {/* Summary pills */}
+      <div className="flex flex-wrap gap-2 mb-5">
+        {[
+          {
+            l: "Total",
+            n: stats.total,
+            cls: "bg-slate-100 text-slate-700 ring-slate-200",
+          },
+          {
+            l: "Awaiting",
+            n: stats.pending,
+            cls: "bg-yellow-50 text-yellow-700 ring-yellow-200",
+          },
+          {
+            l: "Processing",
+            n: stats.processing,
+            cls: "bg-blue-50 text-blue-700 ring-blue-200",
+          },
+          {
+            l: "Delivered",
+            n: stats.delivered,
+            cls: "bg-emerald-50 text-emerald-700 ring-emerald-200",
+          },
+        ].map((s) => (
+          <span
+            key={s.l}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg ring-1 ring-inset text-xs font-semibold ${s.cls}`}
+          >
+            {s.l} <span className="font-bold">{s.n}</span>
+          </span>
+        ))}
+      </div>
+
       <FilterBar>
         <SearchBar
           value={search}
           onChange={setSearch}
-          placeholder="Search by ID or customer…"
+          placeholder="Search by order ID or customer…"
         />
         <FilterSelect
           value={statusFilter}
@@ -544,56 +608,213 @@ export const AdminOrders: React.FC = () => {
             label: s,
           }))}
         />
+        <FilterSelect
+          value={dateFilter}
+          onChange={setDate}
+          placeholder="All Time"
+          options={[
+            { value: "today", label: "Today" },
+            { value: "week", label: "This Week" },
+          ]}
+        />
       </FilterBar>
 
       {isLoading ? (
         <SkeletonList />
       ) : orders.length === 0 ? (
-        <EmptyState icon={CreditCard} title="No orders found" />
+        <EmptyState
+          icon={CreditCard}
+          title="No orders found"
+          description="Orders matching your filters will appear here."
+        />
       ) : (
         <div className="space-y-2">
           {orders.map((o) => (
-            <ListCard key={o.OrderId}>
-              <div className="flex items-center gap-3 min-w-0">
+            <div
+              key={o.OrderId}
+              className="bg-white rounded-xl border border-slate-100 overflow-hidden"
+            >
+              {/* ── Summary row ── */}
+              <button
+                type="button"
+                onClick={() =>
+                  setExpanded(expanded === o.OrderId ? null : o.OrderId)
+                }
+                className="w-full flex items-center gap-3 p-4 text-left hover:bg-slate-50 transition-colors min-w-0"
+              >
+                {/* Expand chevron */}
+                <div
+                  className={`shrink-0 w-6 h-6 rounded-lg border border-slate-200 flex items-center justify-center text-slate-400 transition-transform duration-200 ${expanded === o.OrderId ? "bg-primary-50 border-primary-200 rotate-180" : ""}`}
+                >
+                  <ChevronDown className="w-3.5 h-3.5" />
+                </div>
+
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap mb-0.5">
-                    <span className="font-semibold text-sm text-slate-900">
-                      {o.OrderId}
+                    {/* Shortened ID */}
+                    <span
+                      className="font-mono text-xs font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded"
+                      title={o.OrderId}
+                    >
+                      #{shortId(o.OrderId)}
                     </span>
                     <StatusBadge status={o.Status} />
-                    <span className="font-semibold text-sm text-slate-700">
+                    <span className="font-bold text-sm text-slate-900">
                       {fmtKES(o.TotalAmount)}
                     </span>
+                    {o.Items && o.Items.length > 0 && (
+                      <span className="text-xs text-slate-400">
+                        {o.Items.length} item{o.Items.length !== 1 ? "s" : ""}
+                      </span>
+                    )}
                   </div>
                   <div className="flex items-center gap-3 text-xs text-slate-400 flex-wrap">
                     {o.User && (
-                      <span className="flex items-center gap-1">
-                        <User className="w-3 h-3" />
-                        {o.User.FirstName} {o.User.SecondName}
-                      </span>
+                      <>
+                        <span className="flex items-center gap-1">
+                          <User className="w-3 h-3" />
+                          {o.User.FirstName} {o.User.SecondName}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Phone className="w-3 h-3" />
+                          {o.User.Phone}
+                        </span>
+                        <span className="hidden sm:flex items-center gap-1">
+                          <Mail className="w-3 h-3" />
+                          {o.User.Email}
+                        </span>
+                      </>
                     )}
                     <span className="flex items-center gap-1">
                       <Calendar className="w-3 h-3" />
-                      {new Date(o.CreatedAt).toLocaleDateString()}
+                      {new Date(o.CreatedAt).toLocaleDateString("en-KE", {
+                        dateStyle: "medium",
+                      })}
                     </span>
                   </div>
                 </div>
-                <select
-                  value={o.Status}
-                  disabled={updating === o.OrderId}
-                  onChange={(e) =>
-                    updateStatus(o.OrderId, e.target.value as OrderStatus)
-                  }
-                  className={`${SEL} w-36 shrink-0`}
-                >
-                  {Object.values(OrderStatus).map((s) => (
-                    <option key={s} value={s}>
-                      {s}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </ListCard>
+
+                {/* Status update — stop click propagating to expand toggle */}
+                <div className="shrink-0" onClick={(e) => e.stopPropagation()}>
+                  <select
+                    value={o.Status}
+                    disabled={updating === o.OrderId}
+                    onChange={(e) =>
+                      updateStatus(o.OrderId, e.target.value as OrderStatus)
+                    }
+                    className={`${SEL} w-36`}
+                  >
+                    {Object.values(OrderStatus).map((s) => (
+                      <option key={s} value={s}>
+                        {s}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </button>
+
+              {/* ── Expanded order items ── */}
+              {expanded === o.OrderId && (
+                <div className="border-t border-slate-100">
+                  {/* Customer detail strip */}
+                  {o.User && (
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 px-4 py-3 bg-slate-50 text-xs">
+                      {[
+                        {
+                          label: "Customer",
+                          value: `${o.User.FirstName} ${o.User.SecondName}`,
+                        },
+                        { label: "Phone", value: o.User.Phone },
+                        { label: "Email", value: o.User.Email },
+                        { label: "County", value: o.User.County },
+                      ].map((f) => (
+                        <div key={f.label}>
+                          <p className="font-semibold text-slate-500 uppercase tracking-wide text-[10px] mb-0.5">
+                            {f.label}
+                          </p>
+                          <p className="font-medium text-slate-900 truncate">
+                            {f.value}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Product line items */}
+                  {o.Items && o.Items.length > 0 ? (
+                    <div className="divide-y divide-slate-50">
+                      {/* Table header */}
+                      <div className="hidden sm:grid grid-cols-[1fr_80px_100px_100px] gap-3 px-4 py-2 bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-wide border-t border-slate-100">
+                        <span>Product</span>
+                        <span className="text-center">Qty</span>
+                        <span className="text-right">Unit Price</span>
+                        <span className="text-right">Subtotal</span>
+                      </div>
+
+                      {o.Items.map((item) => (
+                        <div
+                          key={item.OrderItemId}
+                          className="grid grid-cols-1 sm:grid-cols-[1fr_80px_100px_100px] gap-1 sm:gap-3 items-center px-4 py-3"
+                        >
+                          {/* Product name */}
+                          <div className="min-w-0">
+                            <p className="font-semibold text-sm text-slate-900 truncate">
+                              {item.Product?.Name ?? "Unknown Product"}
+                            </p>
+                            {item.Product?.Category && (
+                              <p className="text-xs text-slate-400">
+                                {item.Product.Category.Name}
+                              </p>
+                            )}
+                          </div>
+                          {/* Qty */}
+                          <div className="sm:text-center">
+                            <span className="sm:hidden text-xs text-slate-400">
+                              Qty:{" "}
+                            </span>
+                            <span className="text-sm font-semibold text-slate-700">
+                              ×{item.Quantity}
+                            </span>
+                          </div>
+                          {/* Unit price */}
+                          <div className="sm:text-right">
+                            <span className="sm:hidden text-xs text-slate-400">
+                              Unit:{" "}
+                            </span>
+                            <span className="text-sm text-slate-600">
+                              {fmtKES(item.Price)}
+                            </span>
+                          </div>
+                          {/* Line total */}
+                          <div className="sm:text-right">
+                            <span className="sm:hidden text-xs text-slate-400">
+                              Total:{" "}
+                            </span>
+                            <span className="text-sm font-bold text-slate-900">
+                              {fmtKES(item.Price * item.Quantity)}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+
+                      {/* Order total row */}
+                      <div className="flex items-center justify-between px-4 py-3 bg-slate-50 border-t border-slate-200">
+                        <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                          Order Total
+                        </span>
+                        <span className="text-base font-bold text-slate-900">
+                          {fmtKES(o.TotalAmount)}
+                        </span>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-xs text-slate-400 px-4 py-3 italic">
+                      No item details available.
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
           ))}
         </div>
       )}
@@ -617,15 +838,15 @@ export const AdminPayments: React.FC = () => {
   const [expandedUser, setExpanded] = useState<string | null>(null);
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: [ModelType.Payment.toLowerCase()],
-    queryFn: () => PaymentService.GetAllPayments(),
-  });
-  React.useEffect(() => {
-    if (isError) toast.error("Failed to load payments");
-    // eslint-disable-next-line
-  }, [isError]);
+      queryKey: [ModelType.Payment.toLowerCase()],
+      queryFn: () => PaymentService.GetAllPayments(),
+    });
+    React.useEffect(() => {
+      if (isError) toast.error("Failed to load payments");
+      // eslint-disable-next-line
+    }, [isError]);
 
-  const payments = useMemo(() => {
+  const payments: Payment[] = useMemo(() => {
     let list = data?.DataList ?? [];
     if (statusFilter !== "all")
       list = list.filter((p) => p.Status === statusFilter);
@@ -858,16 +1079,16 @@ export const AdminReviews: React.FC = () => {
   const [updatingId, setUpdId] = useState<string | null>(null);
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: [ModelType.Review.toLowerCase()],
-    queryFn: () => ReviewService.FetchAll(),
-  });
-  React.useEffect(() => {
-    if (isError) toast.error("Failed to load reviews");
-    // eslint-disable-next-line
-  }, [isError]);
+      queryKey: [ModelType.Review.toLowerCase()],
+      queryFn: () => ReviewService.FetchAll(),
+    });
+    React.useEffect(() => {
+      if (isError) toast.error("Failed to load reviews");
+      // eslint-disable-next-line
+    }, [isError]);
 
   const reviews = useMemo(() => {
-    let list = data?.DataList ?? [];
+    let list: Review[] = data?.DataList ?? [];
     if (statusFilter !== "all")
       list = list.filter((r) => r.Status === statusFilter);
     if (ratingFilter !== "all")
@@ -876,28 +1097,28 @@ export const AdminReviews: React.FC = () => {
   }, [data, statusFilter, ratingFilter]);
 
   const changeStatus = async (id: string, status: ReviewStatus) => {
-    setUpdId(id);
-    try {
-      const r = await ReviewService.UpdateStatus(id, status);
-      toastResult(r, toast);
-    } catch(error) {
-      toast.error( error instanceof Error ? error.message : "Update failed");
-    } finally {
-      setUpdId(null);
-    }
-  };
-  const doDelete = async () => {
-    setDeleting(true);
-    try {
-      const r = await ReviewService.Delete(confirmDel!.ReviewId);
-      toastResult(r, toast);
-      if (r.Success) setConfirmDel(null);
-    } catch(error) {
-      toast.error( error instanceof Error ? error.message : "Delete failed");
-    } finally {
-      setDeleting(false);
-    }
-  };
+      setUpdId(id);
+      try {
+        const r = await ReviewService.UpdateStatus(id, status);
+        toastResult(r, toast);
+      } catch(error) {
+        toast.error( error instanceof Error ? error.message : "Update failed");
+      } finally {
+        setUpdId(null);
+      }
+    };
+    const doDelete = async () => {
+      setDeleting(true);
+      try {
+        const r = await ReviewService.Delete(confirmDel!.ReviewId);
+        toastResult(r, toast);
+        if (r.Success) setConfirmDel(null);
+      } catch(error) {
+        toast.error( error instanceof Error ? error.message : "Delete failed");
+      } finally {
+        setDeleting(false);
+      }
+    };
 
   return (
     <AdminLayout title="Reviews">
@@ -933,7 +1154,7 @@ export const AdminReviews: React.FC = () => {
         <EmptyState icon={Star} title="No reviews found" />
       ) : (
         <div className="space-y-2">
-          {reviews.map((r) => (
+          {reviews.map((r: Review) => (
             <ListCard key={r.ReviewId}>
               <div className="flex items-start gap-3 min-w-0">
                 <div className="shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-primary-500 to-navy-600 flex items-center justify-center text-white text-xs font-bold">
@@ -1022,16 +1243,16 @@ export const AdminAdverts: React.FC = () => {
   const [mediaUrl, setMediaUrl] = useState("");
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: [ModelType.Advert.toLowerCase()],
-    queryFn: () => AdvertService.FetchAll(),
-  });
-  React.useEffect(() => {
-    if (isError) toast.error("Failed to load adverts");
-    // eslint-disable-next-line
-  }, [isError]);
+      queryKey: [ModelType.Advert.toLowerCase()],
+      queryFn: () => AdvertService.FetchAll(),
+    });
+    React.useEffect(() => {
+      if (isError) toast.error("Failed to load adverts");
+      // eslint-disable-next-line
+    }, [isError]);
 
   const adverts = useMemo(() => {
-    let list = data?.DataList ?? [];
+    let list: Advert[] = data?.DataList ?? [];
     if (typeFilter !== "all")
       list = list.filter((a) => a.MediaType === typeFilter);
     return list;
@@ -1042,6 +1263,7 @@ export const AdminAdverts: React.FC = () => {
     handleSubmit,
     reset,
     watch,
+    formState: { errors },
   } = useForm<Partial<Advert>>();
   const mediaType = watch("MediaType") as MediaType;
 
@@ -1059,47 +1281,47 @@ export const AdminAdverts: React.FC = () => {
   };
 
   const onSubmit = async (v: Partial<Advert>) => {
-    setSaving(true);
-    try {
-      const r =
-        panelMode === "create"
-          ? await AdvertService.Create({ MediaType: v.MediaType as MediaType, Title: v.Title as string, MediaUrl: mediaUrl })
-          : await AdvertService.Update(editItem!.AdvertId, {
-              MediaType: v.MediaType,
-              Title: v.Title,
-              IsActive: v.IsActive,
-              MediaUrl: mediaUrl,
-            });
-      toastResult(r, toast);
-      if (r.Success) setPanel(null);
-    } catch (error: any) {
-      toast.error(
-        error?.response?.data?.ErrorMessage ?? "Save failed");
-    } finally {
-      setSaving(false);
-    }
-  };
-  const doDelete = async () => {
-    setDeleting(true);
-    try {
-      const r = await AdvertService.Delete(confirmDel!.AdvertId);
-      toastResult(r, toast);
-      if (r.Success) setConfirmDel(null);
-    } catch (error: any) {
-      toast.error(
-        error?.response?.data?.ErrorMessage ?? "Delete failed");
-    } finally {
-      setDeleting(false);
-    }
-  };
-  const toggleActive = async (a: Advert) => {
-    try {
-      const r = await AdvertService.ToggleAdvert(a.AdvertId);
-      toastResult(r, toast);
-    } catch (error: any) {
-      toast.error(error?.response?.data?.ErrorMessage ?? "Toggle failed");
-    }
-  };
+      setSaving(true);
+      try {
+        const r =
+          panelMode === "create"
+            ? await AdvertService.Create({ MediaType: v.MediaType as MediaType, Title: v.Title as string, MediaUrl: mediaUrl })
+            : await AdvertService.Update(editItem!.AdvertId, {
+                MediaType: v.MediaType,
+                Title: v.Title,
+                IsActive: v.IsActive,
+                MediaUrl: mediaUrl,
+              });
+        toastResult(r, toast);
+        if (r.Success) setPanel(null);
+      } catch (error: any) {
+        toast.error(
+          error?.response?.data?.ErrorMessage ?? "Save failed");
+      } finally {
+        setSaving(false);
+      }
+    };
+    const doDelete = async () => {
+      setDeleting(true);
+      try {
+        const r = await AdvertService.Delete(confirmDel!.AdvertId);
+        toastResult(r, toast);
+        if (r.Success) setConfirmDel(null);
+      } catch (error: any) {
+        toast.error(
+          error?.response?.data?.ErrorMessage ?? "Delete failed");
+      } finally {
+        setDeleting(false);
+      }
+    };
+    const toggleActive = async (a: Advert) => {
+      try {
+        const r = await AdvertService.ToggleAdvert(a.AdvertId);
+        toastResult(r, toast);
+      } catch (error: any) {
+        toast.error(error?.response?.data?.ErrorMessage ?? "Toggle failed");
+      }
+    };
 
   return (
     <AdminLayout title="Adverts">
@@ -1139,7 +1361,7 @@ export const AdminAdverts: React.FC = () => {
         />
       ) : (
         <div className="space-y-2">
-          {adverts.map((a) => (
+          {adverts.map((a: Advert) => (
             <ListCard key={a.AdvertId}>
               <div className="flex items-center gap-3 min-w-0">
                 {/* Preview thumbnail */}
@@ -1264,15 +1486,16 @@ export const AdminServiceRequests: React.FC = () => {
   const [confirmDel, setConfirmDel] = useState<ServiceRequest | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [updating, setUpdating] = useState<string | null>(null);
+  const [expanded, setExpanded] = useState<string | null>(null);
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: [ModelType.ServiceRequest.toLowerCase()],
-    queryFn: () => ServiceRequestService.FetchAll(),
-  });
-  React.useEffect(() => {
-    if (isError) toast.error("Failed to load service requests");
-    // eslint-disable-next-line
-  }, [isError]);
+      queryKey: [ModelType.ServiceRequest.toLowerCase()],
+      queryFn: () => ServiceRequestService.FetchAll(),
+    });
+    React.useEffect(() => {
+      if (isError) toast.error("Failed to load service requests");
+      // eslint-disable-next-line
+    }, [isError]);
 
   const requests = useMemo(() => {
     let list = data?.DataList ?? [];
@@ -1286,6 +1509,9 @@ export const AdminServiceRequests: React.FC = () => {
             `${r.User.FirstName} ${r.User.SecondName}`
               .toLowerCase()
               .includes(search.toLowerCase())) ||
+          (r.Service?.Title ?? "")
+            .toLowerCase()
+            .includes(search.toLowerCase()) ||
           (r.LocationDescription ?? "")
             .toLowerCase()
             .includes(search.toLowerCase()),
@@ -1294,43 +1520,52 @@ export const AdminServiceRequests: React.FC = () => {
   }, [data, statusFilter, search]);
 
   const updateStatus = async (id: string, status: ServiceRequestStatus) => {
-    setUpdating(id);
-    try {
-      const r = await ServiceRequestService.UpdateStatus(id, status);
-      toastResult(r, toast, { successMsg: `Request updated to ${status}.` });
-    } catch (error) {
-      toast.error( error instanceof Error ? error.message : "Update failed");
-    } finally {
-      setUpdating(null);
-    }
-  };
-  const doDelete = async () => {
-    setDeleting(true);
-    try {
-      const r = await ServiceRequestService.Delete(
-        confirmDel!.RequestId,
-      );
-      toastResult(r, toast);
-      if (r.Success) setConfirmDel(null);
-    } catch (error) {
-      toast.error( error instanceof Error ? error.message : "Delete failed");
-    } finally {
-      setDeleting(false);
-    }
+      setUpdating(id);
+      try {
+        const r = await ServiceRequestService.UpdateStatus(id, status);
+        toastResult(r, toast, { successMsg: `Request updated to ${status}.` });
+      } catch (error) {
+        toast.error( error instanceof Error ? error.message : "Update failed");
+      } finally {
+        setUpdating(null);
+      }
+    };
+    const doDelete = async () => {
+      setDeleting(true);
+      try {
+        const r = await ServiceRequestService.Delete(
+          confirmDel!.RequestId,
+        );
+        toastResult(r, toast);
+        if (r.Success) setConfirmDel(null);
+      } catch (error) {
+        toast.error( error instanceof Error ? error.message : "Delete failed");
+      } finally {
+        setDeleting(false);
+      }
+    };
+
+  // Status colour dots for the timeline feel
+  const statusDot: Record<string, string> = {
+    Pending: "bg-yellow-400",
+    Contacted: "bg-blue-400",
+    Scheduled: "bg-purple-400",
+    Completed: "bg-emerald-500",
+    Cancelled: "bg-red-400",
   };
 
   return (
     <AdminLayout title="Service Requests">
       <PageHeader
         title="Service Requests"
-        subtitle={`${requests.length} bookings`}
+        subtitle={`${requests.length} booking${requests.length !== 1 ? "s" : ""}`}
         breadcrumb={["Admin", "Service Requests"]}
       />
       <FilterBar>
         <SearchBar
           value={search}
           onChange={setSearch}
-          placeholder="Search by name, location…"
+          placeholder="Search by name, service, location…"
         />
         <FilterSelect
           value={statusFilter}
@@ -1353,15 +1588,41 @@ export const AdminServiceRequests: React.FC = () => {
         />
       ) : (
         <div className="space-y-2">
-          {requests.map((r) => (
-            <ListCard key={r.RequestId}>
-              <div className="flex items-center gap-3 min-w-0">
+          {requests.map((r: ServiceRequest) => (
+            <div
+              key={r.RequestId}
+              className="bg-white rounded-xl border border-slate-100 overflow-hidden"
+            >
+              {/* ── Summary row ── */}
+              <button
+                type="button"
+                onClick={() =>
+                  setExpanded(expanded === r.RequestId ? null : r.RequestId)
+                }
+                className="w-full flex items-center gap-3 p-4 text-left hover:bg-slate-50 transition-colors min-w-0"
+              >
+                {/* Expand chevron */}
+                <div
+                  className={`shrink-0 w-6 h-6 rounded-lg border border-slate-200 flex items-center justify-center text-slate-400 transition-transform duration-200 ${expanded === r.RequestId ? "bg-primary-50 border-primary-200 rotate-180" : ""}`}
+                >
+                  <ChevronDown className="w-3.5 h-3.5" />
+                </div>
+
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap mb-0.5">
-                    <span className="font-semibold text-sm text-slate-900">
-                      {r.RequestId}
+                    <span
+                      className="font-mono text-xs font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded"
+                      title={r.RequestId}
+                    >
+                      #{shortId(r.RequestId)}
                     </span>
                     <StatusBadge status={r.Status} />
+                    {/* Service name — the most important info upfront */}
+                    {r.Service && (
+                      <span className="text-xs font-semibold text-primary-700 bg-primary-50 px-2 py-0.5 rounded-full border border-primary-100">
+                        {r.Service.Title}
+                      </span>
+                    )}
                   </div>
                   <div className="flex items-center gap-3 text-xs text-slate-400 flex-wrap">
                     {r.User && (
@@ -1370,16 +1631,10 @@ export const AdminServiceRequests: React.FC = () => {
                         {r.User.FirstName} {r.User.SecondName}
                       </span>
                     )}
-                    {r.User && (
-                      <span className="flex items-center gap-1">
-                        <Phone className="w-3 h-3" />
-                        {r.User.Phone}
-                      </span>
-                    )}
                     {r.LocationDescription && (
                       <span className="flex items-center gap-1">
                         <MapPin className="w-3 h-3" />
-                        <span className="truncate max-w-[120px]">
+                        <span className="truncate max-w-[140px]">
                           {r.LocationDescription}
                         </span>
                       </span>
@@ -1387,12 +1642,19 @@ export const AdminServiceRequests: React.FC = () => {
                     {r.PreferredDate && (
                       <span className="flex items-center gap-1">
                         <Calendar className="w-3 h-3" />
-                        {new Date(r.PreferredDate).toLocaleDateString()}
+                        {new Date(r.PreferredDate).toLocaleDateString("en-KE", {
+                          dateStyle: "medium",
+                        })}
                       </span>
                     )}
                   </div>
                 </div>
-                <div className="shrink-0 flex items-center gap-1">
+
+                {/* Actions — stop propagation so expand doesn't fire */}
+                <div
+                  className="shrink-0 flex items-center gap-1"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <select
                     value={r.Status}
                     disabled={updating === r.RequestId}
@@ -1417,15 +1679,151 @@ export const AdminServiceRequests: React.FC = () => {
                     variant="danger"
                   />
                 </div>
-              </div>
-            </ListCard>
+              </button>
+
+              {/* ── Expanded detail panel ── */}
+              {expanded === r.RequestId && (
+                <div className="border-t border-slate-100">
+                  {/* Detail grid */}
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 px-4 py-4 bg-slate-50">
+                    {/* Service requested */}
+                    <div>
+                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-1">
+                        Service Requested
+                      </p>
+                      <p className="text-sm font-semibold text-slate-900">
+                        {r.Service?.Title ?? "N/A"}
+                      </p>
+                      {r.Service?.OnOffer && (
+                        <span className="text-[10px] font-semibold text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded-full">
+                          On Offer
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Customer name */}
+                    {r.User && (
+                      <div>
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-1">
+                          Customer
+                        </p>
+                        <p className="text-sm font-semibold text-slate-900">
+                          {r.User.FirstName} {r.User.SecondName}
+                        </p>
+                        <p className="text-xs text-slate-400">{r.User.Role}</p>
+                      </div>
+                    )}
+
+                    {/* Preferred date */}
+                    <div>
+                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-1">
+                        Preferred Date
+                      </p>
+                      <p className="text-sm font-semibold text-slate-900">
+                        {r.PreferredDate
+                          ? new Date(r.PreferredDate).toLocaleDateString(
+                              "en-KE",
+                              { dateStyle: "full" },
+                            )
+                          : "Not specified"}
+                      </p>
+                    </div>
+
+                    {/* Phone */}
+                    {r.User && (
+                      <div>
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-1">
+                          Phone
+                        </p>
+                        <a
+                          href={`tel:${r.User.Phone}`}
+                          className="text-sm font-semibold text-primary-600 hover:underline flex items-center gap-1"
+                        >
+                          <Phone className="w-3 h-3" />
+                          {r.User.Phone}
+                        </a>
+                      </div>
+                    )}
+
+                    {/* Email */}
+                    {r.User && (
+                      <div>
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-1">
+                          Email
+                        </p>
+                        <a
+                          href={`mailto:${r.User.Email}`}
+                          className="text-sm font-semibold text-primary-600 hover:underline truncate block"
+                        >
+                          {r.User.Email}
+                        </a>
+                      </div>
+                    )}
+
+                    {/* County */}
+                    {r.User && (
+                      <div>
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-1">
+                          County
+                        </p>
+                        <p className="text-sm font-semibold text-slate-900">
+                          {r.User.County}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Location description — full width */}
+                  {r.LocationDescription && (
+                    <div className="px-4 py-3 border-t border-slate-100">
+                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-1">
+                        Location / Address
+                      </p>
+                      <p className="text-sm text-slate-700 flex items-start gap-1.5">
+                        <MapPin className="w-3.5 h-3.5 text-slate-400 mt-0.5 shrink-0" />
+                        {r.LocationDescription}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Quick action buttons */}
+                  {r.User && (
+                    <div className="flex gap-2 px-4 py-3 border-t border-slate-100 bg-slate-50">
+                      <a
+                        href={`tel:${r.User.Phone}`}
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary-600 text-white text-xs font-semibold hover:bg-primary-700 transition-colors"
+                      >
+                        <Phone className="w-3.5 h-3.5" /> Call Customer
+                      </a>
+                      <a
+                        href={`mailto:${r.User.Email}?subject=Re: Your ${r.Service?.Title ?? "Service"} Booking`}
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 text-xs font-semibold hover:bg-slate-100 transition-colors"
+                      >
+                        <Mail className="w-3.5 h-3.5" /> Email Customer
+                      </a>
+                      <a
+                        href={`https://wa.me/${r.User.Phone?.replace(/^0/, "254")}?text=${encodeURIComponent(`Hi ${r.User.FirstName}, regarding your ${r.Service?.Title ?? "service"} booking on ${r.PreferredDate ? new Date(r.PreferredDate).toLocaleDateString() : "the requested date"}…`)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-white text-xs font-semibold transition-colors"
+                        style={{
+                          background: "linear-gradient(135deg,#25d366,#128c7e)",
+                        }}
+                      >
+                        <Phone className="w-3.5 h-3.5" /> WhatsApp
+                      </a>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           ))}
         </div>
       )}
       <ConfirmModal
         open={!!confirmDel}
         title="Delete Request"
-        message={`Remove ${confirmDel?.RequestId}?`}
+        message={`Remove booking ${shortId(confirmDel?.RequestId ?? "")} for ${confirmDel?.Service?.Title ?? "this service"}?`}
         loading={deleting}
         onConfirm={doDelete}
         onCancel={() => setConfirmDel(null)}
@@ -1446,90 +1844,90 @@ export const AdminJobs: React.FC = () => {
   const [toggling, setToggling] = useState<string | null>(null);
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: [ModelType.Job.toLowerCase()],
-    queryFn: () => JobService.FetchAll(),
-  });
-  React.useEffect(() => {
-    if (isError) toast.error("Failed to load jobs");
-    // eslint-disable-next-line
-  }, [isError]);
-
-  const jobs = useMemo(() => {
-    let list = data?.DataList ?? [];
-    if (activeFilter === "active") list = list.filter((j) => j.IsActive);
-    if (activeFilter === "inactive") list = list.filter((j) => !j.IsActive);
-    return list;
-  }, [data, activeFilter]);
-
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm<Partial<Job>>();
-  const openCreate = () => {
-    setEditItem(null);
-    reset({ IsActive: true });
-    setPanel("create");
-  };
-  const openEdit = (j: Job) => {
-    setEditItem(j);
-    reset(j);
-    setPanel("edit");
-  };
-
-  const onSubmit = async (v: Partial<Job>) => {
-    setSaving(true);
-    try {
-      const r =
-        panelMode === "create"
-          ? await JobService.Create({
-            Title: v.Title as string,
-            Description: v.Description as string,
-            Location: v.Location as string,
-            SalaryRange: v.SalaryRange ?? undefined,
-            EmploymentType: v.EmploymentType as string
-          })
-          : await JobService.Update(editItem!.JobId, {
-            Title: v.Title,
-            Description: v.Description,
-            Location: v.Location,
-            SalaryRange: v.SalaryRange,
-            IsActive: v.IsActive,
-          });
-      toastResult(r, toast);
-      if (r.Success) setPanel(null);
-    } catch (error: any) {
-      toast.error(
-        error?.response?.data?.ErrorMessage ?? "Save failed");
-    } finally {
-      setSaving(false);
-    }
-  };
-  const doDelete = async () => {
-    setDeleting(true);
-    try {
-      const r = await JobService.Delete(confirmDel!.JobId);
-      toastResult(r, toast);
-      if (r.Success) setConfirmDel(null);
-    } catch (error: any) {
-      toast.error(
-        error?.response?.data?.ErrorMessage ?? "Delete failed");
-    } finally {
-      setDeleting(false);
-    }
-  };
-  const toggleActive = async (j: Job) => {
-    setToggling(j.JobId);
-    try {
-      const r = await JobService.SoftDelete(j.JobId);
-      toastResult(r, toast);
-    } catch (error: any) {
-      toast.error(error?.response?.data?.ErrorMessage ?? "Toggle failed");
-    } finally {
-      setToggling(null);
-    }
-  };
+      queryKey: [ModelType.Job.toLowerCase()],
+      queryFn: () => JobService.FetchAll(),
+    });
+    React.useEffect(() => {
+      if (isError) toast.error("Failed to load jobs");
+      // eslint-disable-next-line
+    }, [isError]);
+  
+    const jobs = useMemo(() => {
+      let list = data?.DataList ?? [];
+      if (activeFilter === "active") list = list.filter((j) => j.IsActive);
+      if (activeFilter === "inactive") list = list.filter((j) => !j.IsActive);
+      return list;
+    }, [data, activeFilter]);
+  
+    const {
+      register,
+      handleSubmit,
+      reset,
+      formState: { errors },
+    } = useForm<Partial<Job>>();
+    const openCreate = () => {
+      setEditItem(null);
+      reset({ IsActive: true });
+      setPanel("create");
+    };
+    const openEdit = (j: Job) => {
+      setEditItem(j);
+      reset(j);
+      setPanel("edit");
+    };
+  
+    const onSubmit = async (v: Partial<Job>) => {
+      setSaving(true);
+      try {
+        const r =
+          panelMode === "create"
+            ? await JobService.Create({
+              Title: v.Title as string,
+              Description: v.Description as string,
+              Location: v.Location as string,
+              SalaryRange: v.SalaryRange ?? undefined,
+              EmploymentType: v.EmploymentType as string
+            })
+            : await JobService.Update(editItem!.JobId, {
+              Title: v.Title,
+              Description: v.Description,
+              Location: v.Location,
+              SalaryRange: v.SalaryRange,
+              IsActive: v.IsActive,
+            });
+        toastResult(r, toast);
+        if (r.Success) setPanel(null);
+      } catch (error: any) {
+        toast.error(
+          error?.response?.data?.ErrorMessage ?? "Save failed");
+      } finally {
+        setSaving(false);
+      }
+    };
+    const doDelete = async () => {
+      setDeleting(true);
+      try {
+        const r = await JobService.Delete(confirmDel!.JobId);
+        toastResult(r, toast);
+        if (r.Success) setConfirmDel(null);
+      } catch (error: any) {
+        toast.error(
+          error?.response?.data?.ErrorMessage ?? "Delete failed");
+      } finally {
+        setDeleting(false);
+      }
+    };
+    const toggleActive = async (j: Job) => {
+      setToggling(j.JobId);
+      try {
+        const r = await JobService.SoftDelete(j.JobId);
+        toastResult(r, toast);
+      } catch (error: any) {
+        toast.error(error?.response?.data?.ErrorMessage ?? "Toggle failed");
+      } finally {
+        setToggling(null);
+      }
+    };
 
   return (
     <AdminLayout title="Jobs">
@@ -1569,7 +1967,7 @@ export const AdminJobs: React.FC = () => {
         />
       ) : (
         <div className="space-y-2">
-          {jobs.map((j) => (
+          {jobs.map((j: Job) => (
             <ListCard key={j.JobId}>
               <div className="flex items-start gap-3 min-w-0">
                 <div className="flex-1 min-w-0">
@@ -1697,17 +2095,17 @@ export const AdminJobApplications: React.FC = () => {
   const [deleting, setDeleting] = useState(false);
   const [updating, setUpdating] = useState<string | null>(null);
 
-  const { data, isLoading, isError } = useQuery({
-    queryKey: [ModelType.JobApplication.toLowerCase()],
-    queryFn: () => JobApplicationService.FetchAll(),
-  });
-  React.useEffect(() => {
-    if (isError) toast.error("Failed to load applications");
-    // eslint-disable-next-line
-  }, [isError]);
+ const { data, isLoading, isError } = useQuery({
+     queryKey: [ModelType.JobApplication.toLowerCase()],
+     queryFn: () => JobApplicationService.FetchAll(),
+   });
+   React.useEffect(() => {
+     if (isError) toast.error("Failed to load applications");
+     // eslint-disable-next-line
+   }, [isError]);
 
   const apps = useMemo(() => {
-    let list = data?.DataList ?? [];
+    let list: JobApplication[] = data?.DataList ?? [];
     if (statusFilter !== "all")
       list = list.filter((a) => a.Status === statusFilter);
     if (search)
@@ -1730,32 +2128,32 @@ export const AdminJobApplications: React.FC = () => {
   ];
 
   const updateStatus = async (id: string, status: JobApplicationStatus) => {
-    setUpdating(id);
-    try {
-      const r = await JobApplicationService.UpdateApplicationStatus(id, status);
-      toastResult(r, toast);
-    } catch (error: any) {
-      toast.error(
-        error?.response?.data?.ErrorMessage ?? "Update failed");
-    } finally {
-      setUpdating(null);
-    }
-  };
-  const doDelete = async () => {
-    setDeleting(true);
-    try {
-      const r = await JobApplicationService.Delete(
-        confirmDel!.ApplicationId,
-      );
-      toastResult(r, toast);
-      if (r.Success) setConfirmDel(null);
-    } catch (error: any) {
-      toast.error(
-        error?.response?.data?.ErrorMessage ?? "Delete failed");
-    } finally {
-      setDeleting(false);
-    }
-  };
+      setUpdating(id);
+      try {
+        const r = await JobApplicationService.UpdateApplicationStatus(id, status);
+        toastResult(r, toast);
+      } catch (error: any) {
+        toast.error(
+          error?.response?.data?.ErrorMessage ?? "Update failed");
+      } finally {
+        setUpdating(null);
+      }
+    };
+    const doDelete = async () => {
+      setDeleting(true);
+      try {
+        const r = await JobApplicationService.Delete(
+          confirmDel!.ApplicationId,
+        );
+        toastResult(r, toast);
+        if (r.Success) setConfirmDel(null);
+      } catch (error: any) {
+        toast.error(
+          error?.response?.data?.ErrorMessage ?? "Delete failed");
+      } finally {
+        setDeleting(false);
+      }
+    };
 
   return (
     <AdminLayout title="Applications">
@@ -1784,7 +2182,7 @@ export const AdminJobApplications: React.FC = () => {
         <EmptyState icon={UserCheck} title="No applications found" />
       ) : (
         <div className="space-y-2">
-          {apps.map((a) => (
+          {apps.map((a: JobApplication) => (
             <ListCard key={a.ApplicationId}>
               <div className="flex items-start gap-3 min-w-0">
                 <div className="flex-1 min-w-0">
