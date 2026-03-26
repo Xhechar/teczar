@@ -257,15 +257,20 @@ export class AuthService extends BaseService {
       { emailExists: EmailExists, recovery },
       async (err, data) => {
         if (err) {
+          Logger.error("Error occured at this point.");
           Logger.error(err.message);
         }
 
-        await SendMail({
-          from: process.env.EMAIL as string,
-          to: EmailExists.Email,
-          subject: "Raz Technologies | Password Verification",
-          html: data,
-        });
+        try {
+          await SendMail({
+            from: process.env.EMAIL as string,
+            to: EmailExists.Email,
+            subject: "Raz Technologies | Password Verification",
+            html: data,
+          });
+        } catch (error) {
+          Logger.error("Error occured at this point. Catch: ", error);
+        }
       },
     );
 

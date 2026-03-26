@@ -316,7 +316,7 @@ model Advert {
 
 model Recovery {
   RecoveryId    String   @id @default(uuid()) @db.Uuid
-  Email        String   @db.Uuid
+  Email        String
   RecoveryCode  String
   Expiry        DateTime
   IsUsed        Boolean  @default(false)
