@@ -239,11 +239,9 @@ export class AuthService extends BaseService {
 
     let recovery = await prisma.recovery.create({
       data: {
-        RecoveryId: v4(),
         RecoveryCode: String(Math.floor(100000 + Math.random() * 900000)),
         Expiry: new Date(new Date().getTime() + 60 * 60 * 1000),
-        Email: EmailExists.Email,
-        IsUsed: false,
+        Email: EmailExists.Email
       },
     });
 

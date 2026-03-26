@@ -145,7 +145,7 @@ const RequestCodeStep: React.FC<Step1Props> = ({ onSuccess }) => {
         );
       }
     } catch (error: any) {
-      setApiError( error?.response?.Data?.ErrorMessage ?? "Network error. Please check your connection.");
+      setApiError( error?.response?.data?.ErrorMessage ?? "Network error. Please check your connection.");
     } finally {
       setLoading(false);
     }
@@ -294,8 +294,8 @@ const ResetPasswordStep: React.FC<Step2Props> = ({
             "Invalid or expired code. Please try again.",
         );
       }
-    } catch (error) {
-      setApiError( error instanceof Error ? error.message : "Network error. Please try again.");
+    } catch (error: any) {
+      setApiError( error?.response?.data?.ErrorMessage ?? "Network error. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -312,8 +312,8 @@ const ResetPasswordStep: React.FC<Step2Props> = ({
       } else {
         setApiError((result as any).ErrorMessage ?? "Could not resend code.");
       }
-    } catch {
-      setApiError("Network error. Please try again.");
+    } catch (error: any) {
+      setApiError( error?.response?.data?.ErrorMessage ?? "Network error. Please try again.");
     } finally {
       setResending(false);
     }
@@ -552,7 +552,6 @@ const ResetPasswordStep: React.FC<Step2Props> = ({
   );
 };
 
-// ─── STEP 3 — Success ─────────────────────────────────────────────
 const SuccessStep: React.FC<{ onGoLogin: () => void }> = ({ onGoLogin }) => (
   <>
     <div className="w-16 h-16 rounded-2xl bg-emerald-50 flex items-center justify-center mb-5 mx-auto">
