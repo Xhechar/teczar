@@ -7,7 +7,7 @@ dotenv.config();
 
 const mailConfigurations: MailConfiguration = {
   service: "gmail",
-  host: process.env.EMAIL_HOST as string,
+  host: process.env.EMAIL_HOST as string ?? "smtp.gmail.com",
   port: 587,
   requireTLS: true,
   auth: {
@@ -23,17 +23,21 @@ const createTransporter = (config: MailConfiguration) => {
 export const SendMail = async (messageOptions: MessageOptions) => {
   const transporter = createTransporter(mailConfigurations);
 
-  await transporter.verify();
-
-  transporter.sendMail(messageOptions, (err, info) => {
-    if (err) {
-      Logger.error(
-        err instanceof Error
-          ? err.message
-          : "an error occured while sending mail.",
-      );
-    }
-
-    Logger.info(info.response);
-  });
+  try {
+    await transporter.verify();
+  
+    transporter.sendMail(messageOptions, (err, info) => {
+      if (err) {
+        Logger.error(
+          err instanceof Error
+            ? err.message
+            : "an error occured while sending mail.",
+        );
+      }
+  
+      Logger.info(info.response);
+    });
+  } catch (error) {
+    Logger.error(error instanceof Error ? error.message : "an error occured while sending mail.", error);
+  }
 };

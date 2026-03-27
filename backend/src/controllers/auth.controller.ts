@@ -156,9 +156,21 @@ export class AuthController {
   }
   async LogoutUser(Req: Request, Res: Response) {
     try {
-      Res.clearCookie("accessToken", { signed: true, httpOnly: true });
+      Res.clearCookie("accessToken", {
+        signed: true,
+        httpOnly: true,
+        sameSite: "none",
+        path: "/",
+        secure: true,
+      });
 
-      Res.clearCookie("refreshToken", { signed: true, httpOnly: true });
+      Res.clearCookie("refreshToken", {
+        signed: true,
+        httpOnly: true,
+        sameSite: "none",
+        path: "/",
+        secure: true,
+      });
 
       return Res.status(200).json(
         ServiceResponse.Success<object>("Logout successful! Always welcomed."),

@@ -38,7 +38,7 @@ export class OrdersService {
 
     for (let order of orders) {
       ejs.renderFile(
-        "templates/order_confirmation.mail.ejs",
+        "./templates/order_confirmation.mail.ejs",
         { order },
         async (error, data) => {
           if (error) {

@@ -24,33 +24,37 @@ export class WelcomeService {
     }
 
     for(let user of users) {
-      ejs.renderFile("templates/welcome_mail.ejs", {user}, async(error, data) => {
-        if (error) {
-          Logger.error(error.message);
-        } else {
-          let messageOptions: MessageOptions = {
-            from: process.env.EMAIL as string,
-            to: user.Email,
-            subject: "Raz Technologies | Welcome",
-            html: data
-          };
+      ejs.renderFile(
+        "./templates/welcome_mail.ejs",
+        { user },
+        async (error, data) => {
+          if (error) {
+            Logger.error(error.message);
+          } else {
+            let messageOptions: MessageOptions = {
+              from: process.env.EMAIL as string,
+              to: user.Email,
+              subject: "Raz Technologies | Welcome",
+              html: data,
+            };
 
-          try {
-            await SendMail(messageOptions);
+            try {
+              await SendMail(messageOptions);
 
-            await prisma.user.update({
-              where: {
-                UserId: user.UserId
-              },
-              data: {
-                IsWelcomed: true
-              }
-            })
-          } catch (error) {
-            Logger.error(error instanceof Error ? error.message : error);
+              await prisma.user.update({
+                where: {
+                  UserId: user.UserId,
+                },
+                data: {
+                  IsWelcomed: true,
+                },
+              });
+            } catch (error) {
+              Logger.error(error instanceof Error ? error.message : error);
+            }
           }
-        }
-      })
+        },
+      );
     }
   }
 }
