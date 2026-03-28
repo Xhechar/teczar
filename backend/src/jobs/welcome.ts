@@ -3,6 +3,7 @@ import type { MessageOptions } from "../interfaces/interfaces.js";
 import { prisma } from "../lib/prisma.js";
 import { Logger } from "../logs/logger.js";
 import ejs from "ejs";
+import path from "path";
 
 export class WelcomeService {
   static async WelcomeUsers(): Promise<void> {
@@ -24,37 +25,29 @@ export class WelcomeService {
     }
 
     for(let user of users) {
-      ejs.renderFile(
-        "./templates/welcome_mail.ejs",
-        { user },
-        async (error, data) => {
-          if (error) {
-            Logger.error(error.message);
-          } else {
-            let messageOptions: MessageOptions = {
-              from: process.env.EMAIL as string,
-              to: user.Email,
-              subject: "Raz Technologies | Welcome",
-              html: data,
-            };
+      try {
+        const templatePath = path.resolve("templates/welcome_mail.ejs");
 
-            try {
-              await SendMail(messageOptions);
+        const data = await ejs.renderFile(templatePath, {
+          user,
+        });
 
-              await prisma.user.update({
-                where: {
-                  UserId: user.UserId,
-                },
-                data: {
-                  IsWelcomed: true,
-                },
-              });
-            } catch (error) {
-              Logger.error(error instanceof Error ? error.message : error);
-            }
-          }
-        },
-      );
+        const messageOptions: MessageOptions = {
+          from: process.env.EMAIL as string,
+          to: user.Email,
+          subject: "Raz Technologies | Welcome",
+          html: data,
+        };
+
+        await SendMail(messageOptions);
+
+        await prisma.user.update({
+          where: { UserId: user.UserId },
+          data: { IsWelcomed: true },
+        });
+      } catch (error) {
+        Logger.error(error instanceof Error ? error.message : String(error));
+      }
     }
   }
 }

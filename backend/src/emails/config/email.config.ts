@@ -25,18 +25,12 @@ export const SendMail = async (messageOptions: MessageOptions) => {
 
   try {
     await transporter.verify();
-  
-    transporter.sendMail(messageOptions, (err, info) => {
-      if (err) {
-        Logger.error(
-          err instanceof Error
-            ? err.message
-            : "an error occured while sending mail.",
-        );
-      }
-  
-      Logger.info(info.response);
-    });
+
+    const info = await transporter.sendMail(messageOptions);
+
+    Logger.info(info.response);
+    
+    return info;
   } catch (error) {
     Logger.error(error instanceof Error ? error.message : "an error occured while sending mail.", error);
   }

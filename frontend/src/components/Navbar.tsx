@@ -27,15 +27,16 @@ interface NavLink {
 }
 
 const NAV_LINKS: NavLink[] = [
-  { label: "Home", to: "/", sectionId: "home" },
-  { label: "Services", to: "/explore?tab=services" },
-  { label: "Products", to: "/explore?tab=products" },
-  { label: "Projects", to: "/", sectionId: "projects" },
-  { label: "About", to: "/", sectionId: "about" },
-  { label: "Careers", to: "/careers" },
-  { label: "Contact", to: "/", sectionId: "contact" },
+  { label: "Home",     to: "/",   sectionId: "home"            },
+  { label: "Services", to: "/explore?tab=services"             },
+  { label: "Products", to: "/explore?tab=products"             },
+  { label: "Projects", to: "/",   sectionId: "projects"        },
+  { label: "About",    to: "/",   sectionId: "about"           },
+  { label: "Careers",  to: "/careers"                          },
+  { label: "Contact",  to: "/",   sectionId: "contact"         },
 ];
 
+/** Smoothly scrolls to a section by id, waiting for it to exist in the DOM */
 function scrollToSection(id: string, attempts = 0) {
   const el = document.getElementById(id);
   if (el) {
@@ -46,20 +47,16 @@ function scrollToSection(id: string, attempts = 0) {
   }
 }
 
-// Section ids that exist on the home page, in document order
 const HOME_SECTION_IDS = ["hero", "projects", "about", "contact"];
 
 export const Navbar: React.FC<NavbarProps> = ({ transparent = false }) => {
-  const [scrolled, setScrolled] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [scrolled, setScrolled]         = useState(false);
+  const [mobileOpen, setMobileOpen]     = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  // Which section id is currently in view on the home page
-  // null  → we're not on the home page, or haven't determined yet
-  // "hero" → at the top (Home link active)
-  // "projects" | "about" | "contact" → that section link active
+
   const [activeSection, setActiveSection] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const { user, logout } = useAuth();
+  const { user, logout }                = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -72,20 +69,15 @@ export const Navbar: React.FC<NavbarProps> = ({ transparent = false }) => {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // ── Section tracking via IntersectionObserver ──────────────────
-  // Only active on the home page. Watches hero + every named section.
-  // The section whose top edge is closest to (but below) the navbar
-  // wins the "active" slot.
   useEffect(() => {
     if (!isHomePage) {
       setActiveSection(null);
       return;
     }
 
-    // Reset to hero on mount / return to home
     setActiveSection("hero");
 
-    const NAVBAR_HEIGHT = 80; // px — offset so section triggers slightly before it hits the top
+    const NAVBAR_HEIGHT = 80;
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -96,18 +88,14 @@ export const Navbar: React.FC<NavbarProps> = ({ transparent = false }) => {
         });
       },
       {
-        // Fire when a section's top 20% is inside the viewport (accounting for navbar)
         rootMargin: `-${NAVBAR_HEIGHT}px 0px -60% 0px`,
         threshold: 0,
-      },
+      }
     );
 
-    // Observe the hero section (the <section> at the top has no id — give it one via querySelector)
-    // We watch each named section plus the page top
     const sectionEls: Element[] = [];
 
     HOME_SECTION_IDS.forEach((id) => {
-      // "hero" is a virtual id we assign to the page top sentinel
       if (id === "hero") {
         const el = document.querySelector("section");
         if (el) {
@@ -127,13 +115,9 @@ export const Navbar: React.FC<NavbarProps> = ({ transparent = false }) => {
     return () => observer.disconnect();
   }, [isHomePage]);
 
-  // ── Close dropdown on outside click ───────────────────────────
   useEffect(() => {
     const onClick = (e: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(e.target as Node)
-      ) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         setDropdownOpen(false);
       }
     };
@@ -226,8 +210,8 @@ export const Navbar: React.FC<NavbarProps> = ({ transparent = false }) => {
                       ? "text-primary-600 bg-primary-50"
                       : "text-white bg-white/15"
                     : isNavScrolled
-                      ? "text-slate-700 hover:text-primary-600 hover:bg-slate-50"
-                      : "text-white/85 hover:text-white hover:bg-white/10"
+                    ? "text-slate-700 hover:text-primary-600 hover:bg-slate-50"
+                    : "text-white/85 hover:text-white hover:bg-white/10"
                 }`}
               >
                 {link.label}
@@ -250,47 +234,32 @@ export const Navbar: React.FC<NavbarProps> = ({ transparent = false }) => {
                 >
                   {/* Avatar */}
                   <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-500 to-navy-600 flex items-center justify-center text-white text-xs font-bold">
-                    {user.FirstName[0]}
-                    {user.SecondName[0]}
+                    {user.FirstName[0]}{user.SecondName[0]}
                   </div>
                   <div className="text-left">
-                    <p
-                      className={`text-sm font-semibold leading-none ${isNavScrolled ? "text-navy-900" : "text-white"}`}
-                    >
+                    <p className={`text-sm font-semibold leading-none ${isNavScrolled ? "text-navy-900" : "text-white"}`}>
                       {user.FirstName}
                     </p>
-                    <p
-                      className={`text-xs mt-0.5 ${isNavScrolled ? "text-slate-500" : "text-white/60"}`}
-                    >
+                    <p className={`text-xs mt-0.5 ${isNavScrolled ? "text-slate-500" : "text-white/60"}`}>
                       {user.Role}
                     </p>
                   </div>
-                  <ChevronDown
-                    className={`w-4 h-4 transition-transform duration-200 ${dropdownOpen ? "rotate-180" : ""} ${isNavScrolled ? "text-slate-400" : "text-white/60"}`}
-                  />
+                  <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${dropdownOpen ? "rotate-180" : ""} ${isNavScrolled ? "text-slate-400" : "text-white/60"}`} />
                 </button>
 
                 {/* Dropdown */}
                 {dropdownOpen && (
                   <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-card-hover border border-slate-100 overflow-hidden">
                     <div className="p-3 bg-gradient-to-br from-primary-50 to-navy-50 border-b border-slate-100">
-                      <p className="text-sm font-semibold text-navy-900">
-                        {user.FirstName} {user.SecondName}
-                      </p>
-                      <p className="text-xs text-slate-500 truncate">
-                        {user.Email}
-                      </p>
+                      <p className="text-sm font-semibold text-navy-900">{user.FirstName} {user.SecondName}</p>
+                      <p className="text-xs text-slate-500 truncate">{user.Email}</p>
                     </div>
                     <div className="py-1.5">
                       {[
                         { icon: User, label: "My Profile", to: "/profile" },
                         { icon: ShoppingCart, label: "My Cart", to: "/cart" },
                         { icon: Package, label: "My Orders", to: "/orders" },
-                        {
-                          icon: Calendar,
-                          label: "My Bookings",
-                          to: "/bookings",
-                        },
+                        { icon: Calendar, label: "My Bookings", to: "/bookings" },
                         { icon: Settings, label: "Settings", to: "/settings" },
                       ].map(({ icon: Icon, label, to }) => (
                         <Link
@@ -306,11 +275,7 @@ export const Navbar: React.FC<NavbarProps> = ({ transparent = false }) => {
                     </div>
                     <div className="border-t border-slate-100 py-1.5">
                       <button
-                        onClick={async () => {
-                          await logout();
-                          setDropdownOpen(false);
-                          navigate("/", { replace: true });
-                        }}
+                        onClick={async () => { await logout(); setDropdownOpen(false); navigate("/", { replace: true }); }}
                         className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors duration-150"
                       >
                         <LogOut className="w-4 h-4" />
@@ -337,9 +302,7 @@ export const Navbar: React.FC<NavbarProps> = ({ transparent = false }) => {
                 <Link
                   to="/register"
                   className="flex items-center gap-1.5 px-5 py-2 rounded-xl text-sm font-semibold text-white transition-all duration-300 shadow-glow"
-                  style={{
-                    background: "linear-gradient(135deg,#1660eb,#0d1a42)",
-                  }}
+                  style={{ background: "linear-gradient(135deg,#1660eb,#0d1a42)" }}
                 >
                   <UserPlus className="w-4 h-4" />
                   Get Started
@@ -358,21 +321,18 @@ export const Navbar: React.FC<NavbarProps> = ({ transparent = false }) => {
             }`}
             aria-label="Toggle menu"
           >
-            {mobileOpen ? (
-              <X className="w-6 h-6" />
-            ) : (
-              <Menu className="w-6 h-6" />
-            )}
+            {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
         </div>
 
         {/* Mobile Drawer */}
         <div
           className={`lg:hidden transition-all duration-400 overflow-hidden ${
-            mobileOpen ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0"
+            mobileOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0"
           }`}
         >
-          <div className="container-custom py-4 space-y-1 border-t border-slate-100 bg-white/98 backdrop-blur-lg">
+          {/* overflow-y-auto ensures the drawer itself scrolls if content is taller than viewport */}
+          <div className="container-custom py-4 space-y-1 border-t border-slate-100 bg-white/98 backdrop-blur-lg overflow-y-auto max-h-[calc(100vh-64px)]">
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.label}
@@ -387,62 +347,54 @@ export const Navbar: React.FC<NavbarProps> = ({ transparent = false }) => {
                 {link.label}
               </Link>
             ))}
-            <div className="pt-3 border-t border-slate-100 flex flex-col gap-2">
+            <div className="pt-3 border-t border-slate-100 flex flex-col gap-1">
               {user ? (
                 <>
-                  <div className="flex items-center gap-3 px-4 py-3 bg-slate-50 rounded-xl">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-500 to-navy-600 flex items-center justify-center text-white text-xs font-bold">
-                      {user.FirstName[0]}
-                      {user.SecondName[0]}
+                  {/* User card */}
+                  <div className="flex items-center gap-3 px-4 py-3 bg-slate-50 rounded-xl mb-1">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-500 to-navy-600 flex items-center justify-center text-white text-xs font-bold shrink-0">
+                      {user.FirstName[0]}{user.SecondName[0]}
                     </div>
-                    <div>
-                      <p className="text-sm font-semibold text-navy-900">
-                        {user.FirstName} {user.SecondName}
-                      </p>
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-navy-900 truncate">{user.FirstName} {user.SecondName}</p>
                       <p className="text-xs text-slate-500">{user.Role}</p>
                     </div>
                   </div>
+                  {/* All dashboard links — Settings included */}
                   {[
-                    { icon: User, label: "Profile", to: "/profile" },
-                    { icon: ShoppingCart, label: "Cart", to: "/cart" },
-                    { icon: Package, label: "Orders", to: "/orders" },
-                    { icon: Calendar, label: "Bookings", to: "/bookings" },
+                    { icon: User,         label: "My Profile",  to: "/profile"  },
+                    { icon: ShoppingCart, label: "My Cart",     to: "/cart"     },
+                    { icon: Package,      label: "My Orders",   to: "/orders"   },
+                    { icon: Calendar,     label: "My Bookings", to: "/bookings" },
+                    { icon: Settings,     label: "Settings",    to: "/settings" },
                   ].map(({ icon: Icon, label, to }) => (
                     <Link
                       key={to}
                       to={to}
-                      className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm text-slate-700 hover:bg-slate-50"
+                      onClick={() => setMobileOpen(false)}
+                      className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm text-slate-700 hover:bg-slate-50 hover:text-primary-600 transition-colors"
                     >
                       <Icon className="w-4 h-4 text-slate-400" />
                       {label}
                     </Link>
                   ))}
-                  <button
-                    onClick={async () => {
-                      await logout();
-                      navigate("/", { replace: true });
-                    }}
-                    className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm text-red-600 hover:bg-red-50"
-                  >
-                    <LogOut className="w-4 h-4" />
-                    Sign Out
-                  </button>
+                  {/* Sign Out — always visible, separated */}
+                  <div className="border-t border-slate-100 mt-1 pt-1">
+                    <button
+                      onClick={async () => { await logout(); setMobileOpen(false); navigate("/", { replace: true }); }}
+                      className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      Sign Out
+                    </button>
+                  </div>
                 </>
               ) : (
                 <>
-                  <Link
-                    to="/login"
-                    className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium text-slate-700 border border-slate-200 hover:bg-slate-50"
-                  >
+                  <Link to="/login" className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium text-slate-700 border border-slate-200 hover:bg-slate-50">
                     <LogIn className="w-4 h-4" /> Sign In
                   </Link>
-                  <Link
-                    to="/register"
-                    className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold text-white"
-                    style={{
-                      background: "linear-gradient(135deg,#1660eb,#0d1a42)",
-                    }}
-                  >
+                  <Link to="/register" className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold text-white" style={{ background: "linear-gradient(135deg,#1660eb,#0d1a42)" }}>
                     <UserPlus className="w-4 h-4" /> Create Account
                   </Link>
                 </>

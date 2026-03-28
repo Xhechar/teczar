@@ -3,6 +3,7 @@ import type { MessageOptions } from "../interfaces/interfaces.js";
 import { Logger } from "../logs/logger.js";
 import { prisma } from "../lib/prisma.js";
 import { SendMail } from "../emails/config/email.config.js";
+import path from "path";
 
 export class OrdersService {
   static async SendOrderNotification(): Promise<void> {
@@ -37,37 +38,31 @@ export class OrdersService {
     }
 
     for (let order of orders) {
-      ejs.renderFile(
-        "./templates/order_confirmation.mail.ejs",
-        { order },
-        async (error, data) => {
-          if (error) {
-            Logger.error(error.message);
-          } else {
-            let messageOptions: MessageOptions = {
-              from: process.env.EMAIL as string,
-              to: order.User.Email,
-              subject: "Raz Technologies | Order Confirmation.",
-              html: data,
-            };
+      try {
+        const templatePath = path.resolve(
+          "templates/order_confirmation.mail.ejs",
+        );
 
-            try {
-              await SendMail(messageOptions);
+        const data = await ejs.renderFile(templatePath, { order });
 
-              await prisma.order.update({
-                where: {
-                  OrderId: order.OrderId
-                },
-                data: {
-                  IsSent: true
-                }
-              })
-            } catch (error) {
-              Logger.error(error instanceof Error ? error.message : error);
-            }
-          }
-        },
-      );
+        const messageOptions: MessageOptions = {
+          from: process.env.EMAIL as string,
+          to: order.User.Email,
+          subject: "Raz Technologies | Order Confirmation.",
+          html: data,
+        };
+
+        await SendMail(messageOptions);
+
+        await prisma.order.update({
+          where: { OrderId: order.OrderId },
+          data: { IsSent: true },
+        });
+
+        Logger.info(`Order confirmation sent to ${order.User.Email}`);
+      } catch (error) {
+        Logger.error(error instanceof Error ? error.message : String(error));
+      }
     }
   }
 }
