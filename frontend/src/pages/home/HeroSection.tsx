@@ -269,7 +269,7 @@ const HeroSection: React.FC = () => {
               className={`flex flex-col sm:flex-row gap-4 mb-16 transition-all duration-500 delay-200 ${loaded && textVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-5"}`}
             >
               <Link
-                onSubmit={() => handleGetQuote(slide.CtaLink)}
+                onClick={() => handleGetQuote(slide.CtaLink)}
                 to={slide.CtaLink}
                 className="btn-primary text-base px-8 py-4"
               >
