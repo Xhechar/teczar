@@ -1,7 +1,7 @@
 // ─── CLOUDINARY UPLOAD HELPER ────────────────────────────────────
 export const CLOUDINARY_CONFIG = {
-  cloudName:    "dakyiye2e",   // ← replace with your Cloudinary cloud name
-  uploadPreset: "allapps", // ← replace with your unsigned upload preset
+  cloudName: "dluza9ttu",
+  uploadPreset: "allapps",
 };
 
 export async function uploadToCloudinary(

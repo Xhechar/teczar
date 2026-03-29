@@ -158,7 +158,7 @@ const AboutSection: React.FC = () => {
               <img
                 src="https://res.cloudinary.com/dakyiye2e/image/upload/v1774811096/jc7r5w1tmfdaalucz6a7.jpg"
                 alt="Electrical setup"
-                className="rounded-2xl object-cover h-52 w-full shadow-card mt-4"
+                className="rounded-2xl object-top h-52 w-full shadow-card mt-4"
               />
             </div>
 
