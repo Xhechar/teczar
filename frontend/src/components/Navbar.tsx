@@ -192,9 +192,9 @@ export const Navbar: React.FC<NavbarProps> = ({ transparent = false }) => {
               }}
             >
               <img
-                src="/favicon.png"
+                src="../favicon.png"
                 alt="Raz Tech"
-                style={{ width: "42px", height: "42px", objectFit: "contain" }}
+                style={{ width: "100%", height: "100%", objectFit: "contain" }}
               />
             </div>
           </Link>

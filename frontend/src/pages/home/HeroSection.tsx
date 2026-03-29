@@ -91,7 +91,7 @@ const HeroSection: React.FC = () => {
   }, []);
 
   const handleGetQuote = (link: string) => {
-    if(!link.includes("#contact")) return;
+    if (link !== "/#contact") return;
     const el = document.getElementById("contact");
     if (el) {
       const navbarHeight = 72;

@@ -22,6 +22,13 @@ const CONTACT_INFO = [
     color: "bg-primary-50 text-primary-600",
   },
   {
+    icon: Phone,
+    label: "Phone / WhatsApp",
+    value: "+254 797 133 976",
+    href: "tel:+254797133976",
+    color: "bg-primary-50 text-primary-600",
+  },
+  {
     icon: Mail,
     label: "Email Address",
     value: "info@raztechnologies.co.ke",

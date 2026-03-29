@@ -141,23 +141,23 @@ const AboutSection: React.FC = () => {
           <div className="reveal stagger-2 relative">
             <div className="grid grid-cols-2 gap-4">
               <img
-                src="https://images.unsplash.com/photo-1509391366360-2e959784a276?w=500&q=80"
+                src="https://res.cloudinary.com/dakyiye2e/image/upload/v1774810633/jhddmdnvvqybkdtf7zrj.jpg"
                 alt="Solar installation"
                 className="rounded-2xl object-cover h-52 w-full shadow-card"
               />
               <img
-                src="https://images.unsplash.com/photo-1557597774-9d273605dfa9?w=500&q=80"
-                alt="CCTV installation"
+                src="https://res.cloudinary.com/dakyiye2e/image/upload/v1774810728/asl6uby48mcvok7ykflj.jpg"
+                alt="CCTV Back-Up Solar System"
                 className="rounded-2xl object-cover h-52 w-full shadow-card mt-8"
               />
               <img
-                src="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=500&q=80"
-                alt="Electrical work"
+                src="https://res.cloudinary.com/dakyiye2e/image/upload/v1774810865/oexm1lxk1nmehm1kqkuk.jpg"
+                alt="CCTV installation"
                 className="rounded-2xl object-cover h-52 w-full shadow-card -mt-4"
               />
               <img
-                src="https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=500&q=80"
-                alt="Network setup"
+                src="https://res.cloudinary.com/dakyiye2e/image/upload/v1774811096/jc7r5w1tmfdaalucz6a7.jpg"
+                alt="Electrical setup"
                 className="rounded-2xl object-cover h-52 w-full shadow-card mt-4"
               />
             </div>

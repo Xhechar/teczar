@@ -18,7 +18,6 @@ const Footer: React.FC = () => {
     "Solar Installation",
     "CCTV Systems",
     "Electrical Works",
-    "Internet & WiFi",
     "Electric Fencing",
     "Intercom Systems",
     "Plumbing Services",
@@ -194,6 +193,11 @@ const Footer: React.FC = () => {
                     icon: Phone,
                     text: "+254 746 430 693",
                     href: "tel:+254746430693",
+                  },
+                  {
+                    icon: Phone,
+                    text: "+254 797 133 976",
+                    href: "tel:+254797133976",
                   },
                   {
                     icon: Mail,
