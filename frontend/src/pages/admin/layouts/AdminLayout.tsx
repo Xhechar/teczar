@@ -132,8 +132,8 @@ const Sidebar: React.FC<SidebarProps> = ({
         <div
           className={`flex items-center gap-3 px-4 py-4 border-b border-white/10 ${collapsed ? "justify-center" : ""}`}
         >
-          {/* Clickable logo — navigates to "/" */}
-          <Link to="/" aria-label="Go to homepage" className="shrink-0">
+          {/* Clickable logo — navigates to "/admin" */}
+          <Link to="/admin" aria-label="Go to homepage" className="shrink-0">
             <img
               src="/favicon.png"
               alt="Raz Tech"

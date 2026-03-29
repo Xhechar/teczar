@@ -49,7 +49,7 @@ const ALL_PROJECTS: Project[] = [
     title: "Flat Plate Water Heater",
     subtitle: "Residential Home",
     county: "Nairobi County",
-    image: "https://images.unsplash.com/photo-1560472355-536de3962603?w=700&q=80",
+    image: "https://res.cloudinary.com/dakyiye2e/image/upload/v1774798144/opdwivkrxpyx2wrfzacd.jpg",
     tag: "Plumbing",
     tagColor: "bg-teal-500 text-white",
     details: ["300L Capacity", "Flat Plate System", "Hot Water All Day", "10yr Warranty"],
