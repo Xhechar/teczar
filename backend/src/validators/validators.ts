@@ -161,12 +161,12 @@ export const CreateCategoryValidator = Joi.object({
   Name: Joi.string().min(2).required().messages({
     "string.empty": "Category name is required",
   }),
-  ImageUrl: urlSchema.optional(),
+  ImageUrl: urlSchema.optional().allow(null).allow(""),
 });
 
 export const UpdateCategoryValidator = Joi.object({
   Name: Joi.string().min(2),
-  ImageUrl: urlSchema,
+  ImageUrl: urlSchema.optional().allow(null).allow(""),
 });
 
 export const CreateProductImageValidator = Joi.object({
