@@ -14,7 +14,6 @@ import {
   ChevronLeft,
   ChevronRight,
   LogOut,
-  Zap,
   Bell,
   Menu,
   ClipboardList,
@@ -131,14 +130,18 @@ const Sidebar: React.FC<SidebarProps> = ({
       >
         {/* Logo */}
         <div
-          className={`flex items-center gap-3 px-4 py-5 border-b border-white/10 ${collapsed ? "justify-center" : ""}`}
+          className={`flex items-center gap-3 px-4 py-4 border-b border-white/10 ${collapsed ? "justify-center" : ""}`}
         >
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center shadow-glow shrink-0">
-            <Zap
-              className="w-4.5 h-4.5 text-white"
-              style={{ width: "18px", height: "18px" }}
+          {/* Clickable logo — navigates to "/" */}
+          <Link to="/" aria-label="Go to homepage" className="shrink-0">
+            <img
+              src="/favicon.png"
+              alt="Raz Tech"
+              className={`object-contain drop-shadow-lg transition-all duration-300 hover:scale-105 ${
+                collapsed ? "h-9 w-9" : "h-11 w-auto"
+              }`}
             />
-          </div>
+          </Link>
           {!collapsed && (
             <div className="min-w-0">
               <p className="font-display font-800 text-white text-sm leading-tight truncate">
@@ -229,8 +232,6 @@ const Sidebar: React.FC<SidebarProps> = ({
   );
 };
 
-
-
 // ─── ADMIN LAYOUT ─────────────────────────────────────────────────
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -289,21 +290,23 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
       </div>
 
       {/* Mobile top bar */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 z-[80] bg-white/95 backdrop-blur-lg border-b border-slate-100 shadow-sm flex items-center justify-between px-4 py-3.5">
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-[80] bg-white/95 backdrop-blur-lg border-b border-slate-100 shadow-sm flex items-center justify-between px-4 py-3">
         <button
           onClick={() => setMobileOpen(true)}
           className="p-2 rounded-xl hover:bg-slate-100 text-slate-600"
         >
           <Menu className="w-5 h-5" />
         </button>
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-primary-500 to-navy-700 flex items-center justify-center">
-            <Zap className="w-4 h-4 text-white" />
-          </div>
-          <span className="font-display font-700 text-navy-900 text-sm">
-            Technologies Admin
-          </span>
-        </div>
+
+        {/* Mobile top bar logo — clickable */}
+        <Link to="/" aria-label="Go to homepage">
+          <img
+            src="/favicon.png"
+            alt="Raz Tech"
+            className="h-9 w-auto object-contain drop-shadow transition-transform duration-300 hover:scale-105"
+          />
+        </Link>
+
         <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-500 to-navy-600 flex items-center justify-center text-white text-xs font-bold">
           {initials}
         </div>

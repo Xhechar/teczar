@@ -217,6 +217,7 @@ model Order {
   User         User        @relation(fields: [UserId], references: [UserId], onDelete: NoAction, onUpdate: NoAction)
   Items        OrderItem[]
   Payments     Payment[]
+  Reviews      Review[]
 
   IsDeleted    Boolean     @default(false)
   CreatedAt    DateTime    @default(now())
@@ -269,12 +270,14 @@ model Review {
   ReviewId    String   @id @default(uuid()) @db.Uuid
   UserId      String   @db.Uuid
   ProductId   String   @db.Uuid
+  OrderId     String   @db.Uuid
   Rating      Int
   Message     String
   Status      ReviewStatus  @default(Pending)
 
   User        User     @relation(fields: [UserId], references: [UserId], onDelete: NoAction, onUpdate: NoAction)
   Product     Product  @relation(fields: [ProductId], references: [ProductId], onDelete: NoAction, onUpdate: NoAction)
+  Order       Order    @relation(fields: [OrderId], references: [OrderId], onDelete: NoAction, onUpdate: NoAction)
 
   IsDeleted   Boolean  @default(false)
   CreatedAt   DateTime @default(now())

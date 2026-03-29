@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const api = axios.create({
-  baseURL: "https://api-raztech.onrender.com/",
+  baseURL: "https://api.raztechnologies.co.ke/",
   withCredentials: true,
 });
 

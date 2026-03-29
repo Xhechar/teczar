@@ -12,7 +12,6 @@ import {
   Calendar,
   LogIn,
   UserPlus,
-  Zap,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
@@ -23,26 +22,24 @@ interface NavbarProps {
 interface NavLink {
   label: string;
   to: string;
-  sectionId?: string; // if set, smooth-scroll to this id on the home page
+  sectionId?: string;
 }
 
 const NAV_LINKS: NavLink[] = [
-  { label: "Home",     to: "/",   sectionId: "home"            },
-  { label: "Services", to: "/explore?tab=services"             },
-  { label: "Products", to: "/explore?tab=products"             },
-  { label: "Projects", to: "/",   sectionId: "projects"        },
-  { label: "About",    to: "/",   sectionId: "about"           },
-  { label: "Careers",  to: "/careers"                          },
-  { label: "Contact",  to: "/",   sectionId: "contact"         },
+  { label: "Home", to: "/", sectionId: "home" },
+  { label: "Services", to: "/explore?tab=services" },
+  { label: "Products", to: "/explore?tab=products" },
+  { label: "Projects", to: "/", sectionId: "projects" },
+  { label: "About", to: "/", sectionId: "about" },
+  { label: "Careers", to: "/careers" },
+  { label: "Contact", to: "/", sectionId: "contact" },
 ];
 
-/** Smoothly scrolls to a section by id, waiting for it to exist in the DOM */
 function scrollToSection(id: string, attempts = 0) {
   const el = document.getElementById(id);
   if (el) {
     el.scrollIntoView({ behavior: "smooth", block: "start" });
   } else if (attempts < 20) {
-    // Retry up to ~500ms while the page finishes rendering
     setTimeout(() => scrollToSection(id, attempts + 1), 25);
   }
 }
@@ -50,19 +47,17 @@ function scrollToSection(id: string, attempts = 0) {
 const HOME_SECTION_IDS = ["hero", "projects", "about", "contact"];
 
 export const Navbar: React.FC<NavbarProps> = ({ transparent = false }) => {
-  const [scrolled, setScrolled]         = useState(false);
-  const [mobileOpen, setMobileOpen]     = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-
   const [activeSection, setActiveSection] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const { user, logout }                = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
   const isHomePage = location.pathname === "/";
 
-  // ── Scroll detection (for navbar bg) ──────────────────────────
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -90,7 +85,7 @@ export const Navbar: React.FC<NavbarProps> = ({ transparent = false }) => {
       {
         rootMargin: `-${NAVBAR_HEIGHT}px 0px -60% 0px`,
         threshold: 0,
-      }
+      },
     );
 
     const sectionEls: Element[] = [];
@@ -99,7 +94,7 @@ export const Navbar: React.FC<NavbarProps> = ({ transparent = false }) => {
       if (id === "hero") {
         const el = document.querySelector("section");
         if (el) {
-          el.id = "hero"; // stamp the id if missing
+          el.id = "hero";
           sectionEls.push(el);
           observer.observe(el);
         }
@@ -117,7 +112,10 @@ export const Navbar: React.FC<NavbarProps> = ({ transparent = false }) => {
 
   useEffect(() => {
     const onClick = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target as Node)
+      ) {
         setDropdownOpen(false);
       }
     };
@@ -125,14 +123,12 @@ export const Navbar: React.FC<NavbarProps> = ({ transparent = false }) => {
     return () => document.removeEventListener("mousedown", onClick);
   }, []);
 
-  // ── Close mobile menu on navigation ───────────────────────────
   useEffect(() => {
     setMobileOpen(false);
   }, [location.pathname]);
 
-  // ── Handle nav link clicks ─────────────────────────────────────
   const handleNavClick = (e: React.MouseEvent, link: NavLink) => {
-    if (!link.sectionId) return; // let <Link> handle plain routes
+    if (!link.sectionId) return;
 
     e.preventDefault();
     setMobileOpen(false);
@@ -149,24 +145,18 @@ export const Navbar: React.FC<NavbarProps> = ({ transparent = false }) => {
 
   const isNavScrolled = scrolled || !transparent || mobileOpen;
 
-  // ── Determine active state per link ───────────────────────────
   const isActive = (link: NavLink): boolean => {
     if (!isHomePage) {
-      // On non-home pages, only highlight exact pathname matches (no sectionId links)
       if (link.sectionId) return false;
       return location.pathname === link.to.split("?")[0];
     }
 
-    // On the home page:
     if (link.sectionId === "home") {
-      // "Home" is active when we're at the top (hero visible)
       return activeSection === "hero" || activeSection === null;
     }
     if (link.sectionId) {
-      // Named section links active when their section is scrolled into view
       return activeSection === link.sectionId;
     }
-    // Services / Products / Careers — never active while browsing home page
     return false;
   };
 
@@ -180,20 +170,32 @@ export const Navbar: React.FC<NavbarProps> = ({ transparent = false }) => {
         }`}
       >
         <div className="container-custom flex items-center justify-between">
-          {/* Logo */}
-          <Link to="/" className="flex items-center gap-3 group">
-            {/* Placeholder logo — replace src with actual logo */}
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-600 to-navy-700 flex items-center justify-center shadow-glow group-hover:scale-105 transition-transform duration-300">
-              <Zap className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <span
-                className={`font-display font-800 text-lg leading-none tracking-tight transition-colors duration-300 ${
-                  isNavScrolled ? "text-navy-900" : "text-white"
-                }`}
-              >
-                Technologies
-              </span>
+          {/* ── Logo ── */}
+          <Link
+            to="/"
+            className="flex items-center gap-3 group"
+            aria-label="Go to homepage"
+          >
+            {/*
+              Blue circular backdrop — fixed size so it never shrinks when the
+              navbar collapses its padding on scroll.
+            */}
+            <div
+              className="shrink-0 flex items-center justify-center rounded-full transition-transform duration-300 group-hover:scale-105"
+              style={{
+                width: "56px",
+                height: "56px",
+                minWidth: "56px",
+                minHeight: "56px",
+                background: "linear-gradient(135deg, #1660eb 0%, #0d1a42 100%)",
+                boxShadow: "0 0 18px rgba(22,96,235,0.45)",
+              }}
+            >
+              <img
+                src="/favicon.png"
+                alt="Raz Tech"
+                style={{ width: "42px", height: "42px", objectFit: "contain" }}
+              />
             </div>
           </Link>
 
@@ -210,8 +212,8 @@ export const Navbar: React.FC<NavbarProps> = ({ transparent = false }) => {
                       ? "text-primary-600 bg-primary-50"
                       : "text-white bg-white/15"
                     : isNavScrolled
-                    ? "text-slate-700 hover:text-primary-600 hover:bg-slate-50"
-                    : "text-white/85 hover:text-white hover:bg-white/10"
+                      ? "text-slate-700 hover:text-primary-600 hover:bg-slate-50"
+                      : "text-white/85 hover:text-white hover:bg-white/10"
                 }`}
               >
                 {link.label}
@@ -232,34 +234,48 @@ export const Navbar: React.FC<NavbarProps> = ({ transparent = false }) => {
                       : "hover:bg-white/10 text-white"
                   }`}
                 >
-                  {/* Avatar */}
                   <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-500 to-navy-600 flex items-center justify-center text-white text-xs font-bold">
-                    {user.FirstName[0]}{user.SecondName[0]}
+                    {user.FirstName[0]}
+                    {user.SecondName[0]}
                   </div>
                   <div className="text-left">
-                    <p className={`text-sm font-semibold leading-none ${isNavScrolled ? "text-navy-900" : "text-white"}`}>
+                    <p
+                      className={`text-sm font-semibold leading-none ${isNavScrolled ? "text-navy-900" : "text-white"}`}
+                    >
                       {user.FirstName}
                     </p>
-                    <p className={`text-xs mt-0.5 ${isNavScrolled ? "text-slate-500" : "text-white/60"}`}>
+                    <p
+                      className={`text-xs mt-0.5 ${isNavScrolled ? "text-slate-500" : "text-white/60"}`}
+                    >
                       {user.Role}
                     </p>
                   </div>
-                  <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${dropdownOpen ? "rotate-180" : ""} ${isNavScrolled ? "text-slate-400" : "text-white/60"}`} />
+                  <ChevronDown
+                    className={`w-4 h-4 transition-transform duration-200 ${dropdownOpen ? "rotate-180" : ""} ${isNavScrolled ? "text-slate-400" : "text-white/60"}`}
+                  />
                 </button>
 
                 {/* Dropdown */}
                 {dropdownOpen && (
                   <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-card-hover border border-slate-100 overflow-hidden">
                     <div className="p-3 bg-gradient-to-br from-primary-50 to-navy-50 border-b border-slate-100">
-                      <p className="text-sm font-semibold text-navy-900">{user.FirstName} {user.SecondName}</p>
-                      <p className="text-xs text-slate-500 truncate">{user.Email}</p>
+                      <p className="text-sm font-semibold text-navy-900">
+                        {user.FirstName} {user.SecondName}
+                      </p>
+                      <p className="text-xs text-slate-500 truncate">
+                        {user.Email}
+                      </p>
                     </div>
                     <div className="py-1.5">
                       {[
                         { icon: User, label: "My Profile", to: "/profile" },
                         { icon: ShoppingCart, label: "My Cart", to: "/cart" },
                         { icon: Package, label: "My Orders", to: "/orders" },
-                        { icon: Calendar, label: "My Bookings", to: "/bookings" },
+                        {
+                          icon: Calendar,
+                          label: "My Bookings",
+                          to: "/bookings",
+                        },
                         { icon: Settings, label: "Settings", to: "/settings" },
                       ].map(({ icon: Icon, label, to }) => (
                         <Link
@@ -275,7 +291,11 @@ export const Navbar: React.FC<NavbarProps> = ({ transparent = false }) => {
                     </div>
                     <div className="border-t border-slate-100 py-1.5">
                       <button
-                        onClick={async () => { await logout(); setDropdownOpen(false); navigate("/", { replace: true }); }}
+                        onClick={async () => {
+                          await logout();
+                          setDropdownOpen(false);
+                          navigate("/", { replace: true });
+                        }}
                         className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors duration-150"
                       >
                         <LogOut className="w-4 h-4" />
@@ -302,7 +322,9 @@ export const Navbar: React.FC<NavbarProps> = ({ transparent = false }) => {
                 <Link
                   to="/register"
                   className="flex items-center gap-1.5 px-5 py-2 rounded-xl text-sm font-semibold text-white transition-all duration-300 shadow-glow"
-                  style={{ background: "linear-gradient(135deg,#1660eb,#0d1a42)" }}
+                  style={{
+                    background: "linear-gradient(135deg,#1660eb,#0d1a42)",
+                  }}
                 >
                   <UserPlus className="w-4 h-4" />
                   Get Started
@@ -321,7 +343,11 @@ export const Navbar: React.FC<NavbarProps> = ({ transparent = false }) => {
             }`}
             aria-label="Toggle menu"
           >
-            {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {mobileOpen ? (
+              <X className="w-6 h-6" />
+            ) : (
+              <Menu className="w-6 h-6" />
+            )}
           </button>
         </div>
 
@@ -331,7 +357,6 @@ export const Navbar: React.FC<NavbarProps> = ({ transparent = false }) => {
             mobileOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0"
           }`}
         >
-          {/* overflow-y-auto ensures the drawer itself scrolls if content is taller than viewport */}
           <div className="container-custom py-4 space-y-1 border-t border-slate-100 bg-white/98 backdrop-blur-lg overflow-y-auto max-h-[calc(100vh-64px)]">
             {NAV_LINKS.map((link) => (
               <Link
@@ -350,23 +375,24 @@ export const Navbar: React.FC<NavbarProps> = ({ transparent = false }) => {
             <div className="pt-3 border-t border-slate-100 flex flex-col gap-1">
               {user ? (
                 <>
-                  {/* User card */}
                   <div className="flex items-center gap-3 px-4 py-3 bg-slate-50 rounded-xl mb-1">
                     <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-500 to-navy-600 flex items-center justify-center text-white text-xs font-bold shrink-0">
-                      {user.FirstName[0]}{user.SecondName[0]}
+                      {user.FirstName[0]}
+                      {user.SecondName[0]}
                     </div>
                     <div className="min-w-0">
-                      <p className="text-sm font-semibold text-navy-900 truncate">{user.FirstName} {user.SecondName}</p>
+                      <p className="text-sm font-semibold text-navy-900 truncate">
+                        {user.FirstName} {user.SecondName}
+                      </p>
                       <p className="text-xs text-slate-500">{user.Role}</p>
                     </div>
                   </div>
-                  {/* All dashboard links — Settings included */}
                   {[
-                    { icon: User,         label: "My Profile",  to: "/profile"  },
-                    { icon: ShoppingCart, label: "My Cart",     to: "/cart"     },
-                    { icon: Package,      label: "My Orders",   to: "/orders"   },
-                    { icon: Calendar,     label: "My Bookings", to: "/bookings" },
-                    { icon: Settings,     label: "Settings",    to: "/settings" },
+                    { icon: User, label: "My Profile", to: "/profile" },
+                    { icon: ShoppingCart, label: "My Cart", to: "/cart" },
+                    { icon: Package, label: "My Orders", to: "/orders" },
+                    { icon: Calendar, label: "My Bookings", to: "/bookings" },
+                    { icon: Settings, label: "Settings", to: "/settings" },
                   ].map(({ icon: Icon, label, to }) => (
                     <Link
                       key={to}
@@ -378,10 +404,13 @@ export const Navbar: React.FC<NavbarProps> = ({ transparent = false }) => {
                       {label}
                     </Link>
                   ))}
-                  {/* Sign Out — always visible, separated */}
                   <div className="border-t border-slate-100 mt-1 pt-1">
                     <button
-                      onClick={async () => { await logout(); setMobileOpen(false); navigate("/", { replace: true }); }}
+                      onClick={async () => {
+                        await logout();
+                        setMobileOpen(false);
+                        navigate("/", { replace: true });
+                      }}
                       className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
                     >
                       <LogOut className="w-4 h-4" />
@@ -391,10 +420,19 @@ export const Navbar: React.FC<NavbarProps> = ({ transparent = false }) => {
                 </>
               ) : (
                 <>
-                  <Link to="/login" className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium text-slate-700 border border-slate-200 hover:bg-slate-50">
+                  <Link
+                    to="/login"
+                    className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium text-slate-700 border border-slate-200 hover:bg-slate-50"
+                  >
                     <LogIn className="w-4 h-4" /> Sign In
                   </Link>
-                  <Link to="/register" className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold text-white" style={{ background: "linear-gradient(135deg,#1660eb,#0d1a42)" }}>
+                  <Link
+                    to="/register"
+                    className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold text-white"
+                    style={{
+                      background: "linear-gradient(135deg,#1660eb,#0d1a42)",
+                    }}
+                  >
                     <UserPlus className="w-4 h-4" /> Create Account
                   </Link>
                 </>

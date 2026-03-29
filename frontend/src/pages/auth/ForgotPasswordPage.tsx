@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import {
-  Zap,
   ArrowLeft,
   Mail,
   KeyRound,
@@ -78,7 +77,6 @@ const OtpInput: React.FC<OtpInputProps> = ({ value, onChange, hasError }) => {
       {Array.from({ length: 6 }).map((_, i) => (
         <input
           key={i}
-          // ✅ Assign each element into the ref array via a ref callback — no hooks involved
           ref={(el) => {
             inputsRef.current[i] = el;
           }}
@@ -140,12 +138,11 @@ const RequestCodeStep: React.FC<Step1Props> = ({ onSuccess }) => {
         onSuccess(data.Email);
       } else {
         setApiError(
-          result.ErrorMessage ??
-            "Something went wrong. Please try again.",
+          result.ErrorMessage ?? "Something went wrong. Please try again.",
         );
       }
     } catch (error: any) {
-      setApiError( error?.response?.data?.ErrorMessage ?? "Network error. Please check your connection.");
+      setApiError(error?.response?.data?.ErrorMessage ?? "Network error. Please check your connection.");
     } finally {
       setLoading(false);
     }
@@ -153,7 +150,6 @@ const RequestCodeStep: React.FC<Step1Props> = ({ onSuccess }) => {
 
   return (
     <>
-      {/* Icon */}
       <div className="w-14 h-14 rounded-2xl bg-primary-50 flex items-center justify-center mb-5">
         <Mail className="w-7 h-7 text-primary-600" />
       </div>
@@ -219,10 +215,7 @@ const RequestCodeStep: React.FC<Step1Props> = ({ onSuccess }) => {
 
       <p className="text-center text-sm text-slate-500 mt-6">
         Remembered your password?{" "}
-        <Link
-          to="/login"
-          className="text-primary-600 font-semibold hover:underline"
-        >
+        <Link to="/login" className="text-primary-600 font-semibold hover:underline">
           Sign in
         </Link>
       </p>
@@ -237,11 +230,7 @@ interface Step2Props {
   onBack: () => void;
 }
 
-const ResetPasswordStep: React.FC<Step2Props> = ({
-  email,
-  onSuccess,
-  onBack,
-}) => {
+const ResetPasswordStep: React.FC<Step2Props> = ({ email, onSuccess, onBack }) => {
   const [otpValue, setOtpValue] = useState("");
   const [showPw, setShowPw] = useState(false);
   const [showCp, setShowCp] = useState(false);
@@ -250,7 +239,6 @@ const ResetPasswordStep: React.FC<Step2Props> = ({
   const [resending, setResending] = useState(false);
   const { remaining, start } = useCountdown(60);
 
-  // Start countdown immediately on mount
   useEffect(() => {
     start();
     // eslint-disable-next-line
@@ -269,7 +257,6 @@ const ResetPasswordStep: React.FC<Step2Props> = ({
   } = useForm<ResetForm>({ mode: "onTouched" });
 
   const newPassword = watch("NewPassword");
-
   const otpComplete = otpValue.replace(/\s/g, "").length === 6;
 
   const onSubmit = async (data: ResetForm) => {
@@ -289,13 +276,10 @@ const ResetPasswordStep: React.FC<Step2Props> = ({
       if (result.Success) {
         onSuccess();
       } else {
-        setApiError(
-          result.ErrorMessage ??
-            "Invalid or expired code. Please try again.",
-        );
+        setApiError(result.ErrorMessage ?? "Invalid or expired code. Please try again.");
       }
     } catch (error: any) {
-      setApiError( error?.response?.data?.ErrorMessage ?? "Network error. Please try again.");
+      setApiError(error?.response?.data?.ErrorMessage ?? "Network error. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -313,13 +297,12 @@ const ResetPasswordStep: React.FC<Step2Props> = ({
         setApiError((result as any).ErrorMessage ?? "Could not resend code.");
       }
     } catch (error: any) {
-      setApiError( error?.response?.data?.ErrorMessage ?? "Network error. Please try again.");
+      setApiError(error?.response?.data?.ErrorMessage ?? "Network error. Please try again.");
     } finally {
       setResending(false);
     }
   };
 
-  // Password strength indicator
   const getStrength = (pw: string = "") => {
     let score = 0;
     if (pw.length >= 8) score++;
@@ -331,17 +314,10 @@ const ResetPasswordStep: React.FC<Step2Props> = ({
 
   const strength = getStrength(newPassword);
   const strengthLabel = ["", "Weak", "Fair", "Good", "Strong"][strength];
-  const strengthColor = [
-    "",
-    "bg-red-400",
-    "bg-amber-400",
-    "bg-primary-400",
-    "bg-emerald-500",
-  ][strength];
+  const strengthColor = ["", "bg-red-400", "bg-amber-400", "bg-primary-400", "bg-emerald-500"][strength];
 
   return (
     <>
-      {/* Icon */}
       <div className="w-14 h-14 rounded-2xl bg-primary-50 flex items-center justify-center mb-5">
         <KeyRound className="w-7 h-7 text-primary-600" />
       </div>
@@ -355,7 +331,6 @@ const ResetPasswordStep: React.FC<Step2Props> = ({
         below along with your new password.
       </p>
 
-      {/* Back link */}
       <button
         type="button"
         onClick={onBack}
@@ -372,17 +347,11 @@ const ResetPasswordStep: React.FC<Step2Props> = ({
       )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>
-        {/* OTP */}
         <div>
           <label className="block text-xs font-semibold text-slate-600 mb-3 text-center">
             6-Digit Reset Code <span className="text-red-400">*</span>
           </label>
-          <OtpInput
-            value={otpValue}
-            onChange={setOtpValue}
-            hasError={!!apiError && !otpComplete}
-          />
-          {/* Resend */}
+          <OtpInput value={otpValue} onChange={setOtpValue} hasError={!!apiError && !otpComplete} />
           <div className="flex justify-center mt-3">
             {remaining > 0 ? (
               <p className="text-xs text-slate-400">
@@ -399,27 +368,21 @@ const ResetPasswordStep: React.FC<Step2Props> = ({
                 className="flex items-center gap-1.5 text-xs text-primary-600 hover:text-primary-700 font-semibold transition-colors disabled:opacity-50"
               >
                 {resending ? (
-                  <>
-                    <Loader2 className="w-3.5 h-3.5 animate-spin" /> Sending…
-                  </>
+                  <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Sending…</>
                 ) : (
-                  <>
-                    <RotateCcw className="w-3.5 h-3.5" /> Resend Code
-                  </>
+                  <><RotateCcw className="w-3.5 h-3.5" /> Resend Code</>
                 )}
               </button>
             )}
           </div>
         </div>
 
-        {/* Divider */}
         <div className="flex items-center gap-3">
           <div className="flex-1 h-px bg-slate-100" />
           <span className="text-xs text-slate-400">New Password</span>
           <div className="flex-1 h-px bg-slate-100" />
         </div>
 
-        {/* New password */}
         <div>
           <label className="block text-xs font-semibold text-slate-600 mb-1.5">
             New Password <span className="text-red-400">*</span>
@@ -428,13 +391,9 @@ const ResetPasswordStep: React.FC<Step2Props> = ({
             <input
               {...register("NewPassword", {
                 required: "New password is required",
-                minLength: {
-                  value: 8,
-                  message: "Must be at least 8 characters",
-                },
+                minLength: { value: 8, message: "Must be at least 8 characters" },
                 validate: (v) =>
-                  getStrength(v) >= 2 ||
-                  "Password is too weak — add uppercase, numbers, or symbols",
+                  getStrength(v) >= 2 || "Password is too weak — add uppercase, numbers, or symbols",
               })}
               type={showPw ? "text" : "password"}
               placeholder="Min. 8 characters"
@@ -447,15 +406,10 @@ const ResetPasswordStep: React.FC<Step2Props> = ({
               className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
               aria-label={showPw ? "Hide password" : "Show password"}
             >
-              {showPw ? (
-                <EyeOff className="w-4 h-4" />
-              ) : (
-                <Eye className="w-4 h-4" />
-              )}
+              {showPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
           </div>
 
-          {/* Strength meter — only shows once user starts typing */}
           {newPassword?.length > 0 && (
             <div className="mt-2 space-y-1">
               <div className="flex gap-1">
@@ -469,17 +423,12 @@ const ResetPasswordStep: React.FC<Step2Props> = ({
                 ))}
               </div>
               {strengthLabel && (
-                <p
-                  className={`text-xs font-medium ${
-                    strength === 1
-                      ? "text-red-500"
-                      : strength === 2
-                        ? "text-amber-500"
-                        : strength === 3
-                          ? "text-primary-500"
-                          : "text-emerald-600"
-                  }`}
-                >
+                <p className={`text-xs font-medium ${
+                  strength === 1 ? "text-red-500"
+                    : strength === 2 ? "text-amber-500"
+                    : strength === 3 ? "text-primary-500"
+                    : "text-emerald-600"
+                }`}>
                   {strengthLabel} password
                 </p>
               )}
@@ -494,7 +443,6 @@ const ResetPasswordStep: React.FC<Step2Props> = ({
           )}
         </div>
 
-        {/* Confirm password */}
         <div>
           <label className="block text-xs font-semibold text-slate-600 mb-1.5">
             Confirm Password <span className="text-red-400">*</span>
@@ -516,11 +464,7 @@ const ResetPasswordStep: React.FC<Step2Props> = ({
               className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
               aria-label={showCp ? "Hide password" : "Show password"}
             >
-              {showCp ? (
-                <EyeOff className="w-4 h-4" />
-              ) : (
-                <Eye className="w-4 h-4" />
-              )}
+              {showCp ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
           </div>
           {errors.ConfirmPassword && touchedFields.ConfirmPassword && (
@@ -538,13 +482,9 @@ const ResetPasswordStep: React.FC<Step2Props> = ({
           style={{ background: "linear-gradient(135deg,#1660eb,#0d1a42)" }}
         >
           {loading ? (
-            <>
-              <Loader2 className="w-4 h-4 animate-spin" /> Resetting password…
-            </>
+            <><Loader2 className="w-4 h-4 animate-spin" /> Resetting password…</>
           ) : (
-            <>
-              <ShieldCheck className="w-4 h-4" /> Reset Password
-            </>
+            <><ShieldCheck className="w-4 h-4" /> Reset Password</>
           )}
         </button>
       </form>
@@ -575,10 +515,7 @@ const SuccessStep: React.FC<{ onGoLogin: () => void }> = ({ onGoLogin }) => (
 );
 
 // ─── Step progress bar ────────────────────────────────────────────
-const StepIndicator: React.FC<{ current: number; total: number }> = ({
-  current,
-  total,
-}) => (
+const StepIndicator: React.FC<{ current: number; total: number }> = ({ current, total }) => (
   <div className="flex items-center gap-2 mb-8">
     {Array.from({ length: total }).map((_, i) => (
       <React.Fragment key={i}>
@@ -603,7 +540,6 @@ const ForgotPasswordPage: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  // Allow pre-filling email from a query param, e.g. from the login page
   const prefilledEmail = searchParams.get("email") ?? "";
 
   const [step, setStep] = useState<Step>("request");
@@ -633,41 +569,32 @@ const ForgotPasswordPage: React.FC = () => {
       className="min-h-screen flex"
       style={{ background: "linear-gradient(135deg,#080f28 0%,#133889 100%)" }}
     >
-      {/* ── Left decorative panel ── */}
+      {/* ── Left decorative panel (desktop only) ── */}
       <div className="hidden lg:flex flex-col justify-between w-1/2 p-16 relative overflow-hidden">
         {/* Blobs */}
         <div
           className="absolute top-1/4 left-1/4 w-72 h-72 rounded-full blob-1 pointer-events-none"
-          style={{
-            background:
-              "radial-gradient(circle, rgba(22,96,235,0.2) 0%, transparent 70%)",
-          }}
+          style={{ background: "radial-gradient(circle, rgba(22,96,235,0.2) 0%, transparent 70%)" }}
         />
         <div
           className="absolute bottom-1/4 right-1/4 w-56 h-56 rounded-full blob-2 pointer-events-none"
-          style={{
-            background:
-              "radial-gradient(circle, rgba(245,158,11,0.15) 0%, transparent 70%)",
-          }}
+          style={{ background: "radial-gradient(circle, rgba(245,158,11,0.15) 0%, transparent 70%)" }}
         />
         <div
           className="absolute top-1/2 right-1/3 w-40 h-40 rounded-full blob-3 pointer-events-none"
-          style={{
-            background:
-              "radial-gradient(circle, rgba(14,165,233,0.12) 0%, transparent 70%)",
-          }}
+          style={{ background: "radial-gradient(circle, rgba(14,165,233,0.12) 0%, transparent 70%)" }}
         />
 
         {/* Logo + back */}
         <div className="relative z-10 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-600 to-navy-700 flex items-center justify-center shadow-glow">
-              <Zap className="w-5 h-5 text-white" />
-            </div>
-            <span className="font-display font-800 text-xl text-white">
-              Technologies
-            </span>
-          </div>
+          {/* Clickable logo — navigates to "/" */}
+          <Link to="/" aria-label="Go to homepage">
+            <img
+              src="../../favicon.png"
+              alt="Raz Tech"
+              className="h-24 w-auto object-contain drop-shadow-lg transition-transform duration-300 hover:scale-105"
+            />
+          </Link>
           <Link
             to="/"
             className="flex items-center gap-1.5 text-white/60 hover:text-white text-sm font-medium transition-colors duration-200"
@@ -686,13 +613,9 @@ const ForgotPasswordPage: React.FC = () => {
           >
             {panel.headline.split(".").map((part, i, arr) =>
               i === arr.length - 1 && part ? (
-                <span key={i} className="text-gradient-gold">
-                  {part}.
-                </span>
+                <span key={i} className="text-gradient-gold">{part}.</span>
               ) : part ? (
-                <span key={i}>
-                  {part}.<br />
-                </span>
+                <span key={i}>{part}.<br /></span>
               ) : null,
             )}
           </p>
@@ -707,11 +630,7 @@ const ForgotPasswordPage: React.FC = () => {
 
         {/* Stats strip */}
         <div className="relative z-10 flex gap-8">
-          {[
-            ["500+", "Projects"],
-            ["24/7", "Support"],
-            ["98%", "Satisfaction"],
-          ].map(([val, label]) => (
+          {[["500+", "Projects"], ["24/7", "Support"], ["98%", "Satisfaction"]].map(([val, label]) => (
             <div key={label}>
               <p className="text-2xl font-900 text-white">{val}</p>
               <p className="text-white/40 text-sm">{label}</p>
@@ -721,21 +640,19 @@ const ForgotPasswordPage: React.FC = () => {
       </div>
 
       {/* ── Right form panel ── */}
-      <div className="flex-1 flex items-center justify-center p-6 lg:p-16">
+      <div className="flex-1 flex items-center justify-center p-4 xs:p-6 sm:p-8 lg:p-16">
         <div className="w-full max-w-md">
+
           {/* Mobile logo + back */}
-          <div className="flex lg:hidden items-center justify-between mb-10">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary-600 to-navy-700 flex items-center justify-center">
-                <Zap
-                  className="w-4.5 h-4.5 text-white"
-                  style={{ width: 18, height: 18 }}
-                />
-              </div>
-              <span className="font-display font-800 text-lg text-white">
-                Technologies
-              </span>
-            </div>
+          <div className="flex lg:hidden items-center justify-between mb-8">
+            {/* Clickable logo — navigates to "/" */}
+            <Link to="/" aria-label="Go to homepage">
+              <img
+                src="../../favicon.png"
+                alt="Raz Tech"
+                className="h-20 xs:h-24 w-auto object-contain drop-shadow-lg transition-transform duration-300 hover:scale-105"
+              />
+            </Link>
             <Link
               to="/"
               className="flex items-center gap-1.5 text-white/60 hover:text-white text-sm font-medium transition-colors"
@@ -746,15 +663,13 @@ const ForgotPasswordPage: React.FC = () => {
 
           {/* Card */}
           <div
-            className="bg-white rounded-3xl shadow-2xl p-8 md:p-10"
+            className="bg-white rounded-3xl shadow-2xl p-6 xs:p-8 md:p-10"
             style={{ animation: "fadeUp .4s ease-out" }}
           >
-            {/* Step progress */}
             {step !== "success" && (
               <StepIndicator current={STEP_INDEX[step]} total={2} />
             )}
 
-            {/* Step content — animated on change */}
             <div key={step} style={{ animation: "fadeUp .35s ease-out" }}>
               {step === "request" && (
                 <RequestCodeStep

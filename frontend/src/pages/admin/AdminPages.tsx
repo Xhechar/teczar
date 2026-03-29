@@ -782,7 +782,7 @@ export const AdminOrders: React.FC = () => {
                               Unit:{" "}
                             </span>
                             <span className="text-sm text-slate-600">
-                              {fmtKES(item.Price)}
+                              {fmtKES(Number(item.PriceAtPurchase))}
                             </span>
                           </div>
                           {/* Line total */}
@@ -791,7 +791,7 @@ export const AdminOrders: React.FC = () => {
                               Total:{" "}
                             </span>
                             <span className="text-sm font-bold text-slate-900">
-                              {fmtKES(item.Price * item.Quantity)}
+                              {fmtKES(Number(item.PriceAtPurchase) * item.Quantity)}
                             </span>
                           </div>
                         </div>

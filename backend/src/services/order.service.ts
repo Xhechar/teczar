@@ -31,7 +31,12 @@ export class OrderService extends BaseService implements IService<FetchOrderDto,
           include: {
             Product: {
               include: {
-                Category: true
+                Category: true,
+                Reviews: {
+                  where: {
+                    UserId: id
+                  }
+                },
               }
             }
           }
@@ -56,14 +61,19 @@ export class OrderService extends BaseService implements IService<FetchOrderDto,
           ProductId: i.ProductId,
           Name: i.Product.Name,
           Quantity: i.Product.Quantity,
-          Price: i.Product.Price.toNumber(),
+          PriceAtPurchase: i.PriceAtPurchase.toNumber(),
           Product: {
             Name: i.Product.Name,
             Category: {
               CategoryId: i.Product.Category.CategoryId,
-              Name: i.Product.Category.Name
-            }
-          }
+              Name: i.Product.Category.Name,
+            },
+            Reviews: i.Product.Reviews?.map((r) => ({
+              ReviewId: r.ReviewId,
+              Rating: r.Rating,
+              Message: r.Message,
+            })),
+          },
         })),
         CreatedAt: o.CreatedAt,
         User: {
@@ -71,7 +81,7 @@ export class OrderService extends BaseService implements IService<FetchOrderDto,
           SecondName: o.User.SecondName,
           Phone: o.User.Phone,
           Email: o.User.Email,
-          County: o.User.County
+          County: o.User.County,
         },
       })),
     );
@@ -114,7 +124,7 @@ export class OrderService extends BaseService implements IService<FetchOrderDto,
           ProductId: i.ProductId,
           Name: i.Product.Name,
           Quantity: i.Product.Quantity,
-          Price: i.Product.Price.toNumber(),
+          PriceAtPurchase: i.PriceAtPurchase.toNumber(),
           Product: {
             Name: i.Product.Name,
             Category: {

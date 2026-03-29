@@ -1,14 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import {
-  Eye,
-  EyeOff,
-  Zap,
-  UserPlus,
-  AlertCircle,
-  ArrowLeft,
-} from "lucide-react";
+import { Eye, EyeOff, UserPlus, AlertCircle, ArrowLeft } from "lucide-react";
 import { toastResult, useToast } from "../../components/Toast";
 import { UserService } from "../../services/user.service";
 import { CreateUserDto } from "../../dtos/dto";
@@ -102,13 +95,13 @@ const RegisterPage: React.FC = () => {
         Phone: data.Phone,
         County: data.County,
         LocationDescription: undefined,
-        Password: data.Password
+        Password: data.Password,
       };
       let result = await UserService.Create(regData);
 
       toastResult(result, toast);
 
-      if(result.Success) {
+      if (result.Success) {
         reset();
         setTimeout(() => {
           navigate("/login");
@@ -116,7 +109,10 @@ const RegisterPage: React.FC = () => {
       }
     } catch (error: any) {
       console.log(error);
-      setError( error.response.data.ErrorMessage ?? "Registration failed. Please try again.");
+      setError(
+        error.response.data.ErrorMessage ??
+          "Registration failed. Please try again.",
+      );
     } finally {
       setLoading(false);
     }
@@ -131,20 +127,20 @@ const RegisterPage: React.FC = () => {
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center p-6 py-20"
+      className="min-h-screen flex items-center justify-center p-4 xs:p-6 py-12 xs:py-16 sm:py-20"
       style={{ background: "linear-gradient(135deg,#080f28 0%,#133889 100%)" }}
     >
       <div className="w-full max-w-2xl">
         {/* Logo + back link */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-600 to-navy-700 flex items-center justify-center shadow-glow">
-              <Zap className="w-5 h-5 text-white" />
-            </div>
-            <span className="font-display font-800 text-xl text-white">
-              Technologies
-            </span>
-          </div>
+        <div className="flex items-center justify-between mb-6 xs:mb-8">
+          {/* Clickable logo — navigates to "/" */}
+          <Link to="/" aria-label="Go to homepage">
+            <img
+              src="../../favicon.png"
+              alt="Raz Tech"
+              className="h-20 xs:h-24 w-auto object-contain drop-shadow-lg transition-transform duration-300 hover:scale-105"
+            />
+          </Link>
           <Link
             to="/"
             className="flex items-center gap-1.5 text-white/60 hover:text-white text-sm font-medium transition-colors duration-200"
@@ -154,9 +150,9 @@ const RegisterPage: React.FC = () => {
           </Link>
         </div>
 
-        <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-10">
-          <div className="mb-8">
-            <h1 className="font-display text-3xl font-700 text-navy-900 mb-1">
+        <div className="bg-white rounded-3xl shadow-2xl p-6 xs:p-8 md:p-10">
+          <div className="mb-6 xs:mb-8">
+            <h1 className="font-display text-2xl xs:text-3xl font-700 text-navy-900 mb-1">
               Create Account
             </h1>
             <p className="text-slate-500 text-sm">
@@ -165,15 +161,15 @@ const RegisterPage: React.FC = () => {
           </div>
 
           {error && (
-            <div className="flex items-center gap-3 p-4 bg-red-50 border border-red-200 rounded-xl mb-6">
-              <AlertCircle className="w-5 h-5 text-red-500 shrink-0" />
+            <div className="flex items-start gap-3 p-4 bg-red-50 border border-red-200 rounded-xl mb-6">
+              <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
               <p className="text-red-700 text-sm">{error}</p>
             </div>
           )}
 
           <form
             onSubmit={handleSubmit(onSubmit)}
-            className="space-y-5"
+            className="space-y-4 xs:space-y-5"
             noValidate
           >
             {/* Name row */}
@@ -251,7 +247,8 @@ const RegisterPage: React.FC = () => {
                     required: "Phone is required",
                     pattern: {
                       value: /^(\+254|0)(7\d{2}|1\d{2})[\s-]?\d{3}[\s-]?\d{3}$/,
-                      message: "Enter a valid Kenyan phone number (e.g. 0712345678, 0112345678, +254712345678, or +254112345678)",
+                      message:
+                        "Enter a valid Kenyan phone number (e.g. 0712345678, 0112345678, +254712345678, or +254112345678)",
                     },
                   })}
                   placeholder="0712 345 678"
@@ -362,7 +359,7 @@ const RegisterPage: React.FC = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl font-semibold text-white transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed"
+              className="w-full flex items-center justify-center gap-2 py-3 xs:py-3.5 rounded-xl font-semibold text-white transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed"
               style={{ background: "linear-gradient(135deg,#1660eb,#0d1a42)" }}
             >
               {loading ? (
@@ -378,7 +375,7 @@ const RegisterPage: React.FC = () => {
             </button>
           </form>
 
-          <p className="text-center text-sm text-slate-500 mt-6">
+          <p className="text-center text-sm text-slate-500 mt-5 xs:mt-6">
             Already have an account?{" "}
             <Link
               to="/login"
@@ -389,7 +386,7 @@ const RegisterPage: React.FC = () => {
           </p>
         </div>
       </div>
-    </div> 
+    </div>
   );
 };
 

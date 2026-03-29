@@ -27,7 +27,6 @@ export class WelcomeService {
     for(let user of users) {
       try {
         const templatePath = path.resolve("templates/welcome_mail.ejs");
-
         const data = await ejs.renderFile(templatePath, {
           user,
         });

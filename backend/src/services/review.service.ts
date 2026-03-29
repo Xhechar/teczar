@@ -26,26 +26,44 @@ export class ReviewService
       );
     }
 
-    let orderExists = await prisma.orderItem.findFirst({
+    let orderExists = await prisma.order.findUnique({
       where: {
-        ProductId: data.ProductId
+        OrderId: data.OrderId,
+        UserId,
       },
       include: {
-        Order: true
-      }
-    });
-
-    if(!orderExists) {
+        Items: true,
+      },
+    }); 
+    
+    if (!orderExists) {
       return ServiceResponse.Failure<FetchReviewDto>(
-        ErrorType.SERVER,
-        "You can only submit a review for this product if you ordered it.",
+        ErrorType.NOTFOUND,
+        "The order specified not found.",
       );
     }
 
-    if (orderExists.Order.Status !== OrderStatus.Delivered) {
+    let itemExists = orderExists.Items.find((i) => i.ProductId === data.ProductId);
+
+    if(!itemExists) {
       return ServiceResponse.Failure<FetchReviewDto>(
-        ErrorType.SERVER,
-        "You can only submit a review after you product has been delivered.",
+        ErrorType.NOTFOUND,
+        "The product specified not found in your order.",
+      );
+    }
+
+    let reviewExists = await prisma.review.findFirst({
+      where: {
+        UserId,
+        ProductId: data.ProductId,
+        OrderId: data.OrderId,
+      },
+    });
+
+    if (reviewExists) {
+      return ServiceResponse.Failure<FetchReviewDto>(
+        ErrorType.VALIDATION,
+        "You have already submitted a review for this product.",
       );
     }
 

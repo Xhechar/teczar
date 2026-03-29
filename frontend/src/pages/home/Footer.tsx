@@ -1,7 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import {
-  Zap,
   Phone,
   Mail,
   MapPin,
@@ -9,8 +8,7 @@ import {
   Instagram,
   Youtube,
   ArrowRight,
-  Heart,
-  Music2
+  Music2,
 } from "lucide-react";
 
 const Footer: React.FC = () => {
@@ -96,14 +94,18 @@ const Footer: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
             {/* Brand */}
             <div className="lg:col-span-1">
-              <div className="flex items-center gap-3 mb-5">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-600 to-navy-700 flex items-center justify-center">
-                  <Zap className="w-5 h-5 text-white" />
-                </div>
-                <span className="font-display font-800 text-xl text-white">
-                  Technologies
-                </span>
-              </div>
+              {/* Clickable logo — navigates to "/" */}
+              <Link
+                to="/"
+                aria-label="Go to homepage"
+                className="inline-block mb-5"
+              >
+                <img
+                  src="/favicon.png"
+                  alt="Raz Tech"
+                  className="h-20 w-auto object-contain drop-shadow-lg transition-transform duration-300 hover:scale-105"
+                />
+              </Link>
               <p className="text-white/50 text-sm leading-relaxed mb-6">
                 Kenya's trusted partner for solar, CCTV, electrical, WiFi, and
                 plumbing solutions. Serving homes and businesses with integrity
@@ -232,9 +234,14 @@ const Footer: React.FC = () => {
               © {year} Raz Technologies. All rights reserved.
             </p>
             <p className="flex items-center gap-1.5 text-white/30 text-xs">
-              Built with{" "}
-              <Heart className="w-3.5 h-3.5 text-red-400 fill-red-400" /> by xhechar in
-              Kenya
+              Built by{" "}
+              <Link
+                to="/"
+                className="text-white/30 hover:text-white/60 text-xs transition-colors duration-200"
+              >
+                xhechar
+              </Link>{" "}
+              in Kenya
             </p>
             <div className="flex gap-5">
               <Link

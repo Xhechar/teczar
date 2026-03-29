@@ -280,6 +280,7 @@ export const CreatePaymentValidator = Joi.object({
 
 export const CreateReviewValidator = Joi.object({
   ProductId: uuidSchema.required(),
+  OrderId: uuidSchema.required(),
   Rating: Joi.number().integer().min(1).max(5).required().messages({
     "number.min": "Rating must be between 1 and 5",
     "number.max": "Rating must be between 1 and 5",

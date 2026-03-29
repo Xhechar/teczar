@@ -1,1 +1,1 @@
-export const SocketURL: string = "https://api-raztech.onrender.com/"; 
+export const SocketURL: string = "https://api.raztechnologies.co.ke/";

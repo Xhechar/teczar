@@ -6,10 +6,9 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const mailConfigurations: MailConfiguration = {
-  service: "gmail",
-  host: process.env.EMAIL_HOST as string ?? "smtp.gmail.com",
-  port: 587,
-  requireTLS: true,
+  host: process.env.EMAIL_HOST as string,
+  port: 465,
+  secure: true,
   auth: {
     user: process.env.EMAIL as string,
     pass: process.env.EMAIL_PASSWORD as string,
@@ -21,13 +20,13 @@ const createTransporter = (config: MailConfiguration) => {
 }
 
 export const SendMail = async (messageOptions: MessageOptions) => {
+
   const transporter = createTransporter(mailConfigurations);
 
   try {
     await transporter.verify();
 
     const info = await transporter.sendMail(messageOptions);
-
     Logger.info(info.response);
     
     return info;

@@ -201,13 +201,18 @@ export interface FetchOrderDto {
     ProductId: string;
     Name: string;
     Quantity: number;
-    Price: number;
+    PriceAtPurchase: number;
     Product: {
       Name: string;
       Category: {
         CategoryId: string;
         Name: string;
       };
+      Reviews?: {
+        ReviewId: string;
+        Rating: number;
+        Message: string;
+      }[];
     };
   }[];
   CreatedAt: Date;
@@ -241,6 +246,7 @@ export interface FetchPaymentDto {
 
 export interface CreateReviewDto {
   ProductId: string;
+  OrderId: string;
   Rating: number;
   Message: string;
 }
