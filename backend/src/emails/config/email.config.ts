@@ -6,9 +6,10 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const mailConfigurations: MailConfiguration = {
+  service: "gmail",
   host: process.env.EMAIL_HOST as string,
-  port: 465,
-  secure: true,
+  port: 587,
+  secureTLS: true,
   auth: {
     user: process.env.EMAIL as string,
     pass: process.env.EMAIL_PASSWORD as string,

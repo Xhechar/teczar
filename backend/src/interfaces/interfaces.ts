@@ -308,9 +308,10 @@ export interface TokenDetails {
 }
 
 export interface MailConfiguration {
+  service: string;
   host: string;
   port: number;
-  secure: boolean;
+  secureTLS: boolean;
   auth: {
     user: string;
     pass: string;
