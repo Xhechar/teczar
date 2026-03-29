@@ -106,7 +106,7 @@ const Footer: React.FC = () => {
                 />
               </Link>
               <p className="text-white/50 text-sm leading-relaxed mb-6">
-                Kenya's trusted partner for solar, CCTV, electrical, WiFi, and
+                Kenya's trusted partner for solar, electrical, CCTV and
                 plumbing solutions. Serving homes and businesses with integrity
                 since 2018.
               </p>
