@@ -69,15 +69,36 @@ const HeroSection: React.FC = () => {
   const [loaded, setLoaded] = useState(false);
   const [textVisible, setTextVis] = useState(true);
   const [statPulse, setStatPulse] = useState(false);
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Store slide count & current index in refs so the auto-play timeout
+  // never captures a stale closure — it always reads the latest values
+  // without needing to be recreated.
+  const slidesLengthRef = useRef(0);
+  const currentRef = useRef(0);
+  const transitioningRef = useRef(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // When the user manually navigates we bump this to cancel the pending tick.
+  const tickIdRef = useRef(0);
 
   const { data } = useQuery({
     queryKey: [ModelType.HeroSlide.toLowerCase(), "active"],
     queryFn: () => HeroSliderService.FetchActive(),
-    staleTime: 1000 * 60 * 5
   });
 
   const slides: HeroSlide[] = data?.DataList ?? [];
+
+  // Keep refs in sync with state
+  useEffect(() => {
+    slidesLengthRef.current = slides.length;
+  }, [slides.length]);
+
+  useEffect(() => {
+    currentRef.current = current;
+  }, [current]);
+
+  useEffect(() => {
+    transitioningRef.current = transitioning;
+  }, [transitioning]);
 
   // Reset current index when slides list changes length
   useEffect(() => {
@@ -86,69 +107,103 @@ const HeroSection: React.FC = () => {
 
   // Initial mount fade-in
   useEffect(() => {
-    const t = setTimeout(() => setLoaded(true), 120);
+    const t = setTimeout(() => setLoaded(true), 0);
     return () => clearTimeout(t);
   }, []);
 
   const handleGetQuote = (link: string) => {
-    if (link !== "/#contact") return;
-    const el = document.getElementById("contact");
-    if (el) {
-      const navbarHeight = 72;
-      const top =
-        el.getBoundingClientRect().top + window.scrollY - navbarHeight;
-      window.scrollTo({ top, behavior: "smooth" });
-    }
+    if (link === "/#contact") {
+      const el = document.getElementById("contact");
+      if (el) {
+        const navbarHeight = 72;
+        const top =
+          el.getBoundingClientRect().top + window.scrollY - navbarHeight;
+        window.scrollTo({ top, behavior: "smooth" });
+      }
+    } else if(link === "/#about") {
+      const el = document.getElementById("about");
+      if (el) {
+        const navbarHeight = 72;
+        const top =
+          el.getBoundingClientRect().top + window.scrollY - navbarHeight;
+        window.scrollTo({ top, behavior: "smooth" });
+      }
+    } else return;
   };
 
-  // ── Navigate to a specific slide ──
+  // ── Core transition logic ──
+  // Extracted so both manual nav and auto-play call the same path.
+  const transitionTo = useCallback((index: number) => {
+    if (transitioningRef.current) return;
+    if (index === currentRef.current) return;
+    if (slidesLengthRef.current < 2) return;
+
+    setTextVis(false);
+    setTrans(true);
+    transitioningRef.current = true;
+    setPrev(currentRef.current);
+
+    setTimeout(() => {
+      setCurrent(index);
+      currentRef.current = index;
+      setTrans(false);
+      transitioningRef.current = false;
+      setTimeout(() => {
+        setTextVis(true);
+        setStatPulse(true);
+        setTimeout(() => setStatPulse(false), 400);
+      }, 80);
+    }, 700);
+  }, []);
+
+  const scheduleNextTick = useCallback(() => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    const myTickId = ++tickIdRef.current;
+
+    timerRef.current = setTimeout(() => {
+      // Bail if a newer tick was scheduled (manual nav happened)
+      if (myTickId !== tickIdRef.current) return;
+      if (slidesLengthRef.current < 2) return;
+
+      const next = (currentRef.current + 1) % slidesLengthRef.current;
+      transitionTo(next);
+
+      // Schedule the following tick immediately — no extra delay
+      scheduleNextTick();
+    }, AUTO_PLAY_INTERVAL);
+  }, [transitionTo]);
+
+  useEffect(() => {
+    if (slides.length > 1) scheduleNextTick();
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [slides.length]);
+
+  // ── Manual navigation — cancels current tick, starts fresh ──
   const goTo = useCallback(
     (index: number) => {
-      if (transitioning || index === current || slides.length < 2) return;
-      setTextVis(false);
-      setTrans(true);
-      setPrev(current);
-      setTimeout(() => {
-        setCurrent(index);
-        setTrans(false);
-        setTimeout(() => {
-          setTextVis(true);
-          setStatPulse(true);
-          setTimeout(() => setStatPulse(false), 400);
-        }, 80);
-      }, 700);
+      transitionTo(index);
+      // Bump tickId so the pending timeout becomes a no-op, then reschedule
+      tickIdRef.current++;
+      scheduleNextTick();
     },
-    [current, transitioning, slides.length],
+    [transitionTo, scheduleNextTick],
   );
 
   const goNext = useCallback(
-    () => goTo((current + 1) % Math.max(slides.length, 1)),
-    [current, goTo, slides.length],
+    () => goTo((currentRef.current + 1) % Math.max(slidesLengthRef.current, 1)),
+    [goTo],
   );
   const goPrev = useCallback(
-    () => goTo((current - 1 + slides.length) % Math.max(slides.length, 1)),
-    [current, goTo, slides.length],
+    () =>
+      goTo(
+        (currentRef.current - 1 + slidesLengthRef.current) %
+          Math.max(slidesLengthRef.current, 1),
+      ),
+    [goTo],
   );
-
-  // ── Auto-play ──
-  const resetTimer = useCallback(() => {
-    if (timerRef.current) clearInterval(timerRef.current);
-    if (slides.length > 1) {
-      timerRef.current = setInterval(goNext, AUTO_PLAY_INTERVAL);
-    }
-  }, [goNext, slides.length]);
-
-  useEffect(() => {
-    resetTimer();
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, [resetTimer]);
-
-  const handleManual = (fn: () => void) => {
-    fn();
-    resetTimer();
-  };
 
   // ── Active slide ──
   const slide = slides[current];
@@ -306,14 +361,14 @@ const HeroSection: React.FC = () => {
       {slides.length > 1 && (
         <>
           <button
-            onClick={() => handleManual(goPrev)}
+            onClick={() => goPrev()}
             aria-label="Previous slide"
             className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full glass flex items-center justify-center text-white hover:bg-white/20 transition-all duration-200 hover:scale-110 active:scale-95"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
           <button
-            onClick={() => handleManual(goNext)}
+            onClick={() => goNext()}
             aria-label="Next slide"
             className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full glass flex items-center justify-center text-white hover:bg-white/20 transition-all duration-200 hover:scale-110 active:scale-95"
           >
@@ -328,7 +383,7 @@ const HeroSection: React.FC = () => {
           {slides.map((_, i) => (
             <button
               key={i}
-              onClick={() => handleManual(() => goTo(i))}
+              onClick={() => goTo(i)}
               aria-label={`Go to slide ${i + 1}`}
               className={`rounded-full transition-all duration-400 ${i === current ? "w-2.5 h-8 bg-amber-400 shadow-glow-amber" : "w-2.5 h-2.5 bg-white/35 hover:bg-white/60"}`}
             />
