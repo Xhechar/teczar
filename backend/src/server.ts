@@ -39,7 +39,7 @@ app.use(bodyParser.json());
 
 app.use(
   cors({
-    origin: "https://www.raztechnologies.co.ke/",
+    origin: "https://raztechnologies.co.ke/",
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     credentials: true,
   }),
@@ -78,7 +78,7 @@ const PORT = process.env.PORT ?? 3001;
 
 export const io: Server = new Server(server, {
   cors: {
-    origin: "https://www.raztechnologies.co.ke/",
+    origin: "https://raztechnologies.co.ke/",
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     credentials: true,
   },
