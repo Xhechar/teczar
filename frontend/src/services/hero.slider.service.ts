@@ -27,6 +27,16 @@ export class HeroSliderService {
     return result.data;
   }
 
+  static async HandleReorder(
+    orderIds: string[],
+  ): Promise<ServiceResult<HeroSlide>> {
+    const result = await api.put<ServiceResult<HeroSlide>>(
+      `${this.ApiUrl}/reorder`,
+      { ids: orderIds },
+    );
+    return result.data;
+  }
+
   static async Delete(id: string): Promise<ServiceResult<boolean>> {
     const result = await api.delete<ServiceResult<boolean>>(
       `${this.ApiUrl}/delete/${id}`,

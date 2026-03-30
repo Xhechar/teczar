@@ -376,13 +376,30 @@ const AdminSlider: React.FC = () => {
       return sl;
     });
 
-    // eslint-disable-next-line
     const orderedIds = [...newOrder]
       .sort((a, b) => a.SortOrder - b.SortOrder)
       .map((x) => x.SlideId);
 
     setReordering(true);
-    setReordering(false);
+
+    try {
+
+      const result = await HeroSliderService.HandleReorder(orderedIds);
+
+      if (result.Success) {
+        toast.success(result.Title, "Slides reordered successfully.");
+      } else {
+        toastResult(result, toast);
+      }
+      
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.Title ?? "Error",
+        error?.response?.data?.ErrorMessage ?? "Could not reorder slides.",
+      );
+    } finally { 
+      setReordering(false);
+    }
   };
 
   // ── Delete ──

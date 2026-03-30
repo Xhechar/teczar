@@ -128,4 +128,22 @@ export class HeroSliderController {
       );
     }
   }
+  async HandleReorder(Req: Request, Res: Response) {
+    try {
+      let result = await this.hsService.HandleReorder(Req.body.ids);
+
+      return result.Success
+        ? Res.status(200).json(result)
+        : Res.status(400).json(result);
+    } catch (error) {
+      return Res.status(500).json(
+        ServiceResponse.Failure(
+          ErrorType.SERVER,
+          error instanceof Error
+            ? error.message
+            : "Internal server error occured, try again later.",
+        ),
+      );
+    }
+  }
 }

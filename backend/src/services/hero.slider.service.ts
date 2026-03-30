@@ -185,4 +185,26 @@ export class HeroSliderService
       slideExists,
     );
   }
+
+  async HandleReorder(ids: string[]): Promise<ServiceResult<HeroSlide>> {
+    try {
+      const updatePromises = ids.map((id, index) =>
+        prisma.heroSlide.update({
+          where: { SlideId: id },
+          data: { SortOrder: index },
+        })
+      );
+
+      await Promise.all(updatePromises);
+
+      io.emit(SocketTypes.hsu);
+
+      return ServiceResponse.Success<HeroSlide>("Slides reordered successfully.");
+    } catch {
+      return ServiceResponse.Failure<HeroSlide>(
+        ErrorType.SERVER,
+        "Unable to reorder slides at the moment.",
+      );
+    }
+  }
 }

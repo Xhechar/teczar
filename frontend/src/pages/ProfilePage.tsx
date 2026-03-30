@@ -90,7 +90,12 @@ const ProfilePage: React.FC = () => {
 
 const onSubmit = async (data: ProfileForm) => {
   try {
-    let result = await UserService.Update(data);
+    let result = await UserService.Update({
+      FirstName: data.FirstName,
+      SecondName: data.SecondName,
+      County: data.County,
+      LocationDescription: data.LocationDescription,
+    });
     toastResult(result, toast);
     if (result.Success)
       queryClient.invalidateQueries({ queryKey: [`user-profile`] });
