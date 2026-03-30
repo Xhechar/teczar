@@ -2,7 +2,7 @@
 
 > Kenya's trusted platform for solar installations, CCTV systems, WiFi setup, electrical works, electric fencing, intercom systems, plumbing services, and electronic repairs — all under one roof.
 
-**Live Site:** [Coming Soon](#) _(link will be updated once deployment is complete)_
+**Live Site:** https://raztechnologies.co.ke
 
 ---
 
