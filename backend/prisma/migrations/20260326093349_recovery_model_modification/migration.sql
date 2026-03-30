@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Recovery" ALTER COLUMN "Email" SET DATA TYPE TEXT;
