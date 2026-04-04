@@ -42,13 +42,14 @@ const MemberCard: React.FC<{ member: FetchTeamMemberDto }> = ({ member }) => {
           >
             <Mail className="w-4 h-4" />
           </a>
-          <a
+            {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+            <a
             href="#"
             className="w-9 h-9 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-white hover:bg-white/40 transition-colors"
             title={`${member.Name} on LinkedIn`}
-          >
+            >
             <Linkedin className="w-4 h-4" />
-          </a>
+            </a>
         </div>
       </div>
 
