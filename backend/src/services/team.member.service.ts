@@ -153,7 +153,7 @@ export class TeamMemberService extends BaseService implements IService<FetchTeam
         Role: member.Role,
         ImageUrl: member.ImageUrl,
         Bio: member.Bio,
-        IsAtive: member.IsActive,
+        IsActive: member.IsActive,
         IsDeleted: member.IsDeleted,
       }))
     );
