@@ -29,6 +29,13 @@ const CONTACT_INFO = [
     color: "bg-primary-50 text-primary-600",
   },
   {
+    icon: Phone,
+    label: "Phone / WhatsApp",
+    value: "+254 790 441 659",
+    href: "tel:+254790441659",
+    color: "bg-primary-50 text-primary-600",
+  },
+  {
     icon: Mail,
     label: "Email Address",
     value: "info@raztechnologies.co.ke",

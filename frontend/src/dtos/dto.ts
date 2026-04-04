@@ -364,3 +364,29 @@ export interface CreateHeroSlideDto {
 }
 
 export type UpdateHeroSlideDto = Partial<CreateHeroSlideDto>;
+
+export interface CreateTeamMemberDto {
+  Name: string;
+  Role: string;
+  ImageUrl: string;
+  Bio?: string;
+  IsActive?: boolean;
+}
+
+export interface UpdateTeamMemberDto {
+  Name?: string;
+  Role?: string;
+  ImageUrl?: string;
+  Bio?: string;
+  IsActive?: boolean;
+}
+
+export interface FetchTeamMemberDto {
+  MemberId: string;
+  Name: string;
+  Role: string;
+  ImageUrl: string;
+  Bio?: string;
+  IsActive: boolean;
+  IsDeleted: boolean;
+}

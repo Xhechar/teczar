@@ -106,9 +106,9 @@ const Footer: React.FC = () => {
                 />
               </Link>
               <p className="text-white/50 text-sm leading-relaxed mb-6">
-                Kenya's trusted partner for solar, electrical, CCTV and
-                plumbing solutions. Serving homes and businesses with integrity
-                since 2018.
+                Kenya's trusted partner for solar, electrical, CCTV and plumbing
+                solutions. Serving homes and businesses with integrity since
+                2018.
               </p>
 
               {/* Social */}
@@ -198,6 +198,11 @@ const Footer: React.FC = () => {
                     icon: Phone,
                     text: "+254 797 133 976",
                     href: "tel:+254797133976",
+                  },
+                  {
+                    icon: Phone,
+                    text: "+254 790 441 659",
+                    href: "tel:+254790441659",
                   },
                   {
                     icon: Mail,

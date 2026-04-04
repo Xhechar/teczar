@@ -1,10 +1,12 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import {
   Award,
   Users,
   MapPin,
   CheckCircle,
   TrendingUp,
+  ArrowRight,
 } from "lucide-react";
 import { useCounterAnimation } from "../../hooks/Helper";
 
@@ -121,7 +123,7 @@ const AboutSection: React.FC = () => {
               under one roof.
             </p>
 
-            <div className="reveal stagger-4 space-y-3">
+            <div className="reveal stagger-4 space-y-3 mb-8">
               {[
                 "All technicians are certified and insured",
                 "Free site assessment before every installation",
@@ -134,6 +136,22 @@ const AboutSection: React.FC = () => {
                   <span className="text-sm text-slate-600">{item}</span>
                 </div>
               ))}
+            </div>
+
+            {/* Meet the Team CTA */}
+            <div className="reveal stagger-5">
+              <Link
+                to="/meet-team"
+                className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-xl font-semibold text-white transition-all duration-300 hover:-translate-y-0.5"
+                style={{
+                  background: "linear-gradient(135deg,#1660eb,#0d1a42)",
+                  boxShadow: "0 4px 16px rgba(22,96,235,0.35)",
+                }}
+              >
+                <Users className="w-4 h-4" />
+                Meet Our Team
+                <ArrowRight className="w-4 h-4" />
+              </Link>
             </div>
           </div>
 

@@ -72,7 +72,8 @@ export enum ModelType {
   Service = "Service",
   ProductImage = "ProductImage",
   Product = "Product",
-  HeroSlide = "HeroSlide"
+  HeroSlide = "HeroSlide",
+  TeamMember = "TeamMember",
 }
 
 export enum SocketTypes {
@@ -155,4 +156,9 @@ export enum SocketTypes {
   prc = "product-created",
   pru = "product-updated",
   prd = "product-deleted",
+
+  // Team Member
+  tmc = "team-member-created",
+  tmu = "team-member-updated",
+  tmd = "team-member-deleted",
 }

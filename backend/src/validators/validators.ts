@@ -412,3 +412,53 @@ export const contactFormSchema = Joi.object({
     "any.required": "Message is required",
   }),
 });
+
+export const CreateTeamMemberValidator = Joi.object({
+  Name: Joi.string().min(2).max(100).required().messages({
+    "string.base": "Name must be a string",
+    "string.empty": "Name is required",
+    "string.min": "Name must be at least 2 characters",
+    "string.max": "Name cannot exceed 100 characters",
+    "any.required": "Name is required",
+  }),
+  Role: Joi.string().min(2).max(100).required().messages({
+    "string.base": "Role must be a string",
+    "string.empty": "Role is required",
+    "string.min": "Role must be at least 2 characters",
+    "string.max": "Role cannot exceed 100 characters",
+    "any.required": "Role is required",
+  }),
+  ImageUrl: urlSchema.required().messages({
+    "string.empty": "Image URL is required",
+    "any.required": "Image URL is required",
+  }),
+  Bio: Joi.string().max(500).optional().allow("").messages({
+    "string.max": "Bio cannot exceed 500 characters",
+  }),
+  IsActive: Joi.boolean().optional().messages({
+    "boolean.base": "IsActive must be a boolean value",
+  }),
+});
+
+export const UpdateTeamMemberValidator = Joi.object({
+  Name: Joi.string().min(2).max(100).messages({
+    "string.base": "Name must be a string",
+    "string.min": "Name must be at least 2 characters",
+    "string.max": "Name cannot exceed 100 characters",
+  }),
+  Role: Joi.string().min(2).max(100).messages({
+    "string.base": "Role must be a string",
+    "string.min": "Role must be at least 2 characters",
+    "string.max": "Role cannot exceed 100 characters",
+  }),
+  ImageUrl: urlSchema.messages({
+    "string.uri": "Must be a valid URL (http or https)",
+    "string.max": "URL is too long (max 500 characters)",
+  }),
+  Bio: Joi.string().max(500).allow("").messages({
+    "string.max": "Bio cannot exceed 500 characters",
+  }),
+  IsActive: Joi.boolean().messages({
+    "boolean.base": "IsActive must be a boolean value",
+  }),
+});

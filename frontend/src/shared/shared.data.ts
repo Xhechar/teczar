@@ -39,4 +39,5 @@ export const ModelSocketMap: Record<ModelType, SocketTypes[]> = {
 
   [ModelType.Product]: [SocketTypes.prc, SocketTypes.pru, SocketTypes.prd],
   [ModelType.HeroSlide]: [SocketTypes.hsc, SocketTypes.hsu, SocketTypes.hsd],
+  [ModelType.TeamMember]: [SocketTypes.tmc, SocketTypes.tmu, SocketTypes.tmd],
 };

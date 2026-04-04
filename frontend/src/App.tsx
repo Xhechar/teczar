@@ -20,10 +20,12 @@ import AdminSlider from "./pages/admin/AdminSlider";
 import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
 import { AuthProvider } from "./context/AuthContext";
 import { GuestGuard, CustomerGuard, AdminGuard } from "./guards/guards";
+import { AdminTeamMembers } from "./pages/admin/AdminTeamMembers";
 
 const HomePage = lazy(() => import("./pages/HomePage"));
 const ExplorePage = lazy(() => import("./pages/ExplorePage"));
 const CareersPage = lazy(() => import("./pages/CareersPage"));
+const MeetTeamPage = lazy(() => import("./pages/MeetTeamPage"));
 
 const LoginPage = lazy(() => import("./pages/auth/LoginPage"));
 const RegisterPage = lazy(() => import("./pages/auth/RegisterPage"));
@@ -45,6 +47,7 @@ const App: React.FC = () => (
             <Route path="/" element={<HomePage />} />
             <Route path="/explore" element={<ExplorePage />} />
             <Route path="/careers" element={<CareersPage />} />
+            <Route path="/meet-team" element={<MeetTeamPage />} />
 
             <Route
               path="/login"
@@ -212,6 +215,14 @@ const App: React.FC = () => (
               element={
                 <AdminGuard>
                   <AdminJobs />
+                </AdminGuard>
+              }
+            />
+            <Route
+              path="/admin/team-members"
+              element={
+                <AdminGuard>
+                  <AdminTeamMembers />
                 </AdminGuard>
               }
             />

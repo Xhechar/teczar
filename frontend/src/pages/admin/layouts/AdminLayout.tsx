@@ -19,6 +19,7 @@ import {
   ClipboardList,
   UserCheck,
   Images,
+  UsersIcon,
 } from "lucide-react";
 import { useAuth } from "../../../context/AuthContext";
 
@@ -78,6 +79,10 @@ const NAV: NavGroup[] = [
   {
     group: "Users",
     items: [{ label: "Manage Users", to: "/admin/users", icon: Users }],
+  },
+  {
+    group: "Management",
+    items: [{ label: "Team Members", to: "/admin/team-members", icon: UsersIcon }],
   },
 ];
 

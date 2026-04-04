@@ -401,3 +401,18 @@ model HeroSlide {
   @@index([SortOrder])
   @@index([IsActive, SortOrder])
 }
+
+model TeamMember {
+  MemberId      String   @id @default(uuid()) @db.Uuid
+  Name          String   
+  Role          String
+  ImageUrl      String  
+  Bio           String?  
+  IsActive      Boolean  @default(true)
+  IsDeleted     Boolean  @default(false)
+
+  CreatedAt     DateTime @default(now())
+  UpdatedAt     DateTime @updatedAt
+
+  @@index([IsActive])
+}

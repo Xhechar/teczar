@@ -30,6 +30,7 @@ import { ErrorType } from "./enums/enums.js";
 import { ContactRouter } from "./routers/contact.route.js";
 import { HeroSliderRouter } from "./routers/hero.slider.route.js";
 import { RunBGServices } from "./events/background.event.js";
+import { TeamMemberRouter } from "./routers/team.member.route.js";
 
 dotenv.config();
 
@@ -65,6 +66,7 @@ app.use("/service", ServiceRouter);
 app.use("/user", UserRouter);
 app.use("/contact", ContactRouter);
 app.use("/hero-slider", HeroSliderRouter);
+app.use("/team-member", TeamMemberRouter);
 
 app.use(morgan("combined", {stream: {write: message => Logger.info(message.trim())}}));
 

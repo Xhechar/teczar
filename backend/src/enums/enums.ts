@@ -156,4 +156,9 @@ export enum SocketTypes {
   prc = "product-created",
   pru = "product-updated",
   prd = "product-deleted",
+
+  // Team Member
+  tmc = "team-member-created",
+  tmu = "team-member-updated",
+  tmd = "team-member-deleted",
 }
