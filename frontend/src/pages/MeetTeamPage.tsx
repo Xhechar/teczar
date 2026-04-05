@@ -90,7 +90,7 @@ const MeetTeamPage: React.FC = () => {
 
   // Always start at the top of the page on navigation
   React.useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "instant" });
+    window.scrollTo({ top: 0, behavior: "auto" });
     // eslint-disable-next-line
   }, []);
 
