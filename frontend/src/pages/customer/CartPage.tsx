@@ -7,7 +7,7 @@ import {
   ArrowRight,
   Phone,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import CustomerLayout from "../../layouts/CustomerLayout";
 import { useQuery } from "@tanstack/react-query";
 import { ModelType } from "../../enums/enums";
@@ -19,6 +19,7 @@ import { PaymentService } from "../../services/payment.service";
 
 const CartPage: React.FC = () => {
   const toast = useToast();
+  const navigate = useNavigate();
 
   let {data} = useQuery({
     queryKey: [`user${ModelType.Cart.toLowerCase}`],
@@ -56,9 +57,19 @@ const CartPage: React.FC = () => {
   const subtotal = items.reduce((acc, i) => acc + i.Price * i.Quantity, 0);
 
   async function handleCreateOrder(): Promise<void> {
-    let result = await PaymentService.InitiatePayment();
-    toastResult(result, toast);
-    if(result.Success) queryClient.invalidateQueries({queryKey: [`user${ModelType.Order.toLowerCase()}`]})
+    try {
+      let result = await PaymentService.InitiatePayment();
+      toastResult(result, toast);
+      if(result.Success) queryClient.invalidateQueries({queryKey: [`user${ModelType.Order.toLowerCase()}`]});
+
+      setTimeout(() => {
+        navigate("/orders");
+      }, 3000);
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.ErrorMessage ?? "Unable to create order."
+      );
+    }
   }
 
   return (

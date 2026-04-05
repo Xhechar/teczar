@@ -167,7 +167,9 @@ export class PaymentService extends BaseService{
     // }
 
     // return ServiceResponse.Success<FetchPaymentDto>("Payment initiated successfully. Await confirmation.");
-    return ServiceResponse.Success<FetchPaymentDto>("Order made successfully. Await confirmation.");
+    return ServiceResponse.Success<FetchPaymentDto>(
+      "Order placed successfully! Please monitor your order status. Our team will contact you shortly to confirm payment details and get you sorted."
+    );
   }
 
   async RetryPayment(UserId: string, OrderId: string) {
