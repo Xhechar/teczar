@@ -88,6 +88,12 @@ const MemberSkeleton: React.FC = () => (
 const MeetTeamPage: React.FC = () => {
   useSocketInvalidation(ModelType.TeamMember);
 
+  // Always start at the top of the page on navigation
+  React.useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" });
+    // eslint-disable-next-line
+  }, []);
+
   const { data, isLoading } = useQuery({
     queryKey: [ModelType.TeamMember.toLowerCase()],
     queryFn: () => TeamMemberService.FetchAll(),
@@ -207,6 +213,6 @@ const MeetTeamPage: React.FC = () => {
       <Footer />
     </div>
   );
-};
+};;
 
 export default MeetTeamPage;
