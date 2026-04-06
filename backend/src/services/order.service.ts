@@ -123,7 +123,7 @@ export class OrderService extends BaseService implements IService<FetchOrderDto,
           OrderItemId: i.OrderItemId,
           ProductId: i.ProductId,
           Name: i.Product.Name,
-          Quantity: i.Product.Quantity,
+          Quantity: i.Quantity,
           PriceAtPurchase: i.PriceAtPurchase.toNumber(),
           Product: {
             Name: i.Product.Name,
