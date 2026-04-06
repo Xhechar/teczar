@@ -46,9 +46,26 @@ import {
   SubmitButton,
 } from "./components/AdminUI";
 import { useToast, toastResult } from "../../components/Toast";
-import { ModelType, OrderStatus, PaymentStatus, ReviewStatus, MediaType, ServiceRequestStatus, JobApplicationStatus } from "../../enums/enums";
+import {
+  ModelType,
+  OrderStatus,
+  PaymentStatus,
+  ReviewStatus,
+  MediaType,
+  ServiceRequestStatus,
+  JobApplicationStatus,
+} from "../../enums/enums";
 import { useSocketInvalidation } from "../../hooks/socket.hook";
-import { Service, Category, Payment, Review, Advert, ServiceRequest, Job, JobApplication } from "../../interfaces/interfaces";
+import {
+  Service,
+  Category,
+  Payment,
+  Review,
+  Advert,
+  ServiceRequest,
+  Job,
+  JobApplication,
+} from "../../interfaces/interfaces";
 import AdminLayout from "./layouts/AdminLayout";
 import { User as UserType } from "../../interfaces/interfaces";
 import { ServicesService } from "../../services/service.service";
@@ -77,13 +94,13 @@ export const AdminServices: React.FC = () => {
   const [imageUrl, setImageUrl] = useState("");
 
   const { data, isLoading, isError } = useQuery({
-      queryKey: [ModelType.Service.toLowerCase()],
-      queryFn: () => ServicesService.FetchAll(),
-    });
-    React.useEffect(() => {
-      if (isError) toast.error("Failed to load services");
-      // eslint-disable-next-line
-    }, [isError]);
+    queryKey: [ModelType.Service.toLowerCase()],
+    queryFn: () => ServicesService.FetchAll(),
+  });
+  React.useEffect(() => {
+    if (isError) toast.error("Failed to load services");
+    // eslint-disable-next-line
+  }, [isError]);
 
   const services = useMemo(() => {
     let list: Service[] = data?.DataList ?? [];
@@ -116,38 +133,42 @@ export const AdminServices: React.FC = () => {
   };
 
   const onSubmit = async (v: Partial<Service>) => {
-      setSaving(true);
-      try {
-        const r =
-          panelMode === "create"
-            ? await ServicesService.Create({ Title: v.Title as string,Description: v.Description as string , ImageUrl: imageUrl })
-            : await ServicesService.Update(editItem!.ServiceId, {
-                Title: v.Title,
-                Description: v.Description,
-                OnOffer: v.OnOffer,
-                IsFeatured: v.IsFeatured,
-                ImageUrl: imageUrl,
-              });
-        toastResult(r, toast);
-        if (r.Success) setPanel(null);
-      } catch(error) {
-        toast.error( error instanceof Error ? error.message : "Save failed");
-      } finally {
-        setSaving(false);
-      }
-    };
-    const doDelete = async () => {
-      setDeleting(true);
-      try {
-        const r = await ServicesService.Delete(confirmDel!.ServiceId);
-        toastResult(r, toast);
-        if (r.Success) setConfirmDel(null);
-      } catch(error) {
-        toast.error( error instanceof Error ? error.message : "Delete failed");
-      } finally {
-        setDeleting(false);
-      }
-    };
+    setSaving(true);
+    try {
+      const r =
+        panelMode === "create"
+          ? await ServicesService.Create({
+              Title: v.Title as string,
+              Description: v.Description as string,
+              ImageUrl: imageUrl,
+            })
+          : await ServicesService.Update(editItem!.ServiceId, {
+              Title: v.Title,
+              Description: v.Description,
+              OnOffer: v.OnOffer,
+              IsFeatured: v.IsFeatured,
+              ImageUrl: imageUrl,
+            });
+      toastResult(r, toast);
+      if (r.Success) setPanel(null);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Save failed");
+    } finally {
+      setSaving(false);
+    }
+  };
+  const doDelete = async () => {
+    setDeleting(true);
+    try {
+      const r = await ServicesService.Delete(confirmDel!.ServiceId);
+      toastResult(r, toast);
+      if (r.Success) setConfirmDel(null);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Delete failed");
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   return (
     <AdminLayout title="Services">
@@ -311,13 +332,13 @@ export const AdminCategories: React.FC = () => {
   const [imageUrl, setImageUrl] = useState("");
 
   const { data, isLoading, isError } = useQuery({
-      queryKey: [ModelType.Category.toLowerCase()],
-      queryFn: () => CategoryService.FetchAll(),
-    });
-    React.useEffect(() => {
-      if (isError) toast.error("Failed to load categories");
-      // eslint-disable-next-line
-    }, [isError]);
+    queryKey: [ModelType.Category.toLowerCase()],
+    queryFn: () => CategoryService.FetchAll(),
+  });
+  React.useEffect(() => {
+    if (isError) toast.error("Failed to load categories");
+    // eslint-disable-next-line
+  }, [isError]);
 
   const cats = data?.DataList ?? [];
   const {
@@ -340,35 +361,38 @@ export const AdminCategories: React.FC = () => {
   };
 
   const onSubmit = async (v: Partial<Category>) => {
-      setSaving(true);
-      try {
-        const r =
-          panelMode === "create"
-            ? await CategoryService.Create({ Name: v.Name as string, ImageUrl: imageUrl })
-            : await CategoryService.Update(editItem!.CategoryId, {
-                Name: v.Name,
-                ImageUrl: imageUrl,
-              });
-        toastResult(r, toast);
-        if (r.Success) setPanel(null);
-      } catch (error: any) {
-        toast.error(error?.response?.data?.ErrorMessage ?? "Save failed");
-      } finally {
-        setSaving(false);
-      }
-    };
-    const doDelete = async () => {
-      setDeleting(true);
-      try {
-        const r = await CategoryService.Delete(confirmDel!.CategoryId);
-        toastResult(r, toast);
-        if (r.Success) setConfirmDel(null);
-      } catch (error: any) {
-        toast.error(error?.response?.data?.ErrorMessage ?? "Delete failed");
-      } finally {
-        setDeleting(false);
-      }
-    };
+    setSaving(true);
+    try {
+      const r =
+        panelMode === "create"
+          ? await CategoryService.Create({
+              Name: v.Name as string,
+              ImageUrl: imageUrl,
+            })
+          : await CategoryService.Update(editItem!.CategoryId, {
+              Name: v.Name,
+              ImageUrl: imageUrl,
+            });
+      toastResult(r, toast);
+      if (r.Success) setPanel(null);
+    } catch (error: any) {
+      toast.error(error?.response?.data?.ErrorMessage ?? "Save failed");
+    } finally {
+      setSaving(false);
+    }
+  };
+  const doDelete = async () => {
+    setDeleting(true);
+    try {
+      const r = await CategoryService.Delete(confirmDel!.CategoryId);
+      toastResult(r, toast);
+      if (r.Success) setConfirmDel(null);
+    } catch (error: any) {
+      toast.error(error?.response?.data?.ErrorMessage ?? "Delete failed");
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   return (
     <AdminLayout title="Categories">
@@ -488,13 +512,13 @@ export const AdminOrders: React.FC = () => {
   const [expanded, setExpanded] = useState<string | null>(null);
 
   const { data, isLoading, isError } = useQuery({
-      queryKey: [ModelType.Order.toLowerCase()],
-      queryFn: () => OrderService.FetchAll(),
-    });
-    React.useEffect(() => {
-      if (isError) toast.error("Failed to load orders");
-      // eslint-disable-next-line
-    }, [isError]);
+    queryKey: [ModelType.Order.toLowerCase()],
+    queryFn: () => OrderService.FetchAll(),
+  });
+  React.useEffect(() => {
+    if (isError) toast.error("Failed to load orders");
+    // eslint-disable-next-line
+  }, [isError]);
 
   const orders = useMemo(() => {
     let list = data?.DataList ?? [];
@@ -521,16 +545,16 @@ export const AdminOrders: React.FC = () => {
   }, [data, statusFilter, dateFilter, search]);
 
   const updateStatus = async (id: string, status: OrderStatus) => {
-      setUpdating(id);
-      try {
-        const r = await OrderService.UpdateOrderStatus(id, {Status: status});
-        toastResult(r, toast, { successMsg: `Order updated to ${status}.` });
-      } catch {
-        toast.error("Update failed");
-      } finally {
-        setUpdating(null);
-      }
-    };
+    setUpdating(id);
+    try {
+      const r = await OrderService.UpdateOrderStatus(id, { Status: status });
+      toastResult(r, toast, { successMsg: `Order updated to ${status}.` });
+    } catch {
+      toast.error("Update failed");
+    } finally {
+      setUpdating(null);
+    }
+  };
 
   const fmtKES = (n: number) => `KES ${n.toLocaleString("en-KE")}`;
 
@@ -791,7 +815,9 @@ export const AdminOrders: React.FC = () => {
                               Total:{" "}
                             </span>
                             <span className="text-sm font-bold text-slate-900">
-                              {fmtKES(Number(item.PriceAtPurchase) * item.Quantity)}
+                              {fmtKES(
+                                Number(item.PriceAtPurchase) * item.Quantity,
+                              )}
                             </span>
                           </div>
                         </div>
@@ -838,13 +864,13 @@ export const AdminPayments: React.FC = () => {
   const [expandedUser, setExpanded] = useState<string | null>(null);
 
   const { data, isLoading, isError } = useQuery({
-      queryKey: [ModelType.Payment.toLowerCase()],
-      queryFn: () => PaymentService.GetAllPayments(),
-    });
-    React.useEffect(() => {
-      if (isError) toast.error("Failed to load payments");
-      // eslint-disable-next-line
-    }, [isError]);
+    queryKey: [ModelType.Payment.toLowerCase()],
+    queryFn: () => PaymentService.GetAllPayments(),
+  });
+  React.useEffect(() => {
+    if (isError) toast.error("Failed to load payments");
+    // eslint-disable-next-line
+  }, [isError]);
 
   const payments: Payment[] = useMemo(() => {
     let list = data?.DataList ?? [];
@@ -1079,13 +1105,13 @@ export const AdminReviews: React.FC = () => {
   const [updatingId, setUpdId] = useState<string | null>(null);
 
   const { data, isLoading, isError } = useQuery({
-      queryKey: [ModelType.Review.toLowerCase()],
-      queryFn: () => ReviewService.FetchAll(),
-    });
-    React.useEffect(() => {
-      if (isError) toast.error("Failed to load reviews");
-      // eslint-disable-next-line
-    }, [isError]);
+    queryKey: [ModelType.Review.toLowerCase()],
+    queryFn: () => ReviewService.FetchAll(),
+  });
+  React.useEffect(() => {
+    if (isError) toast.error("Failed to load reviews");
+    // eslint-disable-next-line
+  }, [isError]);
 
   const reviews = useMemo(() => {
     let list: Review[] = data?.DataList ?? [];
@@ -1097,28 +1123,28 @@ export const AdminReviews: React.FC = () => {
   }, [data, statusFilter, ratingFilter]);
 
   const changeStatus = async (id: string, status: ReviewStatus) => {
-      setUpdId(id);
-      try {
-        const r = await ReviewService.UpdateStatus(id, status);
-        toastResult(r, toast);
-      } catch(error) {
-        toast.error( error instanceof Error ? error.message : "Update failed");
-      } finally {
-        setUpdId(null);
-      }
-    };
-    const doDelete = async () => {
-      setDeleting(true);
-      try {
-        const r = await ReviewService.Delete(confirmDel!.ReviewId);
-        toastResult(r, toast);
-        if (r.Success) setConfirmDel(null);
-      } catch(error) {
-        toast.error( error instanceof Error ? error.message : "Delete failed");
-      } finally {
-        setDeleting(false);
-      }
-    };
+    setUpdId(id);
+    try {
+      const r = await ReviewService.UpdateStatus(id, status);
+      toastResult(r, toast);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Update failed");
+    } finally {
+      setUpdId(null);
+    }
+  };
+  const doDelete = async () => {
+    setDeleting(true);
+    try {
+      const r = await ReviewService.Delete(confirmDel!.ReviewId);
+      toastResult(r, toast);
+      if (r.Success) setConfirmDel(null);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Delete failed");
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   return (
     <AdminLayout title="Reviews">
@@ -1243,13 +1269,13 @@ export const AdminAdverts: React.FC = () => {
   const [mediaUrl, setMediaUrl] = useState("");
 
   const { data, isLoading, isError } = useQuery({
-      queryKey: [ModelType.Advert.toLowerCase()],
-      queryFn: () => AdvertService.FetchAll(),
-    });
-    React.useEffect(() => {
-      if (isError) toast.error("Failed to load adverts");
-      // eslint-disable-next-line
-    }, [isError]);
+    queryKey: [ModelType.Advert.toLowerCase()],
+    queryFn: () => AdvertService.FetchAll(),
+  });
+  React.useEffect(() => {
+    if (isError) toast.error("Failed to load adverts");
+    // eslint-disable-next-line
+  }, [isError]);
 
   const adverts = useMemo(() => {
     let list: Advert[] = data?.DataList ?? [];
@@ -1258,12 +1284,7 @@ export const AdminAdverts: React.FC = () => {
     return list;
   }, [data, typeFilter]);
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    watch,
-  } = useForm<Partial<Advert>>();
+  const { register, handleSubmit, reset, watch } = useForm<Partial<Advert>>();
   const mediaType = watch("MediaType") as MediaType;
 
   const openCreate = () => {
@@ -1280,47 +1301,49 @@ export const AdminAdverts: React.FC = () => {
   };
 
   const onSubmit = async (v: Partial<Advert>) => {
-      setSaving(true);
-      try {
-        const r =
-          panelMode === "create"
-            ? await AdvertService.Create({ MediaType: v.MediaType as MediaType, Title: v.Title as string, MediaUrl: mediaUrl })
-            : await AdvertService.Update(editItem!.AdvertId, {
-                MediaType: v.MediaType,
-                Title: v.Title,
-                IsActive: v.IsActive,
-                MediaUrl: mediaUrl,
-              });
-        toastResult(r, toast);
-        if (r.Success) setPanel(null);
-      } catch (error: any) {
-        toast.error(
-          error?.response?.data?.ErrorMessage ?? "Save failed");
-      } finally {
-        setSaving(false);
-      }
-    };
-    const doDelete = async () => {
-      setDeleting(true);
-      try {
-        const r = await AdvertService.Delete(confirmDel!.AdvertId);
-        toastResult(r, toast);
-        if (r.Success) setConfirmDel(null);
-      } catch (error: any) {
-        toast.error(
-          error?.response?.data?.ErrorMessage ?? "Delete failed");
-      } finally {
-        setDeleting(false);
-      }
-    };
-    const toggleActive = async (a: Advert) => {
-      try {
-        const r = await AdvertService.ToggleAdvert(a.AdvertId);
-        toastResult(r, toast);
-      } catch (error: any) {
-        toast.error(error?.response?.data?.ErrorMessage ?? "Toggle failed");
-      }
-    };
+    setSaving(true);
+    try {
+      const r =
+        panelMode === "create"
+          ? await AdvertService.Create({
+              MediaType: v.MediaType as MediaType,
+              Title: v.Title as string,
+              MediaUrl: mediaUrl,
+            })
+          : await AdvertService.Update(editItem!.AdvertId, {
+              MediaType: v.MediaType,
+              Title: v.Title,
+              IsActive: v.IsActive,
+              MediaUrl: mediaUrl,
+            });
+      toastResult(r, toast);
+      if (r.Success) setPanel(null);
+    } catch (error: any) {
+      toast.error(error?.response?.data?.ErrorMessage ?? "Save failed");
+    } finally {
+      setSaving(false);
+    }
+  };
+  const doDelete = async () => {
+    setDeleting(true);
+    try {
+      const r = await AdvertService.Delete(confirmDel!.AdvertId);
+      toastResult(r, toast);
+      if (r.Success) setConfirmDel(null);
+    } catch (error: any) {
+      toast.error(error?.response?.data?.ErrorMessage ?? "Delete failed");
+    } finally {
+      setDeleting(false);
+    }
+  };
+  const toggleActive = async (a: Advert) => {
+    try {
+      const r = await AdvertService.ToggleAdvert(a.AdvertId);
+      toastResult(r, toast);
+    } catch (error: any) {
+      toast.error(error?.response?.data?.ErrorMessage ?? "Toggle failed");
+    }
+  };
 
   return (
     <AdminLayout title="Adverts">
@@ -1834,90 +1857,88 @@ export const AdminJobs: React.FC = () => {
   const [toggling, setToggling] = useState<string | null>(null);
 
   const { data, isLoading, isError } = useQuery({
-      queryKey: [ModelType.Job.toLowerCase()],
-      queryFn: () => JobService.FetchAll(),
-    });
-    React.useEffect(() => {
-      if (isError) toast.error("Failed to load jobs");
-      // eslint-disable-next-line
-    }, [isError]);
-  
-    const jobs = useMemo(() => {
-      let list = data?.DataList ?? [];
-      if (activeFilter === "active") list = list.filter((j) => j.IsActive);
-      if (activeFilter === "inactive") list = list.filter((j) => !j.IsActive);
-      return list;
-    }, [data, activeFilter]);
-  
-    const {
-      register,
-      handleSubmit,
-      reset,
-      formState: { errors },
-    } = useForm<Partial<Job>>();
-    const openCreate = () => {
-      setEditItem(null);
-      reset({ IsActive: true });
-      setPanel("create");
-    };
-    const openEdit = (j: Job) => {
-      setEditItem(j);
-      reset(j);
-      setPanel("edit");
-    };
-  
-    const onSubmit = async (v: Partial<Job>) => {
-      setSaving(true);
-      try {
-        const r =
-          panelMode === "create"
-            ? await JobService.Create({
+    queryKey: [ModelType.Job.toLowerCase()],
+    queryFn: () => JobService.FetchAll(),
+  });
+  React.useEffect(() => {
+    if (isError) toast.error("Failed to load jobs");
+    // eslint-disable-next-line
+  }, [isError]);
+
+  const jobs = useMemo(() => {
+    let list = data?.DataList ?? [];
+    if (activeFilter === "active") list = list.filter((j) => j.IsActive);
+    if (activeFilter === "inactive") list = list.filter((j) => !j.IsActive);
+    return list;
+  }, [data, activeFilter]);
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<Partial<Job>>();
+  const openCreate = () => {
+    setEditItem(null);
+    reset({ IsActive: true });
+    setPanel("create");
+  };
+  const openEdit = (j: Job) => {
+    setEditItem(j);
+    reset(j);
+    setPanel("edit");
+  };
+
+  const onSubmit = async (v: Partial<Job>) => {
+    setSaving(true);
+    try {
+      const r =
+        panelMode === "create"
+          ? await JobService.Create({
               Title: v.Title as string,
               Description: v.Description as string,
               Location: v.Location as string,
               SalaryRange: v.SalaryRange ?? undefined,
-              EmploymentType: v.EmploymentType as string
+              EmploymentType: v.EmploymentType as string,
             })
-            : await JobService.Update(editItem!.JobId, {
+          : await JobService.Update(editItem!.JobId, {
               Title: v.Title,
               Description: v.Description,
               Location: v.Location,
               SalaryRange: v.SalaryRange,
               IsActive: v.IsActive,
             });
-        toastResult(r, toast);
-        if (r.Success) setPanel(null);
-      } catch (error: any) {
-        toast.error(
-          error?.response?.data?.ErrorMessage ?? "Save failed");
-      } finally {
-        setSaving(false);
-      }
-    };
-    const doDelete = async () => {
-      setDeleting(true);
-      try {
-        const r = await JobService.Delete(confirmDel!.JobId);
-        toastResult(r, toast);
-        if (r.Success) setConfirmDel(null);
-      } catch (error: any) {
-        toast.error(
-          error?.response?.data?.ErrorMessage ?? "Delete failed");
-      } finally {
-        setDeleting(false);
-      }
-    };
-    const toggleActive = async (j: Job) => {
-      setToggling(j.JobId);
-      try {
-        const r = await JobService.SoftDelete(j.JobId);
-        toastResult(r, toast);
-      } catch (error: any) {
-        toast.error(error?.response?.data?.ErrorMessage ?? "Toggle failed");
-      } finally {
-        setToggling(null);
-      }
-    };
+      toastResult(r, toast);
+      if (r.Success) setPanel(null);
+    } catch (error: any) {
+      toast.error(error?.response?.data?.ErrorMessage ?? "Save failed");
+    } finally {
+      setSaving(false);
+    }
+  };
+  const doDelete = async () => {
+    setDeleting(true);
+    try {
+      const r = await JobService.Delete(confirmDel!.JobId);
+      toastResult(r, toast);
+      if (r.Success) setConfirmDel(null);
+    } catch (error: any) {
+      toast.error(error?.response?.data?.ErrorMessage ?? "Delete failed");
+    } finally {
+      setDeleting(false);
+    }
+  };
+  const toggleActive = async (j: Job) => {
+    setToggling(j.JobId);
+    try {
+      const r = await JobService.SoftDelete(j.JobId);
+      toastResult(r, toast);
+    } catch (error: any) {
+      toast.error(error?.response?.data?.ErrorMessage ?? "Toggle failed");
+    } finally {
+      setToggling(null);
+    }
+  };
 
   return (
     <AdminLayout title="Jobs">
@@ -2084,15 +2105,16 @@ export const AdminJobApplications: React.FC = () => {
   const [confirmDel, setConfirmDel] = useState<JobApplication | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [updating, setUpdating] = useState<string | null>(null);
+  const [expanded, setExpanded] = useState<string | null>(null);
 
- const { data, isLoading, isError } = useQuery({
-     queryKey: [ModelType.JobApplication.toLowerCase()],
-     queryFn: () => JobApplicationService.FetchAll(),
-   });
-   React.useEffect(() => {
-     if (isError) toast.error("Failed to load applications");
-     // eslint-disable-next-line
-   }, [isError]);
+  const { data, isLoading, isError } = useQuery({
+    queryKey: [ModelType.JobApplication.toLowerCase()],
+    queryFn: () => JobApplicationService.FetchAll(),
+  });
+  React.useEffect(() => {
+    if (isError) toast.error("Failed to load applications");
+    // eslint-disable-next-line
+  }, [isError]);
 
   const apps = useMemo(() => {
     let list: JobApplication[] = data?.DataList ?? [];
@@ -2101,9 +2123,7 @@ export const AdminJobApplications: React.FC = () => {
     if (search)
       list = list.filter(
         (a) =>
-          `${a.FullName}`
-            .toLowerCase()
-            .includes(search.toLowerCase()) ||
+          `${a.FullName}`.toLowerCase().includes(search.toLowerCase()) ||
           a.Email.toLowerCase().includes(search.toLowerCase()),
       );
     return list;
@@ -2118,38 +2138,35 @@ export const AdminJobApplications: React.FC = () => {
   ];
 
   const updateStatus = async (id: string, status: JobApplicationStatus) => {
-      setUpdating(id);
-      try {
-        const r = await JobApplicationService.UpdateApplicationStatus(id, status);
-        toastResult(r, toast);
-      } catch (error: any) {
-        toast.error(
-          error?.response?.data?.ErrorMessage ?? "Update failed");
-      } finally {
-        setUpdating(null);
-      }
-    };
-    const doDelete = async () => {
-      setDeleting(true);
-      try {
-        const r = await JobApplicationService.Delete(
-          confirmDel!.ApplicationId,
-        );
-        toastResult(r, toast);
-        if (r.Success) setConfirmDel(null);
-      } catch (error: any) {
-        toast.error(
-          error?.response?.data?.ErrorMessage ?? "Delete failed");
-      } finally {
-        setDeleting(false);
-      }
-    };
+    setUpdating(id);
+    try {
+      const r = await JobApplicationService.UpdateApplicationStatus(id, status);
+      toastResult(r, toast);
+    } catch (error: any) {
+      toast.error(error?.response?.data?.ErrorMessage ?? "Update failed");
+    } finally {
+      setUpdating(null);
+    }
+  };
+
+  const doDelete = async () => {
+    setDeleting(true);
+    try {
+      const r = await JobApplicationService.Delete(confirmDel!.ApplicationId);
+      toastResult(r, toast);
+      if (r.Success) setConfirmDel(null);
+    } catch (error: any) {
+      toast.error(error?.response?.data?.ErrorMessage ?? "Delete failed");
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   return (
     <AdminLayout title="Applications">
       <PageHeader
         title="Applications"
-        subtitle={`${apps.length} applicants`}
+        subtitle={`${apps.length} applicant${apps.length !== 1 ? "s" : ""}`}
         breadcrumb={["Admin", "Applications"]}
       />
       <FilterBar>
@@ -2173,16 +2190,44 @@ export const AdminJobApplications: React.FC = () => {
       ) : (
         <div className="space-y-2">
           {apps.map((a: JobApplication) => (
-            <ListCard key={a.ApplicationId}>
-              <div className="flex items-start gap-3 min-w-0">
+            <div
+              key={a.ApplicationId}
+              className="bg-white rounded-xl border border-slate-100 overflow-hidden"
+            >
+              {/* ── Summary row (clickable to expand) ── */}
+              <button
+                type="button"
+                onClick={() =>
+                  setExpanded(
+                    expanded === a.ApplicationId ? null : a.ApplicationId,
+                  )
+                }
+                className="w-full flex items-center gap-3 p-4 text-left hover:bg-slate-50 transition-colors min-w-0"
+              >
+                {/* Expand chevron */}
+                <div
+                  className={`shrink-0 w-6 h-6 rounded-lg border border-slate-200 flex items-center justify-center text-slate-400 transition-transform duration-200 ${
+                    expanded === a.ApplicationId
+                      ? "bg-primary-50 border-primary-200 rotate-180"
+                      : ""
+                  }`}
+                >
+                  <ChevronDown className="w-3.5 h-3.5" />
+                </div>
+
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap mb-0.5">
                     <span className="font-semibold text-sm text-slate-900">
                       {a.FullName}
                     </span>
                     <StatusBadge status={a.Status} />
+                    {a.Job?.Title && (
+                      <span className="text-xs font-semibold text-primary-700 bg-primary-50 px-2 py-0.5 rounded-full border border-primary-100">
+                        {a.Job.Title}
+                      </span>
+                    )}
                   </div>
-                  <div className="flex items-center gap-3 text-xs text-slate-400 flex-wrap mb-1.5">
+                  <div className="flex items-center gap-3 text-xs text-slate-400 flex-wrap">
                     <span className="flex items-center gap-1">
                       <Mail className="w-3 h-3" />
                       {a.Email}
@@ -2191,35 +2236,20 @@ export const AdminJobApplications: React.FC = () => {
                       <Phone className="w-3 h-3" />
                       {a.Phone}
                     </span>
-                    <span className="flex items-center gap-1">
-                      <Briefcase className="w-3 h-3" />
-                      {a.JobId}
-                    </span>
-                  </div>
-                  {/* Mini pipeline */}
-                  <div className="flex items-center gap-0.5 flex-wrap">
-                    {PIPELINE.map((step, i) => {
-                      const ci = PIPELINE.indexOf(
-                        a.Status as JobApplicationStatus,
-                      );
-                      return (
-                        <React.Fragment key={step}>
-                          <span
-                            className={`text-[10px] font-medium px-1.5 py-0.5 rounded ${i === ci ? "bg-primary-600 text-white" : i < ci ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-400"}`}
-                          >
-                            {step}
-                          </span>
-                          {i < PIPELINE.length - 1 && (
-                            <span
-                              className={`w-3 h-px ${i < ci ? "bg-emerald-300" : "bg-slate-200"}`}
-                            />
-                          )}
-                        </React.Fragment>
-                      );
-                    })}
+                    {a.Job?.Location && (
+                      <span className="flex items-center gap-1">
+                        <Briefcase className="w-3 h-3" />
+                        {a.Job.Location}
+                      </span>
+                    )}
                   </div>
                 </div>
-                <div className="shrink-0 flex items-center gap-1">
+
+                {/* Actions — stop propagation so expand doesn't fire */}
+                <div
+                  className="shrink-0 flex items-center gap-1"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <select
                     value={a.Status}
                     disabled={updating === a.ApplicationId}
@@ -2244,11 +2274,198 @@ export const AdminJobApplications: React.FC = () => {
                     variant="danger"
                   />
                 </div>
-              </div>
-            </ListCard>
+              </button>
+
+              {/* ── Expanded detail panel ── */}
+              {expanded === a.ApplicationId && (
+                <div className="border-t border-slate-100">
+                  {/* Detail grid */}
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 px-4 py-4 bg-slate-50">
+                    {/* Applicant name */}
+                    <div>
+                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-1">
+                        Full Name
+                      </p>
+                      <p className="text-sm font-semibold text-slate-900">
+                        {a.FullName}
+                      </p>
+                    </div>
+
+                    {/* Email */}
+                    <div>
+                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-1">
+                        Email
+                      </p>
+                      <a
+                        href={`mailto:${a.Email}`}
+                        className="text-sm font-semibold text-primary-600 hover:underline truncate block"
+                      >
+                        {a.Email}
+                      </a>
+                    </div>
+
+                    {/* Phone */}
+                    <div>
+                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-1">
+                        Phone
+                      </p>
+                      <a
+                        href={`tel:${a.Phone}`}
+                        className="text-sm font-semibold text-primary-600 hover:underline flex items-center gap-1"
+                      >
+                        <Phone className="w-3 h-3" />
+                        {a.Phone}
+                      </a>
+                    </div>
+
+                    {/* Applied for */}
+                    <div>
+                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-1">
+                        Position Applied
+                      </p>
+                      <p className="text-sm font-semibold text-slate-900">
+                        {a.Job?.Title ?? "N/A"}
+                      </p>
+                    </div>
+
+                    {/* Employment type */}
+                    {a.Job?.EmploymentType && (
+                      <div>
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-1">
+                          Employment Type
+                        </p>
+                        <p className="text-sm font-semibold text-slate-900">
+                          {a.Job.EmploymentType}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Salary range */}
+                    {a.Job?.SalaryRange && (
+                      <div>
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-1">
+                          Salary Range
+                        </p>
+                        <p className="text-sm font-semibold text-slate-900">
+                          {a.Job.SalaryRange}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Location */}
+                    {a.Job?.Location && (
+                      <div>
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-1">
+                          Job Location
+                        </p>
+                        <p className="text-sm font-semibold text-slate-900">
+                          {a.Job.Location}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Applied on */}
+                    <div>
+                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-1">
+                        Applied On
+                      </p>
+                      <p className="text-sm font-semibold text-slate-900">
+                        {new Date(a.CreatedAt).toLocaleDateString("en-KE", {
+                          dateStyle: "full",
+                        })}
+                      </p>
+                    </div>
+
+                    {/* Current status */}
+                    <div>
+                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-1">
+                        Current Status
+                      </p>
+                      <StatusBadge status={a.Status} />
+                    </div>
+                  </div>
+
+                  {/* Pipeline progress — full width */}
+                  <div className="px-4 py-3 border-t border-slate-100">
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-2">
+                      Application Pipeline
+                    </p>
+                    <div className="flex items-center gap-0.5 flex-wrap">
+                      {PIPELINE.map((step, i) => {
+                        const ci = PIPELINE.indexOf(
+                          a.Status as JobApplicationStatus,
+                        );
+                        return (
+                          <React.Fragment key={step}>
+                            <span
+                              className={`text-[10px] font-medium px-1.5 py-0.5 rounded ${
+                                i === ci
+                                  ? "bg-primary-600 text-white"
+                                  : i < ci
+                                    ? "bg-emerald-100 text-emerald-700"
+                                    : "bg-slate-100 text-slate-400"
+                              }`}
+                            >
+                              {step}
+                            </span>
+                            {i < PIPELINE.length - 1 && (
+                              <span
+                                className={`w-3 h-px ${i < ci ? "bg-emerald-300" : "bg-slate-200"}`}
+                              />
+                            )}
+                          </React.Fragment>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Job description — full width */}
+                  {a.Job?.Description && (
+                    <div className="px-4 py-3 border-t border-slate-100">
+                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-1">
+                        Job Description
+                      </p>
+                      <p className="text-sm text-slate-600 leading-relaxed">
+                        {a.Job.Description}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Quick action buttons */}
+                  <div className="flex gap-2 px-4 py-3 border-t border-slate-100 bg-slate-50 flex-wrap">
+                    <a
+                      href={`tel:${a.Phone}`}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary-600 text-white text-xs font-semibold hover:bg-primary-700 transition-colors"
+                    >
+                      <Phone className="w-3.5 h-3.5" /> Call Applicant
+                    </a>
+                    <a
+                      href={`mailto:${a.Email}?subject=Re: Your Application for ${a.Job?.Title ?? "the position"}`}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 text-xs font-semibold hover:bg-slate-100 transition-colors"
+                    >
+                      <Mail className="w-3.5 h-3.5" /> Email Applicant
+                    </a>
+                    <a
+                      href={`https://wa.me/${a.Phone?.replace(/^0/, "254")}?text=${encodeURIComponent(
+                        `Hi ${a.FullName}, regarding your application for ${a.Job?.Title ?? "the position"} at Raz Technologies…`,
+                      )}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-white text-xs font-semibold transition-colors"
+                      style={{
+                        background: "linear-gradient(135deg,#25d366,#128c7e)",
+                      }}
+                    >
+                      <Phone className="w-3.5 h-3.5" /> WhatsApp
+                    </a>
+                  </div>
+                </div>
+              )}
+            </div>
           ))}
         </div>
       )}
+
       <ConfirmModal
         open={!!confirmDel}
         title="Delete Application"

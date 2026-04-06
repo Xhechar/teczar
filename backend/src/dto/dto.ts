@@ -333,6 +333,13 @@ export interface FetchJobApplicationDto {
   Phone: string;
   Status: string;
   CreatedAt: Date;
+  Job: {
+    Title: string;
+    Description: string;
+    Location?: string;
+    SalaryRange?: string;
+    EmploymentType: string;
+  }
 }
 
 export interface ResetPasswordDto {

@@ -332,8 +332,8 @@ export const CreateJobApplicationValidator = Joi.object({
   FullName: Joi.string().min(3).required(),
   Email: emailSchema.required(),
   Phone: phoneSchema.required(),
-  ResumeUrl: urlSchema,
-  CoverLetter: Joi.string().max(2000),
+  ResumeUrl: urlSchema.optional().allow(null).allow(""),
+  CoverLetter: Joi.string().max(2000).optional().allow(null).allow(""),
 });
 
 export const loginSchema = Joi.object({

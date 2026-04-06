@@ -109,6 +109,9 @@ export class JobApplicationService
       where: {
         ApplicationId: id,
       },
+      include: {
+        Job: true,
+      }
     });
 
     if (!applicationExists) {
@@ -128,6 +131,14 @@ export class JobApplicationService
         Phone: applicationExists.Phone,
         Status: applicationExists.Status,
         CreatedAt: applicationExists.CreatedAt,
+        Job: {
+          Title: applicationExists.Job.Title,
+          Description: applicationExists.Job.Description,
+          Location: applicationExists.Job.Location,
+          SalaryRange: applicationExists.Job.SalaryRange as string,
+          EmploymentType: applicationExists.Job.EmploymentType,
+        }
+
       },
     );
   }
@@ -147,6 +158,9 @@ export class JobApplicationService
       where: {
         Email: UserExists.Data?.Email as string,
       },
+      include: {
+        Job: true,
+      }
     });
 
     if (!applicationExists) {
@@ -167,11 +181,25 @@ export class JobApplicationService
         Phone: a.Phone,
         Status: a.Status,
         CreatedAt: a.CreatedAt,
+        Job: {
+          Title: a.Job.Title,
+          Description: a.Job.Description,
+          Location: a.Job.Location,
+          SalaryRange: a.Job.SalaryRange as string,
+          EmploymentType: a.Job.EmploymentType,
+        }
       })),
     );
   }
   async FetchAll(): Promise<ServiceResult<FetchJobApplicationDto>> {
-    let applicationExists = await prisma.jobApplication.findMany();
+    let applicationExists = await prisma.jobApplication.findMany({
+      orderBy: {
+        CreatedAt: "desc",
+      },
+      include: {
+        Job: true,
+      }
+    });
 
     if (!applicationExists) {
       return ServiceResponse.Failure<FetchJobApplicationDto>(
@@ -191,6 +219,13 @@ export class JobApplicationService
         Phone: a.Phone,
         Status: a.Status,
         CreatedAt: a.CreatedAt,
+        Job: {
+          Title: a.Job.Title,
+          Description: a.Job.Description,
+          Location: a.Job.Location,
+          SalaryRange: a.Job.SalaryRange as string,
+          EmploymentType: a.Job.EmploymentType,
+        }
       })),
     );
   }
