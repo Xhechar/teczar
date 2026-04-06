@@ -23,6 +23,7 @@ import { useSocketInvalidation } from "../hooks/socket.hook";
 import { Job } from "../interfaces/interfaces";
 import { JobService } from "../services/job.service";
 import Footer from "./home/Footer";
+import { JobApplicationService } from "../services/job.application.service";
 
 interface ApplyForm {
   FirstName: string;
@@ -57,17 +58,32 @@ const ApplyModal: React.FC<{ job: Job; onClose: () => void }> = ({
   const onSubmit = async (data: ApplyForm) => {
     setLoading(true);
     try {
-      // TODO: replace with api.post('/job-applications', { JobId: job.JobId, ...data })
-      await new Promise((r) => setTimeout(r, 700));
-      setSubmitted(true);
-      toast.success(
-        "Application Submitted!",
-        `We'll review your application for ${job.Title} and get back to you.`,
-      );
-    } catch {
+      
+      let result = await JobApplicationService.Create({
+        FullName: `${data.FirstName} ${data.LastName}`,
+        Email: data.Email,
+        Phone: data.Phone,
+        ResumeUrl: data.ResumeUrl,
+        CoverLetter: data.CoverLetter,
+        JobId: job.JobId,
+      });
+
+      if (result.Success) {
+        setSubmitted(true);
+        toast.success(
+          "Application Submitted!",
+          `We'll review your application for ${job.Title} and get back to you.`,
+        );
+      } else {
+        toast.error(
+          "Submission Failed",
+          "Please try again or email your CV directly.",
+        );
+      }
+    } catch (error: any) {
       toast.error(
-        "Submission Failed",
-        "Please try again or email your CV directly.",
+        error?.response?.data?.Title ?? "Submission Failed",
+        error?.response?.data?.ErrorMessage ?? "Please try again or email your CV directly.",
       );
     } finally {
       setLoading(false);
