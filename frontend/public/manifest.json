@@ -3,17 +3,17 @@
   "name": "Energy, Electrical & Plumbing Solutions.",
   "icons": [
     {
-      "src": "favicon.png",
+      "src": "logo.png",
       "sizes": "128x128",
       "type": "image/x-icon"
     },
     {
-      "src": "favicon.png",
+      "src": "logo.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "favicon.png",
+      "src": "logo.png",
       "type": "image/png",
       "sizes": "512x512"
     }
