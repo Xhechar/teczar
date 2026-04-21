@@ -140,7 +140,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           {/* Clickable logo — navigates to "/admin" */}
           <Link to="/admin" aria-label="Go to homepage" className="shrink-0">
             <img
-              src="/favicon.png"
+              src="/testtrial.png"
               alt="Raz Tech"
               className={`object-contain drop-shadow-lg transition-all duration-300 hover:scale-105 ${
                 collapsed ? "h-9 w-9" : "h-11 w-auto"
@@ -306,7 +306,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
         {/* Mobile top bar logo — clickable */}
         <Link to="/" aria-label="Go to homepage">
           <img
-            src="/favicon.png"
+            src="/testtrial.png"
             alt="Raz Tech"
             className="h-9 w-auto object-contain drop-shadow transition-transform duration-300 hover:scale-105"
           />
