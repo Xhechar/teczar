@@ -245,7 +245,7 @@ const Footer: React.FC = () => {
             <p className="flex items-center gap-1.5 text-white/30 text-xs">
               Built by{" "}
               <Link
-                to="https://xhechar.github.io/felix"
+                to="https://xhechar.vercel.app"
                 className="text-white/30 hover:text-white/60 text-xs transition-colors duration-200"
               >
                 xhechar
