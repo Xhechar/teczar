@@ -10,6 +10,7 @@ import ProductsSection from "./home/ProductsSection";
 import ProjectsSection from "./home/ProjectsSection";
 import ReviewsSection from "./home/ReviewsSection";
 import ServicesSection from "./home/ServicesSection";
+import PartnersStrip from "../components/PartnersStrip";
 
 const HomePage: React.FC = () => {
   useScrollReveal([]);
@@ -18,6 +19,7 @@ const HomePage: React.FC = () => {
     <div className="min-h-screen">
       <Navbar transparent />
       <HeroSection />
+      <PartnersStrip />
       <ServicesSection />
       <ProductsSection />
       <AboutSection />

@@ -32,6 +32,7 @@ const NAV_LINKS: NavLink[] = [
   { label: "Projects", to: "/", sectionId: "projects" },
   { label: "About", to: "/", sectionId: "about" },
   { label: "Careers", to: "/careers" },
+  { label: "Team", to: "/meet-team" },
   { label: "Contact", to: "/", sectionId: "contact" },
 ];
 
