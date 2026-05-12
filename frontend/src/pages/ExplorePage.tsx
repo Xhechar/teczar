@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useSearchParams, Link, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
@@ -17,13 +17,15 @@ import {
   MapPin,
   X,
   MessageCircle,
+  Folder,
+  ArrowLeft,
 } from "lucide-react";
 import Navbar from "../components/Navbar";
 import { toastResult, useToast } from "../components/Toast";
 import { ModelType } from "../enums/enums";
 import { useScrollReveal } from "../hooks/Helper";
 import { useSocketInvalidation } from "../hooks/socket.hook";
-import { Service, Product } from "../interfaces/interfaces";
+import { Service, Product, Category } from "../interfaces/interfaces";
 import { ProductService } from "../services/product.service";
 import { ServicesService } from "../services/service.service";
 import Footer from "./home/Footer";
@@ -31,6 +33,7 @@ import { CreateCartItemDto } from "../dtos/dto";
 import { CartItemService } from "../services/cart.item.service";
 import { ServiceRequestService } from "../services/service.request.service";
 import { useAuth } from "../context/AuthContext";
+import { CategoryService } from "../services/category.service";
 
 const formatKES = (v: number) => `KES ${v.toLocaleString("en-KE")}`;
 
@@ -53,14 +56,14 @@ const ServiceBookingModal: React.FC<{
 }> = ({ service, onClose }) => {
   const toast = useToast();
   const [loading, setLoading] = useState(false);
-  const {user} = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-    reset
+    reset,
   } = useForm<BookingForm>();
 
   const inputCls = (e = false) =>
@@ -75,7 +78,7 @@ const ServiceBookingModal: React.FC<{
       navigate("/login", { replace: true });
       return;
     }
-        
+
     setLoading(true);
     try {
       let result = await ServiceRequestService.Create({
@@ -84,12 +87,15 @@ const ServiceBookingModal: React.FC<{
         PreferredDate: new Date(`${data.PreferredDate}T00:00:00Z`),
       });
       toastResult(result, toast);
-      if(result.Success) {
+      if (result.Success) {
         reset();
         onClose();
       }
     } catch (error: any) {
-      toast.error(error?.response?.data?.Title ?? "Booking Failed", error?.response?.data?.ErrorMessage ?? "Please try again or call us.");
+      toast.error(
+        error?.response?.data?.Title ?? "Booking Failed",
+        error?.response?.data?.ErrorMessage ?? "Please try again or call us.",
+      );
     } finally {
       setLoading(false);
     }
@@ -322,41 +328,48 @@ const ServicesList: React.FC = () => {
 };
 
 // ─── Product card ─────────────────────────────────────────────────
-const ProductExploreCard: React.FC<{ product: Product }> = ({ product }) => { 
+const ProductExploreCard: React.FC<{ product: Product }> = ({ product }) => {
   const toast = useToast();
-  const {user} = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
-  
+
   const image =
     product.Images?.[0]?.ImageUrl ??
     "https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&q=80";
 
-    async function handleAddToCart(data: CreateCartItemDto): Promise<void> {
-      if(!user) {
-        navigate('/login', {replace: true});
-        return;
-      }
-
-      try {
-        let result = await CartItemService.Create(data);
-        toastResult(result, toast);
-      } catch (error: any) {
-        toast.error(
-          error?.response?.data?.ErrorMessage ?? "Unable to add to cart",
-        );
-      }
+  async function handleAddToCart(data: CreateCartItemDto): Promise<void> {
+    if (!user) {
+      navigate("/login", { replace: true });
+      return;
     }
 
+    try {
+      let result = await CartItemService.Create(data);
+      toastResult(result, toast);
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.ErrorMessage ?? "Unable to add to cart",
+      );
+    }
+  }
+
   return (
-    <div className="product-card group flex flex-col">
-      <div className="relative h-52 overflow-hidden shrink-0">
-        <img
-          src={image}
-          alt={product.Name}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-          loading="lazy"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-navy-900/60 to-transparent" />
+    <div
+      className="product-card group flex flex-col cursor-pointer hover:shadow-card-hover transition-all duration-300 hover:-translate-y-0.5"
+      onClick={() => navigate(`/products/${product.ProductId}`)}
+    >
+      <div className="relative h-52 overflow-hidden shrink-0 bg-slate-100">
+        {image ? (
+          <img
+            src={image}
+            alt={product.Name}
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            loading="lazy"
+          />
+        ) : (
+          <Package className="w-10 h-10 text-slate-300 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-navy-900/50 to-transparent" />
         <div className="absolute top-3 left-3 flex flex-col gap-1.5">
           {product.OnOffer && product.OfferPrice && (
             <span className="bg-amber-400 text-white text-xs font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
@@ -373,20 +386,28 @@ const ProductExploreCard: React.FC<{ product: Product }> = ({ product }) => {
             </span>
           )}
         </div>
+        {/* View details hint on hover */}
+        <div className="absolute inset-0 bg-primary-600/0 group-hover:bg-primary-600/10 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+          <span className="bg-white text-primary-600 text-xs font-bold px-3 py-1.5 rounded-full shadow-lg">
+            View Details →
+          </span>
+        </div>
       </div>
+
       <div className="p-5 flex flex-col flex-1">
         {product.Category && (
           <span className="text-xs font-semibold text-primary-500 uppercase tracking-wide mb-1">
             {product.Category.Name}
           </span>
         )}
-        <h3 className="font-display font-700 text-base text-navy-900 mb-2 leading-snug">
+        <h3 className="font-display font-700 text-base text-navy-900 mb-2 leading-snug line-clamp-2">
           {product.Name}
         </h3>
         <p className="text-sm text-slate-500 leading-relaxed line-clamp-2 flex-1 mb-4">
           {product.Description}
         </p>
-        <div className="flex items-end gap-2 mb-4">
+
+        <div className="flex items-end gap-2 mb-3">
           <span className="text-xl font-900 text-navy-900">
             {formatKES(product.OfferPrice ?? product.Price)}
           </span>
@@ -396,8 +417,12 @@ const ProductExploreCard: React.FC<{ product: Product }> = ({ product }) => {
             </span>
           )}
         </div>
-        {/* Actions pinned to bottom */}
-        <div className="flex flex-col gap-2 mt-auto">
+
+        {/* Stop propagation on action buttons so card click doesn't also fire */}
+        <div
+          className="flex flex-col gap-2 mt-auto"
+          onClick={(e) => e.stopPropagation()}
+        >
           <div className="flex gap-2">
             <button
               disabled={!product.IsAvailable}
@@ -408,12 +433,12 @@ const ProductExploreCard: React.FC<{ product: Product }> = ({ product }) => {
             >
               <ShoppingCart className="w-4 h-4" /> Cart
             </button>
-            {/* WhatsApp order */}
             <a
               href={whatsappOrderUrl(product.Name)}
               target="_blank"
               rel="noopener noreferrer"
-              className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all duration-200 ${!product.IsAvailable ? "opacity-40 pointer-events-none" : ""}`}
+              onClick={(e) => e.stopPropagation()}
+              className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-sm font-semibold text-white ${!product.IsAvailable ? "opacity-40 pointer-events-none" : ""}`}
               style={{ background: "linear-gradient(135deg,#25d366,#128c7e)" }}
             >
               <MessageCircle className="w-4 h-4" /> Order
@@ -421,6 +446,7 @@ const ProductExploreCard: React.FC<{ product: Product }> = ({ product }) => {
           </div>
           <a
             href="tel:+254746430693"
+            onClick={(e) => e.stopPropagation()}
             className="flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-semibold text-slate-500 hover:text-primary-600 border border-slate-200 hover:border-primary-300 transition-all duration-200"
           >
             <Phone className="w-3.5 h-3.5" /> Call to Order
@@ -431,37 +457,99 @@ const ProductExploreCard: React.FC<{ product: Product }> = ({ product }) => {
   );
 };
 
+const CategoryBar: React.FC<{
+  categories: Category[];
+  selected: string;
+  onSelect: (id: string) => void;
+}> = ({ categories, selected, onSelect }) => (
+  <div className="flex items-center gap-2 overflow-x-auto pb-0.5 scrollbar-none">
+    <button
+      onClick={() => onSelect("all")}
+      className={`shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 ${
+        selected === "all"
+          ? "bg-primary-600 text-white shadow-sm"
+          : "bg-white border border-slate-200 text-slate-600 hover:border-primary-300 hover:text-primary-600"
+      }`}
+    >
+      <Folder className="w-3.5 h-3.5" /> All
+    </button>
+    {categories.map((cat) => (
+      <button
+        key={cat.CategoryId}
+        onClick={() => onSelect(cat.CategoryId)}
+        className={`shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 whitespace-nowrap ${
+          selected === cat.CategoryId
+            ? "bg-primary-600 text-white shadow-sm"
+            : "bg-white border border-slate-200 text-slate-600 hover:border-primary-300 hover:text-primary-600"
+        }`}
+      >
+        {cat.ImageUrl && (
+          <img
+            src={cat.ImageUrl}
+            alt=""
+            className="w-4 h-4 rounded object-cover"
+          />
+        )}
+        {cat.Name}
+      </button>
+    ))}
+  </div>
+);
+
 const ProductsList: React.FC = () => {
   useSocketInvalidation(ModelType.Product);
+
+  const [searchParams, setSearchParams] = useSearchParams();
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState<"default" | "price-asc" | "price-desc">(
     "default",
   );
+  const selectedCat = searchParams.get("category") ?? "all";
 
-  const { data, isLoading } = useQuery({
+  const setCategory = (id: string) => {
+    const next = new URLSearchParams(searchParams);
+    if (id === "all") next.delete("category");
+    else next.set("category", id);
+    setSearchParams(next);
+  };
+
+  const { data: productsData, isLoading: loadingProducts } = useQuery({
     queryKey: [ModelType.Product.toLowerCase()],
     queryFn: () => ProductService.FetchAll(),
   });
 
-  let products = (data?.DataList ?? []).filter(
-    (p) =>
-      p.Name.toLowerCase().includes(search.toLowerCase()) ||
-      p.Description.toLowerCase().includes(search.toLowerCase()) ||
-      p.Category?.Name.toLowerCase().includes(search.toLowerCase()),
-  );
+  const { data: catsData, isLoading: loadingCats } = useQuery({
+    queryKey: [ModelType.Category.toLowerCase()],
+    queryFn: CategoryService.FetchAll,
+  });
 
-  if (sortBy === "price-asc")
-    products = [...products].sort(
-      (a, b) => (a.OfferPrice ?? a.Price) - (b.OfferPrice ?? b.Price),
-    );
-  if (sortBy === "price-desc")
-    products = [...products].sort(
-      (a, b) => (b.OfferPrice ?? b.Price) - (a.OfferPrice ?? a.Price),
-    );
+  const categories = catsData?.DataList ?? [];
+
+  let products = useMemo(() => {
+    let list = productsData?.DataList ?? [];
+    if (selectedCat !== "all")
+      list = list.filter((p) => p.CategoryId === selectedCat);
+    if (search)
+      list = list.filter(
+        (p) =>
+          p.Name.toLowerCase().includes(search.toLowerCase()) ||
+          p.Description.toLowerCase().includes(search.toLowerCase()) ||
+          (p.Category?.Name ?? "").toLowerCase().includes(search.toLowerCase()),
+      );
+    if (sortBy === "price-asc")
+      list = [...list].sort(
+        (a, b) => (a.OfferPrice ?? a.Price) - (b.OfferPrice ?? b.Price),
+      );
+    if (sortBy === "price-desc")
+      list = [...list].sort(
+        (a, b) => (b.OfferPrice ?? b.Price) - (a.OfferPrice ?? a.Price),
+      );
+    return list;
+  }, [productsData, selectedCat, search, sortBy]);
 
   useScrollReveal([products.length]);
 
-  if (isLoading)
+  if (loadingProducts)
     return (
       <div className="flex justify-center py-20">
         <Loader2 className="w-8 h-8 animate-spin text-primary-500" />
@@ -470,40 +558,77 @@ const ProductsList: React.FC = () => {
 
   return (
     <div>
+      {/* Category pills */}
+      {!loadingCats && categories.length > 0 && (
+        <div className="mb-5">
+          <CategoryBar
+            categories={categories}
+            selected={selectedCat}
+            onSelect={setCategory}
+          />
+        </div>
+      )}
+
+      {/* Search + sort row */}
       <div className="flex flex-col sm:flex-row gap-3 mb-8">
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search products..."
+            placeholder="Search products…"
             className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-100 text-sm transition-all"
           />
           {search && (
             <button
               onClick={() => setSearch("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2"
+              className="absolute right-3.5 top-1/2 -translate-y-1/2"
             >
               <X className="w-4 h-4 text-slate-400" />
             </button>
           )}
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 shrink-0">
           <SlidersHorizontal className="w-4 h-4 text-slate-400" />
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
-            className="px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:border-primary-400 text-sm bg-white"
+            className="py-3 px-4 rounded-xl border border-slate-200 focus:outline-none focus:border-primary-400 text-sm bg-white"
           >
-            <option value="default">Default Sorting</option>
-            <option value="price-asc">Price: Low to High</option>
-            <option value="price-desc">Price: High to Low</option>
+            <option value="default">Default</option>
+            <option value="price-asc">Price: Low → High</option>
+            <option value="price-desc">Price: High → Low</option>
           </select>
         </div>
       </div>
+
+      {/* Results count */}
+      {(search || selectedCat !== "all") && (
+        <p className="text-sm text-slate-400 mb-4">
+          {products.length} product{products.length !== 1 ? "s" : ""}
+          {selectedCat !== "all" &&
+          categories.find((c) => c.CategoryId === selectedCat)
+            ? ` in ${categories.find((c) => c.CategoryId === selectedCat)!.Name}`
+            : ""}
+          {search ? ` matching "${search}"` : ""}
+        </p>
+      )}
+
       {products.length === 0 ? (
-        <div className="text-center py-16 text-slate-400">
-          No products found matching "{search}".
+        <div className="text-center py-20 bg-white rounded-2xl border border-slate-100">
+          <Package className="w-10 h-10 mx-auto mb-3 text-slate-200" />
+          <p className="text-slate-400 font-medium">No products found.</p>
+          {(search || selectedCat !== "all") && (
+            <button
+              onClick={() => {
+                setSearch("");
+                setCategory("all");
+              }}
+              className="mt-4 text-sm text-primary-600 hover:underline font-semibold"
+            >
+              Clear filters
+            </button>
+          )}
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
@@ -517,6 +642,7 @@ const ProductsList: React.FC = () => {
 };
 
 const ExplorePage: React.FC = () => {
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const tab =
     (searchParams.get("tab") as "services" | "products") ?? "services";
@@ -524,6 +650,8 @@ const ExplorePage: React.FC = () => {
   return (
     <div className="min-h-screen bg-surface-50">
       <Navbar />
+
+      {/* Header */}
       <div
         className="pt-28 pb-10"
         style={{
@@ -531,31 +659,45 @@ const ExplorePage: React.FC = () => {
         }}
       >
         <div className="container-custom">
-          <div className="flex items-center gap-2 text-white/50 text-sm mb-3">
-            <Link to="/" className="hover:text-white transition-colors">
-              Home
-            </Link>
-            <ChevronRight className="w-4 h-4" />
-            <span className="text-white">Explore</span>
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-2 text-white/50 text-sm flex-wrap">
+              <Link to="/" className="hover:text-white transition-colors">
+                Home
+              </Link>
+              <ChevronRight className="w-4 h-4" />
+              <span className="text-white">Explore</span>
+            </div>
+            {/* Back button */}
+            <button
+              onClick={() => navigate(-1)}
+              className="flex items-center gap-1.5 text-sm font-semibold text-white/70 hover:text-white transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" /> Back
+            </button>
           </div>
-          <h1 className="font-display text-4xl md:text-5xl font-700 text-white mb-3">
+          <h1 className="font-display text-4xl md:text-5xl font-700 text-white mt-4 mb-2">
             {tab === "services" ? "All Services" : "All Products"}
           </h1>
-          <p className="text-white/60 max-w-xl">
+          <p className="text-white/60 max-w-xl text-sm">
             {tab === "services"
               ? "Book professional installation and repair services for your home or business."
-              : "Browse our range of quality electronic products with warranty support."}
+              : "Browse our quality electronic products. Click any product to see full details."}
           </p>
         </div>
       </div>
 
+      {/* Tab switcher */}
       <div className="sticky top-16 z-30 bg-white border-b border-slate-200 shadow-sm">
         <div className="container-custom">
           <div className="flex">
             {(["services", "products"] as const).map((t) => (
               <button
                 key={t}
-                onClick={() => setSearchParams({ tab: t })}
+                onClick={() => {
+                  const next = new URLSearchParams();
+                  next.set("tab", t);
+                  setSearchParams(next);
+                }}
                 className={`flex items-center gap-2 px-6 py-4 text-sm font-semibold border-b-2 transition-all duration-200 capitalize ${
                   tab === t
                     ? "border-primary-600 text-primary-600"
@@ -579,6 +721,11 @@ const ExplorePage: React.FC = () => {
       </div>
 
       <Footer />
+
+      <style>{`
+        .scrollbar-none::-webkit-scrollbar { display: none; }
+        .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+      `}</style>
     </div>
   );
 };

@@ -23,7 +23,7 @@ import { useAuth } from "../../context/AuthContext";
 
 const formatKES = (n: number) => `KES ${n.toLocaleString("en-KE")}`;
 
-const WHATSAPP_NUMBER = "254746430693"; // admin WhatsApp — update with real number
+const WHATSAPP_NUMBER = "254746430693";
 
 function whatsappUrl(productName: string) {
   const msg = encodeURIComponent(
@@ -55,39 +55,40 @@ const ProductCard: React.FC<{ product: Product; index: number }> = ({
   index,
 }) => {
   const toast = useToast();
-  const {user} = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   const mainImage =
     product.Images?.[0]?.ImageUrl ??
     "https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&q=80";
 
-    const handleAddToCart = async (dto: CreateCartItemDto) => {
-      try {
-        if(!user) {
-          navigate('/login', {replace: true});
-          return;
-        }
-        
-        let result = await CartItemService.Create(dto);
-        toastResult(result, toast);
-        if (result.Success)
-          queryClient.invalidateQueries({
-            queryKey: [`user${ModelType.Order.toLowerCase()}`],
-          });
-      } catch (error: any) {
-        toast.error(
-          error.response.data.Title ?? "SERVER ERROR",
-          error.response.data.ErrorMessage ??
-            "Cannot create cart item. Please try again.",
-        );
+  const handleAddToCart = async (dto: CreateCartItemDto) => {
+    try {
+      if (!user) {
+        navigate("/login", { replace: true });
+        return;
       }
-    };
+
+      let result = await CartItemService.Create(dto);
+      toastResult(result, toast);
+      if (result.Success)
+        queryClient.invalidateQueries({
+          queryKey: [`user${ModelType.Order.toLowerCase()}`],
+        });
+    } catch (error: any) {
+      toast.error(
+        error.response.data.Title ?? "SERVER ERROR",
+        error.response.data.ErrorMessage ??
+          "Cannot create cart item. Please try again.",
+      );
+    }
+  };
 
   return (
     <div
-      className="reveal product-card group flex flex-col"
+      className="reveal product-card group flex flex-col cursor-pointer hover:shadow-card-hover transition-all duration-300 hover:-translate-y-0.5"
       style={{ transitionDelay: `${(index % 4) * 0.08}s` }}
+      onClick={() => navigate(`/products/${product.ProductId}`)}
     >
       {/* Image */}
       <div className="relative h-52 overflow-hidden shrink-0">
@@ -167,13 +168,17 @@ const ProductCard: React.FC<{ product: Product; index: number }> = ({
           </span>
         </div>
 
-        {/* Actions — mt-auto pins to bottom */}
-        <div className="flex flex-col gap-2 mt-auto">
+        {/* Actions — mt-auto pins to bottom. stopPropagation prevents card navigation */}
+        <div
+          className="flex flex-col gap-2 mt-auto"
+          onClick={(e) => e.stopPropagation()}
+        >
           <div className="flex gap-2">
             <button
               disabled={!product.IsAvailable}
-              onClick={() => {
-                handleAddToCart({ProductId: product.ProductId, Quantity: 1})
+              onClick={(e) => {
+                e.stopPropagation();
+                handleAddToCart({ ProductId: product.ProductId, Quantity: 1 });
               }}
               className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-sm font-semibold border-2 border-primary-600 text-primary-600 hover:bg-primary-600 hover:text-white transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
             >
@@ -184,6 +189,7 @@ const ProductCard: React.FC<{ product: Product; index: number }> = ({
               href={whatsappUrl(product.Name)}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
               aria-label="Order via WhatsApp"
               className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all duration-200 ${!product.IsAvailable ? "opacity-40 pointer-events-none" : ""}`}
               style={{ background: "linear-gradient(135deg,#25d366,#128c7e)" }}
@@ -193,6 +199,7 @@ const ProductCard: React.FC<{ product: Product; index: number }> = ({
           </div>
           <a
             href="tel:+254746430693"
+            onClick={(e) => e.stopPropagation()}
             className="flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-semibold text-slate-500 hover:text-primary-600 hover:bg-slate-50 transition-all duration-200 border border-slate-200"
           >
             <Phone className="w-3.5 h-3.5" /> Call to Order
