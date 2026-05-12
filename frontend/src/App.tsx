@@ -25,6 +25,7 @@ import { AdminTeamMembers } from "./pages/admin/AdminTeamMembers";
 const HomePage = lazy(() => import("./pages/HomePage"));
 const ExplorePage = lazy(() => import("./pages/ExplorePage"));
 const ProductPage = lazy(() => import("./pages/ProductPage"));
+const ServicePage = lazy(() => import("./pages/ServicePage"));
 const CareersPage = lazy(() => import("./pages/CareersPage"));
 const MeetTeamPage = lazy(() => import("./pages/MeetTeamPage"));
 
@@ -48,6 +49,7 @@ const App: React.FC = () => (
             <Route path="/" element={<HomePage />} />
             <Route path="/explore" element={<ExplorePage />} />
             <Route path="/products/:productId" element={<ProductPage />} />
+            <Route path="/services/:serviceId" element={<ServicePage />} />
             <Route path="/careers" element={<CareersPage />} />
             <Route path="/meet-team" element={<MeetTeamPage />} />
 

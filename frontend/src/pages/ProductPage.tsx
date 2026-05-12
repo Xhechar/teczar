@@ -1,36 +1,54 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
-  ArrowLeft, ShoppingCart, MessageCircle, Phone,
-  Tag, Star, CheckCircle, XCircle, Package,
-  ChevronRight, Loader2, Share2, Plus, Minus,
+  ArrowLeft,
+  ShoppingCart,
+  MessageCircle,
+  Phone,
+  Tag,
+  Star,
+  CheckCircle,
+  XCircle,
+  Package,
+  ChevronRight,
+  Loader2,
+  Share2,
+  Plus,
+  Minus,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useToast, toastResult } from "../components/Toast";
 import { Navbar } from "../components/Navbar";
 import { ModelType } from "../enums/enums";
-import { useScrollReveal } from "../hooks/Helper";
 import { Product } from "../interfaces/interfaces";
 import { CartItemService } from "../services/cart.item.service";
 import Footer from "./home/Footer";
 import { ProductService } from "../services/product.service";
 
 // ─── Helpers ──────────────────────────────────────────────────────
-const fmtKES = (n: number) => `KES ${n.toLocaleString("en-KE")}`;
+function fmtKES(value?: number | string) {
+  const num = Number(value);
+  if (isNaN(num)) return "KES 0.00"; // fallback
+  return num.toLocaleString("en-KE", {
+    style: "currency",
+    currency: "KES",
+  });
+}
 
 const WHATSAPP_NUMBER = "254746430693";
 const waUrl = (name: string) => {
   const msg = encodeURIComponent(
-    `Hi Raz Technologies! I'd like to order: *${name}*. Please share availability and delivery details.`
+    `Hi Raz Technologies! I'd like to order: *${name}*. Please share availability and delivery details.`,
   );
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`;
 };
 
 // ─── Image gallery ────────────────────────────────────────────────
-const ImageGallery: React.FC<{ images: { ImageId: string; ImageUrl: string }[]; name: string }> = ({
-  images, name,
-}) => {
+const ImageGallery: React.FC<{
+  images: { ImageId: string; ImageUrl: string }[];
+  name: string;
+}> = ({ images, name }) => {
   const [active, setActive] = useState(0);
 
   if (!images.length) {
@@ -60,10 +78,16 @@ const ImageGallery: React.FC<{ images: { ImageId: string; ImageUrl: string }[]; 
               key={img.ImageId}
               onClick={() => setActive(i)}
               className={`shrink-0 w-16 h-16 rounded-xl overflow-hidden border-2 transition-all duration-200 ${
-                i === active ? "border-primary-500 shadow-sm scale-105" : "border-slate-200 hover:border-slate-300"
+                i === active
+                  ? "border-primary-500 shadow-sm scale-105"
+                  : "border-slate-200 hover:border-slate-300"
               }`}
             >
-              <img src={img.ImageUrl} alt="" className="w-full h-full object-cover" />
+              <img
+                src={img.ImageUrl}
+                alt=""
+                className="w-full h-full object-cover"
+              />
             </button>
           ))}
         </div>
@@ -73,7 +97,10 @@ const ImageGallery: React.FC<{ images: { ImageId: string; ImageUrl: string }[]; 
 };
 
 // ─── Star display ─────────────────────────────────────────────────
-const StarDisplay: React.FC<{ rating: number; count?: number }> = ({ rating, count }) => (
+const StarDisplay: React.FC<{ rating: number; count?: number }> = ({
+  rating,
+  count,
+}) => (
   <div className="flex items-center gap-1.5">
     <div className="flex gap-0.5">
       {[1, 2, 3, 4, 5].map((n) => (
@@ -84,7 +111,9 @@ const StarDisplay: React.FC<{ rating: number; count?: number }> = ({ rating, cou
       ))}
     </div>
     {count !== undefined && (
-      <span className="text-sm text-slate-500">({count} review{count !== 1 ? "s" : ""})</span>
+      <span className="text-sm text-slate-500">
+        ({count} review{count !== 1 ? "s" : ""})
+      </span>
     )}
   </div>
 );
@@ -115,24 +144,22 @@ const ProductSkeleton: React.FC = () => (
 // ─── Page ─────────────────────────────────────────────────────────
 const ProductPage: React.FC = () => {
   const { productId } = useParams<{ productId: string }>();
-  const navigate    = useNavigate();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const toast       = useToast();
-  const { user }    = useAuth();
+  const toast = useToast();
+  const { user } = useAuth();
 
-  const [qty, setQty]           = useState(1);
+  const [qty, setQty] = useState(1);
   const [addingToCart, setAdding] = useState(false);
 
-  useScrollReveal([]);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const { data, isLoading, isError } = useQuery({
     queryKey: [ModelType.Product.toLowerCase(), productId],
-    queryFn: async () => {
-      const data = await ProductService.FetchById(productId!);
-      return { Success: true, Data: data, Title: "" };
-    },
+    queryFn: () => ProductService.FetchById(productId as string),
     enabled: !!productId,
-    staleTime: 1000 * 60 * 5,
   });
 
   const product = data?.Data as Product | undefined;
@@ -148,15 +175,19 @@ const ProductPage: React.FC = () => {
     if (!product) return;
 
     if (!user) {
-      navigate(`/login?redirect=${encodeURIComponent(window.location.pathname)}`, { replace: true });
+      toast.error("Please log in to add product to cart");
+      setTimeout(() => navigate(
+        `/login?redirect=${encodeURIComponent(window.location.pathname)}`,
+        { replace: true },
+      ), 5000);
       return;
     }
- 
+
     setAdding(true);
     try {
       const result = await CartItemService.Create({
         ProductId: product.ProductId,
-        Quantity:  qty,
+        Quantity: qty,
       });
 
       toastResult(result, toast);
@@ -168,8 +199,9 @@ const ProductPage: React.FC = () => {
       }
     } catch (error: any) {
       toast.error(
-        error?.response?.data?.Title        ?? "SERVER ERROR",
-        error?.response?.data?.ErrorMessage ?? "Cannot create cart item. Please try again.",
+        error?.response?.data?.Title ?? "SERVER ERROR",
+        error?.response?.data?.ErrorMessage ??
+          "Cannot create cart item. Please try again.",
       );
     } finally {
       setAdding(false);
@@ -178,22 +210,25 @@ const ProductPage: React.FC = () => {
 
   const handleShare = async () => {
     if (navigator.share) {
-      await navigator.share({ title: product?.Name, url: window.location.href });
+      await navigator.share({
+        title: product?.Name,
+        url: window.location.href,
+      });
     } else {
       await navigator.clipboard.writeText(window.location.href);
       toast.success("Link copied!", "Product link copied to clipboard.");
     }
   };
-  const avgRating   = product?.Reviews?.length
+  const avgRating = product?.Reviews?.length
     ? product.Reviews.reduce((s, r) => s + r.Rating, 0) / product.Reviews.length
     : 0;
 
-  const savings = product?.OnOffer && product.OfferPrice
-    ? product.Price - product.OfferPrice
-    : 0;
-  const savingsPct = product?.Price && savings
-    ? Math.round((savings / product.Price) * 100)
-    : 0;
+  const savings =
+    product?.OnOffer && product.OfferPrice
+      ? product.Price - product.OfferPrice
+      : 0;
+  const savingsPct =
+    product?.Price && savings ? Math.round((savings / product.Price) * 100) : 0;
 
   return (
     <div className="min-h-screen bg-surface-50">
@@ -205,8 +240,12 @@ const ProductPage: React.FC = () => {
         ) : isError || !product ? (
           <div className="container-custom py-20 text-center">
             <Package className="w-14 h-14 mx-auto mb-4 text-slate-200" />
-            <h2 className="font-display text-2xl font-700 text-navy-900 mb-2">Product Not Found</h2>
-            <p className="text-slate-400 mb-6">This product may no longer be available.</p>
+            <h2 className="font-display text-2xl font-700 text-navy-900 mb-2">
+              Product Not Found
+            </h2>
+            <p className="text-slate-400 mb-6">
+              This product may no longer be available.
+            </p>
             <button
               onClick={() => navigate(-1)}
               className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-white text-sm"
@@ -221,14 +260,28 @@ const ProductPage: React.FC = () => {
             <div className="container-custom py-5">
               <div className="flex items-center justify-between gap-4">
                 <div className="flex items-center gap-2 text-sm text-slate-400 flex-wrap">
-                  <Link to="/" className="hover:text-primary-600 transition-colors">Home</Link>
+                  <Link
+                    to="/"
+                    className="hover:text-primary-600 transition-colors"
+                  >
+                    Home
+                  </Link>
                   <ChevronRight className="w-3.5 h-3.5" />
-                  <Link to="/explore?tab=products" className="hover:text-primary-600 transition-colors">Products</Link>
+                  <Link
+                    to="/explore?tab=products"
+                    className="hover:text-primary-600 transition-colors"
+                  >
+                    Products
+                  </Link>
                   {product.Category && (
                     <>
                       <ChevronRight className="w-3.5 h-3.5" />
                       <button
-                        onClick={() => navigate(`/explore?tab=products&category=${product.CategoryId}`)}
+                        onClick={() =>
+                          navigate(
+                            `/explore?tab=products&category=${product.CategoryId}`,
+                          )
+                        }
                         className="hover:text-primary-600 transition-colors"
                       >
                         {product.Category.Name}
@@ -236,7 +289,9 @@ const ProductPage: React.FC = () => {
                     </>
                   )}
                   <ChevronRight className="w-3.5 h-3.5" />
-                  <span className="text-slate-600 font-medium truncate max-w-[160px]">{product.Name}</span>
+                  <span className="text-slate-600 font-medium truncate max-w-[160px]">
+                    {product.Name}
+                  </span>
                 </div>
                 <button
                   onClick={() => navigate(-1)}
@@ -250,15 +305,16 @@ const ProductPage: React.FC = () => {
             {/* Main content */}
             <div className="container-custom pb-16">
               <div className="grid md:grid-cols-2 gap-10 lg:gap-14">
-
                 {/* ── Left: gallery ── */}
-                <div className="reveal">
-                  <ImageGallery images={product.Images ?? []} name={product.Name} />
+                <div>
+                  <ImageGallery
+                    images={product.Images ?? []}
+                    name={product.Name}
+                  />
                 </div>
 
                 {/* ── Right: details ── */}
-                <div className="reveal stagger-2 flex flex-col">
-
+                <div className="flex flex-col">
                   {/* Category + badges */}
                   <div className="flex items-center gap-2 flex-wrap mb-3">
                     {product.Category && (
@@ -268,7 +324,8 @@ const ProductPage: React.FC = () => {
                     )}
                     {product.IsFeatured && (
                       <span className="flex items-center gap-1 text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 rounded-full">
-                        <Star className="w-3 h-3 fill-amber-400 text-amber-400" /> Featured
+                        <Star className="w-3 h-3 fill-amber-400 text-amber-400" />{" "}
+                        Featured
                       </span>
                     )}
                     {product.OnOffer && (
@@ -286,7 +343,10 @@ const ProductPage: React.FC = () => {
                   {/* Rating */}
                   {(product.Reviews?.length ?? 0) > 0 && (
                     <div className="mb-4">
-                      <StarDisplay rating={avgRating} count={(product.Reviews ?? []).length} />
+                      <StarDisplay
+                        rating={avgRating}
+                        count={(product.Reviews ?? []).length}
+                      />
                     </div>
                   )}
 
@@ -308,28 +368,41 @@ const ProductPage: React.FC = () => {
                   )}
 
                   {/* Stock */}
-                  <div className={`flex items-center gap-2 text-sm font-semibold mb-6 ${
-                    product.Quantity > 5 ? "text-emerald-600" :
-                    product.Quantity > 0 ? "text-amber-600" : "text-red-500"
-                  }`}>
-                    {product.Quantity > 0
-                      ? <CheckCircle className="w-4 h-4" />
-                      : <XCircle className="w-4 h-4" />}
-                    {product.Quantity > 5 ? "In Stock" :
-                     product.Quantity > 0 ? `Only ${product.Quantity} left` :
-                     "Out of Stock"}
+                  <div
+                    className={`flex items-center gap-2 text-sm font-semibold mb-6 ${
+                      product.Quantity > 5
+                        ? "text-emerald-600"
+                        : product.Quantity > 0
+                          ? "text-amber-600"
+                          : "text-red-500"
+                    }`}
+                  >
+                    {product.Quantity > 0 ? (
+                      <CheckCircle className="w-4 h-4" />
+                    ) : (
+                      <XCircle className="w-4 h-4" />
+                    )}
+                    {product.Quantity > 5
+                      ? "In Stock"
+                      : product.Quantity > 0
+                        ? `Only ${product.Quantity} left`
+                        : "Out of Stock"}
                   </div>
 
                   {/* Description */}
-                  <p className="text-slate-600 leading-relaxed mb-8">{product.Description}</p>
+                  <p className="text-slate-600 leading-relaxed mb-8">
+                    {product.Description}
+                  </p>
 
                   {/* ── Quantity stepper ── */}
                   <div className="flex items-center gap-4 mb-5">
-                    <span className="text-sm font-semibold text-slate-600">Quantity</span>
+                    <span className="text-sm font-semibold text-slate-600">
+                      Quantity
+                    </span>
                     <div className="flex items-center gap-0 rounded-xl border border-slate-200 overflow-hidden">
                       <button
                         type="button"
-                        onClick={() => setQty(q => Math.max(1, q - 1))}
+                        onClick={() => setQty((q) => Math.max(1, q - 1))}
                         disabled={qty <= 1}
                         className="w-10 h-10 flex items-center justify-center text-slate-500 hover:bg-slate-50 hover:text-primary-600 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                         aria-label="Decrease quantity"
@@ -341,7 +414,7 @@ const ProductPage: React.FC = () => {
                       </span>
                       <button
                         type="button"
-                        onClick={() => setQty(q => Math.min(maxQty, q + 1))}
+                        onClick={() => setQty((q) => Math.min(maxQty, q + 1))}
                         disabled={qty >= maxQty || !product.IsAvailable}
                         className="w-10 h-10 flex items-center justify-center text-slate-500 hover:bg-slate-50 hover:text-primary-600 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                         aria-label="Increase quantity"
@@ -364,25 +437,35 @@ const ProductPage: React.FC = () => {
                         onClick={handleAddToCart}
                         disabled={!product.IsAvailable || addingToCart}
                         className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl text-sm font-semibold text-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                        style={{ background: "linear-gradient(135deg,#1660eb,#0d1a42)" }}
+                        style={{
+                          background: "linear-gradient(135deg,#1660eb,#0d1a42)",
+                        }}
                       >
-                        {addingToCart
-                          ? <><Loader2 className="w-4 h-4 animate-spin" /> Adding…</>
-                          : <><ShoppingCart className="w-4 h-4" /> Add to Cart</>}
+                        {addingToCart ? (
+                          <>
+                            <Loader2 className="w-4 h-4 animate-spin" /> Adding…
+                          </>
+                        ) : (
+                          <>
+                            <ShoppingCart className="w-4 h-4" /> Add to Cart
+                          </>
+                        )}
                       </button>
                       <a
                         href={waUrl(product.Name)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className={`flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl text-sm font-semibold text-white transition-all duration-200 ${!product.IsAvailable ? "opacity-40 pointer-events-none" : ""}`}
-                        style={{ background: "linear-gradient(135deg,#25d366,#128c7e)" }}
+                        style={{
+                          background: "linear-gradient(135deg,#25d366,#128c7e)",
+                        }}
                       >
                         <MessageCircle className="w-4 h-4" /> Order via WhatsApp
                       </a>
                     </div>
                     <div className="flex gap-3">
                       <a
-                        href="tel:+254700000000"
+                        href="tel:+254746430693"
                         className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold text-slate-600 border border-slate-200 hover:border-primary-300 hover:text-primary-600 transition-all duration-200"
                       >
                         <Phone className="w-4 h-4" /> Call to Order
@@ -404,9 +487,14 @@ const ProductPage: React.FC = () => {
                       { emoji: "🚚", label: "Kenya-wide Delivery" },
                       { emoji: "🔧", label: "Installation Support" },
                     ].map(({ emoji, label }) => (
-                      <div key={label} className="flex flex-col items-center gap-1">
+                      <div
+                        key={label}
+                        className="flex flex-col items-center gap-1"
+                      >
                         <span className="text-xl">{emoji}</span>
-                        <span className="text-xs text-slate-500 leading-tight">{label}</span>
+                        <span className="text-xs text-slate-500 leading-tight">
+                          {label}
+                        </span>
                       </div>
                     ))}
                   </div>
@@ -415,27 +503,38 @@ const ProductPage: React.FC = () => {
 
               {/* ── Reviews section ── */}
               {(product.Reviews?.length ?? 0) > 0 && (
-                <div className="mt-16 reveal">
+                <div className="mt-16">
                   <h2 className="font-display text-2xl font-700 text-navy-900 mb-6">
                     Customer Reviews
-                    <span className="text-base font-normal text-slate-400 ml-2">({(product.Reviews ?? []).length})</span>
+                    <span className="text-base font-normal text-slate-400 ml-2">
+                      ({(product.Reviews ?? []).length})
+                    </span>
                   </h2>
                   <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     {product.Reviews?.slice(0, 6).map((review) => (
-                      <div key={review.ReviewId} className="bg-white rounded-2xl p-5 shadow-card border border-slate-100">
+                      <div
+                        key={review.ReviewId}
+                        className="bg-white rounded-2xl p-5 shadow-card border border-slate-100"
+                      >
                         <div className="flex items-center gap-3 mb-3">
                           <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary-500 to-navy-600 flex items-center justify-center text-white text-xs font-bold shrink-0">
-                            {review.User ? `${review.User.FirstName[0]}${review.User.SecondName[0]}` : "?"}
+                            {review.User
+                              ? `${review.User.FirstName[0]}${review.User.SecondName[0]}`
+                              : "?"}
                           </div>
                           <div>
                             <p className="font-semibold text-sm text-slate-900">
-                              {review.User ? `${review.User.FirstName} ${review.User.SecondName}` : "Customer"}
+                              {review.User
+                                ? `${review.User.FirstName} ${review.User.SecondName}`
+                                : "Customer"}
                             </p>
                             <StarDisplay rating={review.Rating} />
                           </div>
                         </div>
                         {review.Message && (
-                          <p className="text-sm text-slate-500 italic leading-relaxed">"{review.Message}"</p>
+                          <p className="text-sm text-slate-500 italic leading-relaxed">
+                            "{review.Message}"
+                          </p>
                         )}
                       </div>
                     ))}

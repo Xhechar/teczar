@@ -65,7 +65,15 @@ const ProductCard: React.FC<{ product: Product; index: number }> = ({
   const handleAddToCart = async (dto: CreateCartItemDto) => {
     try {
       if (!user) {
-        navigate("/login", { replace: true });
+        toast.error("Please log in to add products to cart");
+        setTimeout(
+          () =>
+            navigate(
+              `/login?redirect=${encodeURIComponent(window.location.pathname)}`,
+              { replace: true },
+            ),
+          5000,
+        );
         return;
       }
 
@@ -116,6 +124,13 @@ const ProductCard: React.FC<{ product: Product; index: number }> = ({
               <Star className="w-3 h-3" /> Featured
             </span>
           )}
+        </div>
+
+        {/* View details hint on hover */}
+        <div className="absolute inset-0 bg-primary-600/0 group-hover:bg-primary-600/10 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+          <span className="bg-white text-primary-600 text-xs font-bold px-3 py-1.5 rounded-full shadow-lg">
+            View Details →
+          </span>
         </div>
 
         {!product.IsAvailable && (

@@ -75,7 +75,15 @@ const ServiceBookingModal: React.FC<{
 
   const onSubmit = async (data: BookingForm) => {
     if (!user) {
-      navigate("/login", { replace: true });
+      toast.error("Please log in to book a service");
+      setTimeout(
+        () =>
+          navigate(
+            `/login?redirect=${encodeURIComponent(window.location.pathname)}`,
+            { replace: true },
+          ),
+        5000,
+      );
       return;
     }
 
@@ -212,50 +220,66 @@ const ServiceBookingModal: React.FC<{
 const ServiceExploreCard: React.FC<{
   service: Service;
   onBook: (s: Service) => void;
-}> = ({ service, onBook }) => (
-  <div className="product-card group flex flex-col">
-    {service.ImageUrl && (
-      <div className="relative h-48 overflow-hidden shrink-0">
-        <img
-          src={service.ImageUrl}
-          alt={service.Title}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-          loading="lazy"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-navy-900/60 to-transparent" />
-        {service.OnOffer && (
-          <span className="absolute top-3 right-3 bg-amber-400 text-white text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1">
-            <Tag className="w-3 h-3" /> On Offer
-          </span>
-        )}
-      </div>
-    )}
-    <div className="p-6 flex flex-col flex-1">
-      <h3 className="font-display font-700 text-lg text-navy-900 mb-2">
-        {service.Title}
-      </h3>
-      {/* flex-1 pushes buttons to bottom */}
-      <p className="text-sm text-slate-500 leading-relaxed flex-1 mb-5">
-        {service.Description}
-      </p>
-      <div className="flex gap-2 mt-auto">
-        <button
-          onClick={() => onBook(service)}
-          className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold text-white transition-all duration-200"
-          style={{ background: "linear-gradient(135deg,#1660eb,#0d1a42)" }}
+}> = ({ service, onBook }) => {
+  const navigate = useNavigate();
+
+  return (
+    <div
+      className="product-card group flex flex-col cursor-pointer hover:shadow-card-hover transition-all duration-300 hover:-translate-y-0.5"
+      onClick={() => navigate(`/services/${service.ServiceId}`)}
+    >
+      {service.ImageUrl && (
+        <div className="relative h-48 overflow-hidden shrink-0">
+          <img
+            src={service.ImageUrl}
+            alt={service.Title}
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            loading="lazy"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-navy-900/60 to-transparent" />
+          {service.OnOffer && (
+            <span className="absolute top-3 right-3 bg-amber-400 text-white text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1">
+              <Tag className="w-3 h-3" /> On Offer
+            </span>
+          )}
+          <div className="absolute inset-0 bg-primary-600/0 group-hover:bg-primary-600/10 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+            <span className="bg-white text-primary-600 text-xs font-bold px-3 py-1 rounded-full shadow">
+              View Details →
+            </span>
+          </div>
+        </div>
+      )}
+      <div className="p-6 flex flex-col flex-1">
+        <h3 className="font-display font-700 text-lg text-navy-900 mb-2">
+          {service.Title}
+        </h3>
+        <p className="text-sm text-slate-500 leading-relaxed flex-1 mb-5 line-clamp-3">
+          {service.Description}
+        </p>
+        {/* Stop propagation so card click doesn't fire when using buttons */}
+        <div
+          className="flex gap-2 mt-auto"
+          onClick={(e) => e.stopPropagation()}
         >
-          <Calendar className="w-4 h-4" /> Book Service
-        </button>
-        <a
-          href="tel:+254746430693"
-          className="flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-semibold border-2 border-slate-200 text-slate-600 hover:border-primary-400 hover:text-primary-600 transition-all duration-200"
-        >
-          <Phone className="w-4 h-4" />
-        </a>
+          <button
+            onClick={() => onBook(service)}
+            className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold text-white transition-all duration-200"
+            style={{ background: "linear-gradient(135deg,#1660eb,#0d1a42)" }}
+          >
+            <Calendar className="w-4 h-4" /> Book Service
+          </button>
+          <a
+            href="tel:+254746430693"
+            onClick={(e) => e.stopPropagation()}
+            className="flex items-center justify-center px-4 py-2.5 rounded-xl border-2 border-slate-200 text-slate-600 hover:border-primary-400 hover:text-primary-600 transition-all duration-200"
+          >
+            <Phone className="w-4 h-4" />
+          </a>
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 // ─── Services list ────────────────────────────────────────────────
 const ServicesList: React.FC = () => {
@@ -268,20 +292,17 @@ const ServicesList: React.FC = () => {
     queryFn: () => ServicesService.FetchAll(),
   });
 
-  const services = (data?.DataList ?? []).filter(
-    (s) =>
-      s.Title.toLowerCase().includes(search.toLowerCase()) ||
-      s.Description.toLowerCase().includes(search.toLowerCase()),
+  const services = useMemo(
+    () =>
+      (data?.DataList ?? []).filter(
+        (s) =>
+          s.Title.toLowerCase().includes(search.toLowerCase()) ||
+          s.Description.toLowerCase().includes(search.toLowerCase()),
+      ),
+    [data, search],
   );
 
   useScrollReveal([services.length]);
-
-  if (isLoading)
-    return (
-      <div className="flex justify-center py-20">
-        <Loader2 className="w-8 h-8 animate-spin text-primary-500" />
-      </div>
-    );
 
   return (
     <div>
@@ -290,21 +311,25 @@ const ServicesList: React.FC = () => {
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search services..."
+          placeholder="Search services…"
           className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-100 text-sm transition-all"
         />
         {search && (
           <button
             onClick={() => setSearch("")}
-            className="absolute right-3 top-1/2 -translate-y-1/2"
+            className="absolute right-3.5 top-1/2 -translate-y-1/2"
           >
             <X className="w-4 h-4 text-slate-400" />
           </button>
         )}
       </div>
-      {services.length === 0 ? (
+      {isLoading ? (
+        <div className="flex justify-center py-20">
+          <Loader2 className="w-8 h-8 animate-spin text-primary-500" />
+        </div>
+      ) : services.length === 0 ? (
         <div className="text-center py-16 text-slate-400">
-          No services found matching "{search}".
+          No services found{search ? ` matching "${search}"` : ""}.
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
@@ -339,7 +364,15 @@ const ProductExploreCard: React.FC<{ product: Product }> = ({ product }) => {
 
   async function handleAddToCart(data: CreateCartItemDto): Promise<void> {
     if (!user) {
-      navigate("/login", { replace: true });
+      toast.error("Please log in to add products to cart");
+      setTimeout(
+        () =>
+          navigate(
+            `/login?redirect=${encodeURIComponent(window.location.pathname)}`,
+            { replace: true },
+          ),
+        5000,
+      );
       return;
     }
 
@@ -520,7 +553,7 @@ const ProductsList: React.FC = () => {
 
   const { data: catsData, isLoading: loadingCats } = useQuery({
     queryKey: [ModelType.Category.toLowerCase()],
-    queryFn: CategoryService.FetchAll,
+    queryFn: () => CategoryService.FetchAll(),
   });
 
   const categories = catsData?.DataList ?? [];
