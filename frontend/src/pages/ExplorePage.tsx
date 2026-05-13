@@ -19,6 +19,7 @@ import {
   MessageCircle,
   Folder,
   ArrowLeft,
+  ChevronDown,
 } from "lucide-react";
 import Navbar from "../components/Navbar";
 import { toastResult, useToast } from "../components/Toast";
@@ -494,40 +495,51 @@ const CategoryBar: React.FC<{
   categories: Category[];
   selected: string;
   onSelect: (id: string) => void;
-}> = ({ categories, selected, onSelect }) => (
-  <div className="flex items-center gap-2 overflow-x-auto pb-0.5 scrollbar-none">
-    <button
-      onClick={() => onSelect("all")}
-      className={`shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 ${
-        selected === "all"
-          ? "bg-primary-600 text-white shadow-sm"
-          : "bg-white border border-slate-200 text-slate-600 hover:border-primary-300 hover:text-primary-600"
-      }`}
-    >
-      <Folder className="w-3.5 h-3.5" /> All
-    </button>
-    {categories.map((cat) => (
-      <button
-        key={cat.CategoryId}
-        onClick={() => onSelect(cat.CategoryId)}
-        className={`shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 whitespace-nowrap ${
-          selected === cat.CategoryId
-            ? "bg-primary-600 text-white shadow-sm"
-            : "bg-white border border-slate-200 text-slate-600 hover:border-primary-300 hover:text-primary-600"
-        }`}
-      >
-        {cat.ImageUrl && (
-          <img
-            src={cat.ImageUrl}
-            alt=""
-            className="w-4 h-4 rounded object-cover"
-          />
-        )}
-        {cat.Name}
-      </button>
-    ))}
-  </div>
-);
+}> = ({ categories, selected, onSelect }) => {
+  const selectedCat = categories.find((c) => c.CategoryId === selected);
+
+  return (
+    <div className="flex items-center gap-3">
+      <div className="relative">
+        <Folder className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+        <select
+          value={selected}
+          onChange={(e) => onSelect(e.target.value)}
+          className="pl-10 pr-10 py-2.5 rounded-xl border border-slate-200 text-sm font-medium text-slate-700 bg-white focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-100 cursor-pointer appearance-none transition-all min-w-[200px]"
+        >
+          <option value="all">All Categories</option>
+          {categories.map((cat) => (
+            <option key={cat.CategoryId} value={cat.CategoryId}>
+              {cat.Name}
+            </option>
+          ))}
+        </select>
+        <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+      </div>
+
+      {/* Active category badge — shows which filter is applied */}
+      {selected !== "all" && selectedCat && (
+        <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-primary-50 border border-primary-200 text-sm font-semibold text-primary-700">
+          {selectedCat.ImageUrl && (
+            <img
+              src={selectedCat.ImageUrl}
+              alt=""
+              className="w-4 h-4 rounded object-cover"
+            />
+          )}
+          {selectedCat.Name}
+          <button
+            onClick={() => onSelect("all")}
+            className="w-4 h-4 rounded-full bg-primary-200 hover:bg-primary-300 flex items-center justify-center transition-colors"
+            aria-label="Clear category filter"
+          >
+            <X className="w-2.5 h-2.5 text-primary-700" />
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
 
 const ProductsList: React.FC = () => {
   useSocketInvalidation(ModelType.Product);

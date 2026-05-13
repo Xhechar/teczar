@@ -106,7 +106,7 @@ const ALL_PROJECTS: Project[] = [
     subtitle: "Business Apartments",
     county: "Uasin Gishu County",
     image:
-      "https://res.cloudinary.com/dakyiye2e/image/upload/v1774810054/qflnoqpsylefxsljwqni.jpg",
+      "https://res.cloudinary.com/dakyiye2e/image/upload/v1778659169/h883zi7vxbtbb2ta4n05.jpg",
     tag: "CCTV Back-Up",
     tagColor: "bg-amber-400 text-white",
     details: [

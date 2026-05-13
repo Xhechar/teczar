@@ -14,6 +14,9 @@ import {
   UserPlus,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+import { CategoryService } from "../services/category.service";
+import { useQuery } from "@tanstack/react-query";
+import { Category } from "../interfaces/interfaces";
 
 interface NavbarProps {
   transparent?: boolean;
@@ -29,8 +32,8 @@ const NAV_LINKS: NavLink[] = [
   { label: "Home", to: "/", sectionId: "home" },
   { label: "Services", to: "/explore?tab=services" },
   { label: "Products", to: "/explore?tab=products" },
-  { label: "Projects", to: "/", sectionId: "projects" },
   { label: "About", to: "/", sectionId: "about" },
+  { label: "Projects", to: "/", sectionId: "projects" },
   { label: "Careers", to: "/careers" },
   { label: "Team", to: "/meet-team" },
   { label: "Contact", to: "/", sectionId: "contact" },
@@ -51,13 +54,24 @@ export const Navbar: React.FC<NavbarProps> = ({ transparent = false }) => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [catMenuOpen, setCatMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const catMenuRef = useRef<HTMLDivElement>(null);
+  const catMenuCloseTimeout = useRef<number | null>(null);
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
   const isHomePage = location.pathname === "/";
+
+  const { data: catsData } = useQuery({
+    queryKey: ["nav-categories"],
+    queryFn: () => CategoryService.FetchAll(),
+    staleTime: 1000 * 60 * 10,
+  });
+
+  const navCategories: Category[] = catsData?.DataList ?? [];
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -128,6 +142,14 @@ export const Navbar: React.FC<NavbarProps> = ({ transparent = false }) => {
     setMobileOpen(false);
   }, [location.pathname]);
 
+  useEffect(() => {
+    return () => {
+      if (catMenuCloseTimeout.current) {
+        window.clearTimeout(catMenuCloseTimeout.current);
+      }
+    };
+  }, []);
+
   const handleNavClick = (e: React.MouseEvent, link: NavLink) => {
     if (!link.sectionId) return;
 
@@ -149,15 +171,28 @@ export const Navbar: React.FC<NavbarProps> = ({ transparent = false }) => {
   const isActive = (link: NavLink): boolean => {
     if (!isHomePage) {
       if (link.sectionId) return false;
-      return location.pathname === link.to.split("?")[0];
+
+      const linkPath = link.to.split("?")[0];
+      const linkParams = new URLSearchParams(
+        link.to.includes("?") ? link.to.split("?")[1] : "",
+      );
+      const currentParams = new URLSearchParams(location.search);
+
+      // For Services and Products: match both pathname AND the tab param
+      if (linkPath === "/explore" && linkParams.get("tab")) {
+        return (
+          location.pathname === "/explore" &&
+          currentParams.get("tab") === linkParams.get("tab")
+        );
+      }
+
+      return location.pathname === linkPath;
     }
 
-    if (link.sectionId === "home") {
+    // Home page section tracking
+    if (link.sectionId === "home")
       return activeSection === "hero" || activeSection === null;
-    }
-    if (link.sectionId) {
-      return activeSection === link.sectionId;
-    }
+    if (link.sectionId) return activeSection === link.sectionId;
     return false;
   };
 
@@ -166,60 +201,159 @@ export const Navbar: React.FC<NavbarProps> = ({ transparent = false }) => {
       <nav
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-400 ${
           isNavScrolled
-            ? "bg-white/95 backdrop-blur-lg shadow-md py-3"
-            : "bg-transparent py-5"
+            ? "bg-white/95 backdrop-blur-lg shadow-md py-2"
+            : "bg-transparent py-3"
         }`}
       >
         <div className="container-custom flex items-center justify-between">
-          {/* ── Logo ── */}
+          {/* Logo — blue rounded container keeps logo visible on both transparent & white states */}
           <Link
             to="/"
-            className="flex items-center gap-3 group"
-            aria-label="Go to homepage"
+            className="flex items-center group"
+            aria-label="Raz Tech — Home"
           >
-            {/*
-              Blue circular backdrop — fixed size so it never shrinks when the
-              navbar collapses its padding on scroll.
-            */}
-            <div
-              className="shrink-0 flex items-center justify-center rounded-full transition-transform duration-300 group-hover:scale-105"
-              style={{
-                width: "56px",
-                height: "56px",
-                minWidth: "56px",
-                minHeight: "56px",
-                background: "linear-gradient(135deg, #1660eb 0%, #0d1a42 100%)",
-                boxShadow: "0 0 18px rgba(22,96,235,0.45)",
-              }}
-            >
+            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary-600 to-navy-700 flex items-center justify-center shadow-glow group-hover:scale-105 transition-transform duration-300 overflow-hidden p-1.5">
               <img
                 src="../testtrial.png"
                 alt="Raz Tech"
-                style={{ width: "100%", height: "100%", objectFit: "contain" }}
+                className="w-full h-full object-contain"
               />
             </div>
           </Link>
 
           {/* Desktop Nav Links */}
           <div className="hidden lg:flex items-center gap-1">
-            {NAV_LINKS.map((link) => (
-              <Link
-                key={link.label}
-                to={link.sectionId ? "/" : link.to}
-                onClick={(e) => handleNavClick(e, link)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                  isActive(link)
-                    ? isNavScrolled
-                      ? "text-primary-600 bg-primary-50"
-                      : "text-white bg-white/15"
-                    : isNavScrolled
-                      ? "text-slate-700 hover:text-primary-600 hover:bg-slate-50"
-                      : "text-white/85 hover:text-white hover:bg-white/10"
-                }`}
-              >
-                {link.label}
-              </Link>
-            ))}
+            {NAV_LINKS.map((link) => {
+              const isProducts = link.label === "Products";
+
+              // Products gets a special dropdown wrapper
+              if (isProducts) {
+                return (
+                  <div
+                    key={link.label}
+                    ref={catMenuRef}
+                    className="relative"
+                    onMouseEnter={() => {
+                      if (catMenuCloseTimeout.current) {
+                        window.clearTimeout(catMenuCloseTimeout.current);
+                        catMenuCloseTimeout.current = null;
+                      }
+                      setCatMenuOpen(true);
+                    }}
+                    onMouseLeave={() => {
+                      if (catMenuCloseTimeout.current) {
+                        window.clearTimeout(catMenuCloseTimeout.current);
+                      }
+                      catMenuCloseTimeout.current = window.setTimeout(
+                        () => setCatMenuOpen(false),
+                        250,
+                      );
+                    }}
+                  >
+                    {/* Products button — left part navigates, right chevron opens submenu */}
+                    <div
+                      className={`flex items-center rounded-lg transition-all duration-200 ${
+                        isActive(link)
+                          ? isNavScrolled
+                            ? "text-primary-600 bg-primary-50"
+                            : "text-white bg-white/15"
+                          : isNavScrolled
+                            ? "text-slate-700 hover:text-primary-600 hover:bg-slate-50"
+                            : "text-white/85 hover:text-white hover:bg-white/10"
+                      }`}
+                    >
+                      <Link
+                        to={link.to}
+                        className="pl-4 py-2 text-sm font-medium"
+                      >
+                        {link.label}
+                      </Link>
+                      <button
+                        className="px-1.5 py-2 rounded-r-lg"
+                        aria-label="Browse product categories"
+                      >
+                        <ChevronDown
+                          className={`w-3.5 h-3.5 transition-transform duration-200 ${catMenuOpen ? "rotate-180" : ""}`}
+                        />
+                      </button>
+                    </div>
+
+                    {/* Category submenu */}
+                    {catMenuOpen && (
+                      <div
+                        className="absolute top-full left-0 mt-2 w-56 bg-white rounded-2xl shadow-card-hover border border-slate-100 overflow-hidden z-50"
+                        style={{ animation: "fadeUp .18s ease-out" }}
+                      >
+                        <div className="px-4 py-2.5 border-b border-slate-100 bg-slate-50">
+                          <p className="text-xs font-700 text-slate-500 uppercase tracking-wide">
+                            Browse by Category
+                          </p>
+                        </div>
+                        <div className="py-1.5 max-h-72 overflow-y-auto">
+                          {/* All products */}
+                          <Link
+                            to="/explore?tab=products"
+                            onClick={() => setCatMenuOpen(false)}
+                            className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-slate-600 hover:bg-primary-50 hover:text-primary-600 transition-colors"
+                          >
+                            <div className="w-6 h-6 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
+                              <Package className="w-3.5 h-3.5 text-slate-500" />
+                            </div>
+                            All Products
+                          </Link>
+
+                          {navCategories.length > 0 && (
+                            <div className="h-px bg-slate-100 my-1" />
+                          )}
+
+                          {navCategories.map((cat) => (
+                            <Link
+                              key={cat.CategoryId}
+                              to={`/explore?tab=products&category=${cat.CategoryId}`}
+                              onClick={() => setCatMenuOpen(false)}
+                              className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-slate-600 hover:bg-primary-50 hover:text-primary-600 transition-colors"
+                            >
+                              {cat.ImageUrl ? (
+                                <img
+                                  src={cat.ImageUrl}
+                                  alt=""
+                                  className="w-6 h-6 rounded-lg object-cover shrink-0"
+                                />
+                              ) : (
+                                <div className="w-6 h-6 rounded-lg bg-primary-50 flex items-center justify-center shrink-0">
+                                  <Package className="w-3.5 h-3.5 text-primary-400" />
+                                </div>
+                              )}
+                              <span className="truncate">{cat.Name}</span>
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              }
+
+              // All other nav links render normally
+              return (
+                <Link
+                  key={link.label}
+                  to={link.sectionId ? "/" : link.to}
+                  onClick={(e) => handleNavClick(e, link)}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                    isActive(link)
+                      ? isNavScrolled
+                        ? "text-primary-600 bg-primary-50"
+                        : "text-white bg-white/15"
+                      : isNavScrolled
+                        ? "text-slate-700 hover:text-primary-600 hover:bg-slate-50"
+                        : "text-white/85 hover:text-white hover:bg-white/10"
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
           </div>
 
           {/* Right side */}
@@ -235,6 +369,7 @@ export const Navbar: React.FC<NavbarProps> = ({ transparent = false }) => {
                       : "hover:bg-white/10 text-white"
                   }`}
                 >
+                  {/* Avatar */}
                   <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-500 to-navy-600 flex items-center justify-center text-white text-xs font-bold">
                     {user.FirstName[0]}
                     {user.SecondName[0]}
@@ -358,6 +493,7 @@ export const Navbar: React.FC<NavbarProps> = ({ transparent = false }) => {
             mobileOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0"
           }`}
         >
+          {/* overflow-y-auto ensures the drawer itself scrolls if content is taller than viewport */}
           <div className="container-custom py-4 space-y-1 border-t border-slate-100 bg-white/98 backdrop-blur-lg overflow-y-auto max-h-[calc(100vh-64px)]">
             {NAV_LINKS.map((link) => (
               <Link
@@ -376,6 +512,7 @@ export const Navbar: React.FC<NavbarProps> = ({ transparent = false }) => {
             <div className="pt-3 border-t border-slate-100 flex flex-col gap-1">
               {user ? (
                 <>
+                  {/* User card */}
                   <div className="flex items-center gap-3 px-4 py-3 bg-slate-50 rounded-xl mb-1">
                     <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-500 to-navy-600 flex items-center justify-center text-white text-xs font-bold shrink-0">
                       {user.FirstName[0]}
@@ -388,6 +525,7 @@ export const Navbar: React.FC<NavbarProps> = ({ transparent = false }) => {
                       <p className="text-xs text-slate-500">{user.Role}</p>
                     </div>
                   </div>
+                  {/* All dashboard links — Settings included */}
                   {[
                     { icon: User, label: "My Profile", to: "/profile" },
                     { icon: ShoppingCart, label: "My Cart", to: "/cart" },
@@ -405,6 +543,7 @@ export const Navbar: React.FC<NavbarProps> = ({ transparent = false }) => {
                       {label}
                     </Link>
                   ))}
+                  {/* Sign Out — always visible, separated */}
                   <div className="border-t border-slate-100 mt-1 pt-1">
                     <button
                       onClick={async () => {
