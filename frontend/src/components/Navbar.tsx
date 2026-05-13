@@ -212,7 +212,7 @@ export const Navbar: React.FC<NavbarProps> = ({ transparent = false }) => {
             className="flex items-center group"
             aria-label="Raz Tech — Home"
           >
-            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary-600 to-navy-700 flex items-center justify-center shadow-glow group-hover:scale-105 transition-transform duration-300 overflow-hidden p-1.5">
+            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary-600 to-navy-700 flex items-center justify-center shadow-glow group-hover:scale-105 transition-transform duration-300 overflow-hidden">
               <img
                 src="../testtrial.png"
                 alt="Raz Tech"
