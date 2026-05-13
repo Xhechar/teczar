@@ -216,6 +216,7 @@ export const Navbar: React.FC<NavbarProps> = ({ transparent = false }) => {
               <img
                 src="../testtrial.png"
                 alt="Raz Tech"
+                style={{ width: "100%", height: "100%", objectFit: "contain" }}
                 className="w-full h-full object-contain"
               />
             </div>
