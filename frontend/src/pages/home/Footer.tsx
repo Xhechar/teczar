@@ -128,7 +128,7 @@ const Footer: React.FC = () => {
                   },
                   {
                     icon: Youtube,
-                    href: "https://www.youtube.com/@raz-technologies",
+                    href: "https://www.youtube.com/@raztechnologies",
                   },
                 ].map(({ icon: Icon, href }) => (
                   <a
