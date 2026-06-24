@@ -36,7 +36,7 @@ const MemberCard: React.FC<{ member: FetchTeamMemberDto }> = ({ member }) => {
         {/* Social icons — revealed on hover */}
         <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-3 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
           <a
-            href={`mailto:info@raztechnologies.co.ke`}
+            href={`mailto:raztechnologies9@gmail.com`}
             className="w-9 h-9 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-white hover:bg-white/40 transition-colors"
             title={`Email ${member.Name}`}
           >

@@ -38,8 +38,8 @@ const CONTACT_INFO = [
   {
     icon: Mail,
     label: "Email Address",
-    value: "info@raztechnologies.co.ke",
-    href: "mailto:info@raztechnologies.co.ke",
+    value: "raztechnologies9@gmail.com",
+    href: "mailto:raztechnologies9@gmail.com",
     color: "bg-amber-50 text-amber-600",
   },
   {

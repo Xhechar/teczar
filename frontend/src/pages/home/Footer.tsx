@@ -206,8 +206,8 @@ const Footer: React.FC = () => {
                   },
                   {
                     icon: Mail,
-                    text: "info@raztechnologies.co.ke",
-                    href: "mailto:info@raztechnologies.co.ke",
+                    text: "raztechnologies9@gmail.com",
+                    href: "mailto:raztechnologies9@gmail.com",
                   },
                   { icon: MapPin, text: "Eldoret, Kenya", href: "#" },
                 ].map(({ icon: Icon, text, href }) => (
