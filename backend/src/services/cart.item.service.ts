@@ -174,7 +174,7 @@ export class CartItemService extends BaseService implements IService<FetchCartDt
   }
   async Delete(id: string): Promise<ServiceResult<FetchCartDto>> {
     
-    let itemExist = await prisma.cartItem.delete({
+    let itemExist = await prisma.cartItem.findUnique({
       where: {
         CartItemId: id
       },

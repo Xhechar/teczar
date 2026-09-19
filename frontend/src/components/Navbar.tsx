@@ -15,8 +15,11 @@ import {
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { CategoryService } from "../services/category.service";
+import { CartService } from "../services/cart.service";
 import { useQuery } from "@tanstack/react-query";
 import { Category } from "../interfaces/interfaces";
+import { useSocketInvalidation } from "../hooks/socket.hook";
+import { ModelType } from "../enums/enums";
 
 interface NavbarProps {
   transparent?: boolean;
@@ -58,21 +61,34 @@ export const Navbar: React.FC<NavbarProps> = ({ transparent = false }) => {
   const [activeSection, setActiveSection] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const catMenuRef = useRef<HTMLDivElement>(null);
-  const catMenuCloseTimeout = useRef<number | null>(null);
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  useSocketInvalidation(ModelType.Cart);
 
   const isHomePage = location.pathname === "/";
 
+  // ── Cart item count (only fetched when user is logged in) ──────
+  const { data: cartData } = useQuery({
+    queryKey: [ModelType.Cart.toLowerCase()],
+    queryFn: () => CartService.FetchByUserId(),
+    enabled: !!user,
+    staleTime: 1000 * 30, // refresh every 30s
+    refetchOnWindowFocus: true,
+  });
+
+  const cartCount = cartData?.Data?.Items
+    ? cartData.Data.Items.reduce((sum, item) => sum + item.Quantity, 0)
+    : 0;
+
+  // ── Fetch categories for Products submenu ──────────────────────
   const { data: catsData } = useQuery({
     queryKey: ["nav-categories"],
     queryFn: () => CategoryService.FetchAll(),
     staleTime: 1000 * 60 * 10,
   });
-
   const navCategories: Category[] = catsData?.DataList ?? [];
-
+  // ── Scroll detection (for navbar bg) ──────────────────────────
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -98,18 +114,22 @@ export const Navbar: React.FC<NavbarProps> = ({ transparent = false }) => {
         });
       },
       {
+        // Fire when a section's top 20% is inside the viewport (accounting for navbar)
         rootMargin: `-${NAVBAR_HEIGHT}px 0px -60% 0px`,
         threshold: 0,
       },
     );
 
+    // Observe the hero section (the <section> at the top has no id — give it one via querySelector)
+    // We watch each named section plus the page top
     const sectionEls: Element[] = [];
 
     HOME_SECTION_IDS.forEach((id) => {
+      // "hero" is a virtual id we assign to the page top sentinel
       if (id === "hero") {
         const el = document.querySelector("section");
         if (el) {
-          el.id = "hero";
+          el.id = "hero"; // stamp the id if missing
           sectionEls.push(el);
           observer.observe(el);
         }
@@ -125,6 +145,7 @@ export const Navbar: React.FC<NavbarProps> = ({ transparent = false }) => {
     return () => observer.disconnect();
   }, [isHomePage]);
 
+  // ── Close dropdowns on outside click ──────────────────────────
   useEffect(() => {
     const onClick = (e: MouseEvent) => {
       if (
@@ -133,25 +154,25 @@ export const Navbar: React.FC<NavbarProps> = ({ transparent = false }) => {
       ) {
         setDropdownOpen(false);
       }
+      if (
+        catMenuRef.current &&
+        !catMenuRef.current.contains(e.target as Node)
+      ) {
+        setCatMenuOpen(false);
+      }
     };
     document.addEventListener("mousedown", onClick);
     return () => document.removeEventListener("mousedown", onClick);
   }, []);
 
+  // ── Close mobile menu on navigation ───────────────────────────
   useEffect(() => {
     setMobileOpen(false);
   }, [location.pathname]);
 
-  useEffect(() => {
-    return () => {
-      if (catMenuCloseTimeout.current) {
-        window.clearTimeout(catMenuCloseTimeout.current);
-      }
-    };
-  }, []);
-
+  // ── Handle nav link clicks ─────────────────────────────────────
   const handleNavClick = (e: React.MouseEvent, link: NavLink) => {
-    if (!link.sectionId) return;
+    if (!link.sectionId) return; // let <Link> handle plain routes
 
     e.preventDefault();
     setMobileOpen(false);
@@ -168,6 +189,7 @@ export const Navbar: React.FC<NavbarProps> = ({ transparent = false }) => {
 
   const isNavScrolled = scrolled || !transparent || mobileOpen;
 
+  // ── Determine active state per link ───────────────────────────
   const isActive = (link: NavLink): boolean => {
     if (!isHomePage) {
       if (link.sectionId) return false;
@@ -230,27 +252,7 @@ export const Navbar: React.FC<NavbarProps> = ({ transparent = false }) => {
               // Products gets a special dropdown wrapper
               if (isProducts) {
                 return (
-                  <div
-                    key={link.label}
-                    ref={catMenuRef}
-                    className="relative"
-                    onMouseEnter={() => {
-                      if (catMenuCloseTimeout.current) {
-                        window.clearTimeout(catMenuCloseTimeout.current);
-                        catMenuCloseTimeout.current = null;
-                      }
-                      setCatMenuOpen(true);
-                    }}
-                    onMouseLeave={() => {
-                      if (catMenuCloseTimeout.current) {
-                        window.clearTimeout(catMenuCloseTimeout.current);
-                      }
-                      catMenuCloseTimeout.current = window.setTimeout(
-                        () => setCatMenuOpen(false),
-                        250,
-                      );
-                    }}
-                  >
+                  <div key={link.label} ref={catMenuRef} className="relative">
                     {/* Products button — left part navigates, right chevron opens submenu */}
                     <div
                       className={`flex items-center rounded-lg transition-all duration-200 ${
@@ -270,6 +272,7 @@ export const Navbar: React.FC<NavbarProps> = ({ transparent = false }) => {
                         {link.label}
                       </Link>
                       <button
+                        onClick={() => setCatMenuOpen((p) => !p)}
                         className="px-1.5 py-2 rounded-r-lg"
                         aria-label="Browse product categories"
                       >
@@ -359,6 +362,30 @@ export const Navbar: React.FC<NavbarProps> = ({ transparent = false }) => {
 
           {/* Right side */}
           <div className="hidden lg:flex items-center gap-3">
+            {/* ── Cart icon — always visible, shows item count badge ── */}
+            <Link
+              to={user ? "/cart" : "/login"}
+              className={`relative flex items-center justify-center w-10 h-10 rounded-xl transition-all duration-200 ${
+                isNavScrolled
+                  ? "text-slate-600 hover:bg-slate-100 hover:text-primary-600"
+                  : "text-white/90 hover:bg-white/15 hover:text-white"
+              }`}
+              aria-label={`Cart${cartCount > 0 ? ` — ${cartCount} item${cartCount !== 1 ? "s" : ""}` : " — empty"}`}
+            >
+              <ShoppingCart className="w-5 h-5" />
+              <span
+                className={`absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold text-white flex items-center justify-center leading-none transition-all duration-300 ${
+                  cartCount > 0
+                    ? "bg-red-500 scale-110 shadow-sm"
+                    : isNavScrolled
+                      ? "bg-slate-300 text-slate-600"
+                      : "bg-white/30 text-white/90"
+                }`}
+              >
+                {cartCount > 9 ? "9+" : cartCount}
+              </span>
+            </Link>
+
             {user ? (
               /* ── Authenticated ── */
               <div ref={dropdownRef} className="relative">
@@ -470,22 +497,49 @@ export const Navbar: React.FC<NavbarProps> = ({ transparent = false }) => {
             )}
           </div>
 
-          {/* Mobile menu toggle */}
-          <button
-            onClick={() => setMobileOpen((p) => !p)}
-            className={`lg:hidden p-2 rounded-xl transition-all duration-200 ${
-              isNavScrolled
-                ? "text-slate-700 hover:bg-slate-100"
-                : "text-white hover:bg-white/10"
-            }`}
-            aria-label="Toggle menu"
-          >
-            {mobileOpen ? (
-              <X className="w-6 h-6" />
-            ) : (
-              <Menu className="w-6 h-6" />
-            )}
-          </button>
+          {/* Mobile right cluster: cart + hamburger */}
+          <div className="flex lg:hidden items-center gap-2">
+            {/* Cart — visible on mobile always */}
+            <Link
+              to={user ? "/cart" : "/login"}
+              className={`relative flex items-center justify-center w-10 h-10 rounded-xl transition-all duration-200 ${
+                isNavScrolled
+                  ? "text-slate-600 hover:bg-slate-100"
+                  : "text-white/90 hover:bg-white/15"
+              }`}
+              aria-label="Cart"
+            >
+              <ShoppingCart className="w-5 h-5" />
+              <span
+                className={`absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold text-white flex items-center justify-center leading-none transition-all duration-300 ${
+                  cartCount > 0
+                    ? "bg-red-500 scale-110 shadow-sm"
+                    : isNavScrolled
+                      ? "bg-slate-300 text-slate-600"
+                      : "bg-white/30 text-white/90"
+                }`}
+              >
+                {cartCount > 9 ? "9+" : cartCount}
+              </span>
+            </Link>
+
+            {/* Hamburger */}
+            <button
+              onClick={() => setMobileOpen((p) => !p)}
+              className={`p-2 rounded-xl transition-all duration-200 ${
+                isNavScrolled
+                  ? "text-slate-700 hover:bg-slate-100"
+                  : "text-white hover:bg-white/10"
+              }`}
+              aria-label="Toggle menu"
+            >
+              {mobileOpen ? (
+                <X className="w-6 h-6" />
+              ) : (
+                <Menu className="w-6 h-6" />
+              )}
+            </button>
+          </div>
         </div>
 
         {/* Mobile Drawer */}
@@ -529,11 +583,16 @@ export const Navbar: React.FC<NavbarProps> = ({ transparent = false }) => {
                   {/* All dashboard links — Settings included */}
                   {[
                     { icon: User, label: "My Profile", to: "/profile" },
-                    { icon: ShoppingCart, label: "My Cart", to: "/cart" },
+                    {
+                      icon: ShoppingCart,
+                      label: "My Cart",
+                      to: "/cart",
+                      count: cartCount,
+                    },
                     { icon: Package, label: "My Orders", to: "/orders" },
                     { icon: Calendar, label: "My Bookings", to: "/bookings" },
                     { icon: Settings, label: "Settings", to: "/settings" },
-                  ].map(({ icon: Icon, label, to }) => (
+                  ].map(({ icon: Icon, label, to, count }) => (
                     <Link
                       key={to}
                       to={to}
@@ -541,7 +600,18 @@ export const Navbar: React.FC<NavbarProps> = ({ transparent = false }) => {
                       className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm text-slate-700 hover:bg-slate-50 hover:text-primary-600 transition-colors"
                     >
                       <Icon className="w-4 h-4 text-slate-400" />
-                      {label}
+                      <span className="flex-1">{label}</span>
+                      {count !== undefined && (
+                        <span
+                          className={`min-w-[20px] h-5 px-1.5 rounded-full text-[10px] font-bold text-white flex items-center justify-center ${
+                            count > 0
+                              ? "bg-red-500"
+                              : "bg-slate-300 text-slate-600"
+                          }`}
+                        >
+                          {count > 9 ? "9+" : count}
+                        </span>
+                      )}
                     </Link>
                   ))}
                   {/* Sign Out — always visible, separated */}

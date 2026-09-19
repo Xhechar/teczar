@@ -194,7 +194,7 @@ const ProductPage: React.FC = () => {
 
       if (result.Success) {
         queryClient.invalidateQueries({
-          queryKey: [`user${ModelType.CartItem.toLowerCase()}`],
+          queryKey: [ModelType.Cart.toLowerCase()],
         });
       }
     } catch (error: any) {
