@@ -528,13 +528,13 @@ const ServicePage: React.FC = () => {
                     </button>
                     <div className="flex gap-3">
                       <a
-                        href="tel:+254700000000"
+                        href="tel:+254746430693"
                         className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold text-slate-600 border border-slate-200 hover:border-primary-300 hover:text-primary-600 transition-all duration-200"
                       >
                         <Phone className="w-4 h-4" /> Call Us
                       </a>
                       <a
-                        href={`https://wa.me/254700000000?text=${encodeURIComponent(`Hi! I'd like to enquire about: *${service.Title}*`)}`}
+                        href={`https://wa.me/254746430693?text=${encodeURIComponent(`Hi! I'd like to enquire about: *${service.Title}*`)}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold text-white transition-all duration-200"

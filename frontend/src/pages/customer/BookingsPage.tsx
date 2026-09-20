@@ -89,7 +89,7 @@ const BookingsPage: React.FC = () => {
             {booking.Status === ServiceRequestStatus.Scheduled && (
               <div className="mt-4 flex gap-2">
                 <a
-                  href="tel:+254700000000"
+                  href="tel:+254746430693"
                   className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold border border-slate-200 text-slate-600 hover:border-primary-400 hover:text-primary-600 transition-all"
                 >
                   <PhoneCall className="w-3.5 h-3.5" /> Confirm with Team

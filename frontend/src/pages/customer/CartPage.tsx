@@ -187,7 +187,7 @@ const CartPage: React.FC = () => {
                 <ArrowRight className="w-4 h-4" />
               </button>
               <a
-                href="tel:+254700000000"
+                href="tel:+254746430693"
                 className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border border-slate-200 text-sm font-semibold text-slate-600 hover:border-primary-400 hover:text-primary-600 transition-all"
               >
                 <Phone className="w-4 h-4" />
