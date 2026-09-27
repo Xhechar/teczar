@@ -381,7 +381,7 @@ const JobCard: React.FC<{ job: Job; onApply: (j: Job) => void }> = ({
                 <Briefcase className="w-4 h-4" /> Apply Now
               </button>
               <a
-                href="mailto:careers@raztechnologies.co.ke"
+                href="mailto:raztechnologies9@gmail.com"
                 className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold border-2 border-slate-200 text-slate-600 hover:border-primary-400 hover:text-primary-600 transition-all duration-200"
               >
                 Email CV
@@ -457,10 +457,10 @@ const CareersPage: React.FC = () => {
             <p className="text-sm mt-2">
               Or send your CV to{" "}
               <a
-                href="mailto:careers@raztechnologies.co.ke"
+                href="mailto:raztechnologies9@gmail.com"
                 className="text-primary-500 hover:underline"
               >
-                careers@raztechnologies.co.ke
+                raztechnologies9@gmail.com
               </a>
             </p>
           </div>

@@ -24,7 +24,7 @@ HeroSliderRouter.put(
   "/reorder",
   VerifyToken,
   verifyAdmin,
-  async (req, res) => await hsController.Update(req, res),
+  async (req, res) => await hsController.HandleReorder(req, res),
 );
 
 HeroSliderRouter.delete(
