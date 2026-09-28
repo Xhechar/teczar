@@ -175,9 +175,9 @@ export class HeroSliderService
     let slideExists = await prisma.heroSlide.findMany({
       where: {
         IsActive: true,
-        orderBy: {
-          SortOrder: "asc"
-        }
+      },
+      orderBy: {
+        SortOrder: "asc"
       }
     });
 
