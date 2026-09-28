@@ -154,7 +154,13 @@ export class HeroSliderService
     return ServiceResponse.Success<HeroSlide>("Slide updated successfully.");
   }
   async FetchAll(): Promise<ServiceResult<HeroSlide>> {
-    let slideExists = await prisma.heroSlide.findMany();
+    let slideExists = await prisma.heroSlide.findMany(
+      {
+        orderBy: {
+          SortOrder: "asc"
+        }
+      }
+    );
 
     if (!slideExists) {
       return ServiceResponse.Failure<HeroSlide>(
@@ -163,12 +169,15 @@ export class HeroSliderService
       );
     }
 
-    return ServiceResponse.Success<HeroSlide>("Slide updated successfully.", undefined, slideExists);
+    return ServiceResponse.Success<HeroSlide>("Slides fetched successfully.", undefined, slideExists);
   }
   async FetchActive(): Promise<ServiceResult<HeroSlide>> {
     let slideExists = await prisma.heroSlide.findMany({
       where: {
-        IsActive: true
+        IsActive: true,
+        orderBy: {
+          SortOrder: "asc"
+        }
       }
     });
 
@@ -180,7 +189,7 @@ export class HeroSliderService
     }
 
     return ServiceResponse.Success<HeroSlide>(
-      "Slide updated successfully.",
+      "Slides fetched successfully.",
       undefined,
       slideExists,
     );
