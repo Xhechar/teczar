@@ -20,7 +20,7 @@ const ALL_PROJECTS: Project[] = [
     subtitle: "Personal Apartment",
     county: "Elgeyo Marakwet",
     image:
-      "https://res.cloudinary.com/dakyiye2e/image/upload/v1793774020/ijdsp3fk3xzcihmnku5t.jpg",
+      "https://res.cloudinary.com/dakyiye2e/image/upload/v1793776642/ujlqdiji8g9nygsmh7hx.jpg",
     tag: "CCTV",
     tagColor: "bg-amber-400 text-white",
     details: [
@@ -48,7 +48,7 @@ const ALL_PROJECTS: Project[] = [
     county: "Eldoret Town",
     image:
       "https://res.cloudinary.com/dakyiye2e/image/upload/v1793774120/ecww7ngqsykrfiyyawwr.jpg",
-    tag: "Solar",
+    tag: "Electricity",
     tagColor: "bg-amber-400 text-white",
     details: [
       "Socket Outlets",
