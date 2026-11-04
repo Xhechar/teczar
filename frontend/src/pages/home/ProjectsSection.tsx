@@ -16,6 +16,49 @@ interface Project {
 const ALL_PROJECTS: Project[] = [
   {
     id: "proj-001",
+    title: "PTZ Camera Installation",
+    subtitle: "Personal Apartment",
+    county: "Elgeyo Marakwet",
+    image:
+      "https://res.cloudinary.com/dakyiye2e/image/upload/v1793774020/ijdsp3fk3xzcihmnku5t.jpg",
+    tag: "CCTV",
+    tagColor: "bg-amber-400 text-white",
+    details: [
+      "32-Channel NVR",
+      "IP Camera",
+      "Alarm system",
+      "Remote Access",
+    ],
+  },
+  {
+    id: "proj-002",
+    title: "16-Channel HD Camera Installation",
+    subtitle: "Business Complex",
+    county: "Eldoret Town",
+    image:
+      "https://res.cloudinary.com/dakyiye2e/image/upload/v1793773901/xpztzpbcl2ngy9d6kvkb.jpg",
+    tag: "CCTV",
+    tagColor: "bg-primary-600 text-white",
+    details: ["16-Channel DVR", "HD Camera", "Alarm System", "Remote Access"],
+  },
+  {
+    id: "proj-003",
+    title: "Electrical Dropping",
+    subtitle: "Local Rentals",
+    county: "Eldoret Town",
+    image:
+      "https://res.cloudinary.com/dakyiye2e/image/upload/v1793774120/ecww7ngqsykrfiyyawwr.jpg",
+    tag: "Solar",
+    tagColor: "bg-amber-400 text-white",
+    details: [
+      "Socket Outlets",
+      "Lighting Outlets",
+      "Shower Points",
+      "Cooker Outlets",
+    ],
+  },
+  {
+    id: "proj-004",
     title: "10KVA Solar Installation",
     subtitle: "Bungalow House",
     county: "Kakamega County",
@@ -31,7 +74,7 @@ const ALL_PROJECTS: Project[] = [
     ],
   },
   {
-    id: "proj-002",
+    id: "proj-005",
     title: "IP Camera Installation",
     subtitle: "Commercial Complex",
     county: "Eldoret Town",
@@ -42,7 +85,7 @@ const ALL_PROJECTS: Project[] = [
     details: ["32-Channel NVR", "IP Cameras", "Alarm System", "Remote Access"],
   },
   {
-    id: "proj-003",
+    id: "proj-006",
     title: "20KVA Solar Back-Up System",
     subtitle: "Apartment Complex",
     county: "Migori County",
@@ -58,7 +101,7 @@ const ALL_PROJECTS: Project[] = [
     ],
   },
   {
-    id: "proj-004",
+    id: "proj-007",
     title: "Direct Solar Water Heater",
     subtitle: "Residential Home",
     county: "Migori County",
@@ -74,7 +117,7 @@ const ALL_PROJECTS: Project[] = [
     ],
   },
   {
-    id: "proj-005",
+    id: "proj-008",
     title: "Electrical Fence Installation",
     subtitle: "Full Perimeter Wall Installation",
     county: "Homabay County",
@@ -85,7 +128,7 @@ const ALL_PROJECTS: Project[] = [
     details: ["Complete Wiring", "HV Fence Energizer", "Strainers", "HT Wire"],
   },
   {
-    id: "proj-006",
+    id: "proj-009",
     title: "5KVA Back-Up Solar System",
     subtitle: "Family Home",
     county: "Bungoma County",
@@ -101,7 +144,7 @@ const ALL_PROJECTS: Project[] = [
     ],
   },
   {
-    id: "proj-007",
+    id: "proj-010",
     title: "CCTV Solar Back-Up System",
     subtitle: "Business Apartments",
     county: "Uasin Gishu County",
@@ -117,7 +160,7 @@ const ALL_PROJECTS: Project[] = [
     ],
   },
   {
-    id: "proj-008",
+    id: "proj-011",
     title: "Solar 2KVA System",
     subtitle: "Business Apartments",
     county: "Uasin Gishu County",
