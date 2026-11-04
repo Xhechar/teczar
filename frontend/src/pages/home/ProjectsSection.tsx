@@ -47,7 +47,7 @@ const ALL_PROJECTS: Project[] = [
     subtitle: "Local Rentals",
     county: "Eldoret Town",
     image:
-      "https://res.cloudinary.com/dakyiye2e/image/upload/v1793774120/ecww7ngqsykrfiyyawwr.jpg",
+      "https://res.cloudinary.com/dakyiye2e/image/upload/v1793780076/axkntaoexhzei4vzxog9.jpg",
     tag: "Electricity",
     tagColor: "bg-amber-400 text-white",
     details: [
