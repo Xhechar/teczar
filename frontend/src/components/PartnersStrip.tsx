@@ -33,6 +33,10 @@ const PARTNERS: { name: string; src: string }[] = [
     name: "Dahua",
     src: "https://res.cloudinary.com/dakyiye2e/image/upload/v1778099555/bldpr3bksngkqa1agpsg.png",
   },
+  {
+    name: "Hikvision",
+    src: "https://res.cloudinary.com/dakyiye2e/image/upload/v1794079861/dos3t8mc39caghqnpmp3.png",
+  },
 ];
 
 // ─── Single logo pill ─────────────────────────────────────────────
