@@ -1,235 +1,25 @@
-import React, { useState } from "react";
-import { MapPin, CheckCircle, ArrowRight, ChevronDown } from "lucide-react";
+import React from "react";
+import { Link } from "react-router-dom";
+import { CheckCircle, ArrowRight } from "lucide-react";
 import { useScrollReveal } from "../../hooks/Helper";
+import ProjectCard from "../../components/ProjectCard";
+import { PROJECTS, getLatestProjects } from "../../shared/projects.data";
 
-interface Project {
-  id: string;
-  title: string;
-  subtitle: string;
-  county: string;
-  image: string;
-  tag: string;
-  tagColor: string;
-  details: string[];
-}
-
-const ALL_PROJECTS: Project[] = [
-  {
-    id: "proj-001",
-    title: "PTZ Camera Installation",
-    subtitle: "Personal Apartment",
-    county: "Elgeyo Marakwet",
-    image:
-      "https://res.cloudinary.com/dakyiye2e/image/upload/v1793776642/ujlqdiji8g9nygsmh7hx.jpg",
-    tag: "CCTV",
-    tagColor: "bg-amber-400 text-white",
-    details: [
-      "32-Channel NVR",
-      "IP Camera",
-      "Alarm system",
-      "Remote Access",
-    ],
-  },
-  {
-    id: "proj-002",
-    title: "16-Channel HD Camera Installation",
-    subtitle: "Business Complex",
-    county: "Eldoret Town",
-    image:
-      "https://res.cloudinary.com/dakyiye2e/image/upload/v1793773901/xpztzpbcl2ngy9d6kvkb.jpg",
-    tag: "CCTV",
-    tagColor: "bg-primary-600 text-white",
-    details: ["16-Channel DVR", "HD Camera", "Alarm System", "Remote Access"],
-  },
-  {
-    id: "proj-003",
-    title: "Electrical Dropping",
-    subtitle: "Local Rentals",
-    county: "Eldoret Town",
-    image:
-      "https://res.cloudinary.com/dakyiye2e/image/upload/v1793780076/axkntaoexhzei4vzxog9.jpg",
-    tag: "Electricity",
-    tagColor: "bg-amber-400 text-white",
-    details: [
-      "Socket Outlets",
-      "Lighting Outlets",
-      "Shower Points",
-      "Cooker Outlets",
-    ],
-  },
-  {
-    id: "proj-004",
-    title: "10KVA Solar Installation",
-    subtitle: "Bungalow House",
-    county: "Kakamega County",
-    image:
-      "https://res.cloudinary.com/dakyiye2e/image/upload/v1774802946/o8pfvwzshyjbjowfpboc.jpg",
-    tag: "Solar",
-    tagColor: "bg-amber-400 text-white",
-    details: [
-      "10KW System",
-      "Lithium Batteries",
-      "Grid-tie Inverter",
-      "Monitoring App",
-    ],
-  },
-  {
-    id: "proj-005",
-    title: "IP Camera Installation",
-    subtitle: "Commercial Complex",
-    county: "Eldoret Town",
-    image:
-      "https://res.cloudinary.com/dakyiye2e/image/upload/v1774803049/ojrnxa0aj0n0yggpdoeh.jpg",
-    tag: "CCTV",
-    tagColor: "bg-primary-600 text-white",
-    details: ["32-Channel NVR", "IP Cameras", "Alarm System", "Remote Access"],
-  },
-  {
-    id: "proj-006",
-    title: "20KVA Solar Back-Up System",
-    subtitle: "Apartment Complex",
-    county: "Migori County",
-    image:
-      "https://res.cloudinary.com/dakyiye2e/image/upload/v1774809453/sdibugy7fvlbtzg0smfe.jpg",
-    tag: "Solar",
-    tagColor: "bg-amber-400 text-white",
-    details: [
-      "20KW System",
-      "3-Phase Inverter",
-      "Battery Storage",
-      "24hr Backup",
-    ],
-  },
-  {
-    id: "proj-007",
-    title: "Direct Solar Water Heater",
-    subtitle: "Residential Home",
-    county: "Migori County",
-    image:
-      "https://res.cloudinary.com/dakyiye2e/image/upload/v1774798144/opdwivkrxpyx2wrfzacd.jpg",
-    tag: "Plumbing",
-    tagColor: "bg-teal-500 text-white",
-    details: [
-      "300L Capacity",
-      "Direct Solar Systems",
-      "Hot Water All Day",
-      "10yr Warranty",
-    ],
-  },
-  {
-    id: "proj-008",
-    title: "Electrical Fence Installation",
-    subtitle: "Full Perimeter Wall Installation",
-    county: "Homabay County",
-    image:
-      "https://res.cloudinary.com/dakyiye2e/image/upload/v1774809726/zykx8tt1nljro5kqiuxe.jpg",
-    tag: "Electrical",
-    tagColor: "bg-yellow-500 text-white",
-    details: ["Complete Wiring", "HV Fence Energizer", "Strainers", "HT Wire"],
-  },
-  {
-    id: "proj-009",
-    title: "5KVA Back-Up Solar System",
-    subtitle: "Family Home",
-    county: "Bungoma County",
-    image:
-      "https://res.cloudinary.com/dakyiye2e/image/upload/v1774809545/wmlp63elgzlj61ynmjfk.jpg",
-    tag: "Solar",
-    tagColor: "bg-amber-400 text-white",
-    details: [
-      "5KW System",
-      "Lithium Battery",
-      "Hybrid Inverter",
-      "App Monitoring",
-    ],
-  },
-  {
-    id: "proj-010",
-    title: "CCTV Solar Back-Up System",
-    subtitle: "Business Apartments",
-    county: "Uasin Gishu County",
-    image:
-      "https://res.cloudinary.com/dakyiye2e/image/upload/v1774810054/qflnoqpsylefxsljwqni.jpg",
-    tag: "CCTV Back-Up",
-    tagColor: "bg-amber-400 text-white",
-    details: [
-      "2KW System",
-      "Lithium Battery",
-      "Hybrid Inverter",
-      "App Monitoring",
-    ],
-  },
-  {
-    id: "proj-011",
-    title: "Solar 2KVA System",
-    subtitle: "Business Apartments",
-    county: "Uasin Gishu County",
-    image:
-      "https://res.cloudinary.com/dakyiye2e/image/upload/v1778659169/h883zi7vxbtbb2ta4n05.jpg",
-    tag: "2KVA System",
-    tagColor: "bg-amber-400 text-white",
-    details: [
-      "2KVA System",
-      "Lithium Battery",
-      "App Monitoring",
-    ],
-  },
-];
-
-const PREVIEW_COUNT = 4;
-
-const ProjectCard: React.FC<{ project: Project; index: number; animate?: boolean }> = ({ project, index, animate = true }) => (
-  <div
-    className={`${animate ? "reveal" : ""} group relative overflow-hidden rounded-2xl shadow-card hover:shadow-card-hover transition-all duration-400`}
-    style={animate ? { transitionDelay: `${(index % 4) * 0.08}s` } : undefined}
-  >
-    <div className="relative h-56 overflow-hidden">
-      <img
-        src={project.image}
-        alt={project.title}
-        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-        loading="lazy"
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-navy-900/80 via-navy-900/30 to-transparent" />
-      <span className={`absolute top-4 right-4 text-xs font-bold px-3 py-1 rounded-full ${project.tagColor}`}>
-        {project.tag}
-      </span>
-      <div className="absolute bottom-0 left-0 right-0 p-5">
-        <div className="flex items-center gap-1.5 text-white/70 text-xs mb-1.5">
-          <MapPin className="w-3.5 h-3.5 text-amber-400" />
-          {project.county}
-        </div>
-        <h3 className="font-display font-700 text-white text-lg leading-tight">{project.title}</h3>
-        <p className="text-white/70 text-sm">{project.subtitle}</p>
-      </div>
-    </div>
-    <div className="bg-white p-4">
-      <div className="flex flex-wrap gap-2">
-        {project.details.map((detail) => (
-          <span key={detail}
-            className="flex items-center gap-1 text-xs text-slate-600 bg-slate-50 rounded-full px-2.5 py-1">
-            <CheckCircle className="w-3 h-3 text-green-500" />
-            {detail}
-          </span>
-        ))}
-      </div>
-    </div>
-  </div>
-);
+// How many projects the homepage previews. The rest live on /projects.
+const HOME_PREVIEW_COUNT = 4;
 
 const ProjectsSection: React.FC = () => {
-  const [showAll, setShowAll] = useState(false);
-
-  const initialCards = ALL_PROJECTS.slice(0, PREVIEW_COUNT);
-  const extraCards   = ALL_PROJECTS.slice(PREVIEW_COUNT);
+  const latest = getLatestProjects(HOME_PREVIEW_COUNT);
 
   useScrollReveal([]);
 
   const handleGetQuote = () => {
+    // Scroll to contact with an offset for the fixed navbar
     const el = document.getElementById("contact");
     if (el) {
       const navbarHeight = 72;
-      const top = el.getBoundingClientRect().top + window.scrollY - navbarHeight;
+      const top =
+        el.getBoundingClientRect().top + window.scrollY - navbarHeight;
       window.scrollTo({ top, behavior: "smooth" });
     }
   };
@@ -253,39 +43,23 @@ const ProjectsSection: React.FC = () => {
           </p>
         </div>
 
-        {/* Grid — initial 4 animate in on scroll, extras appear instantly */}
+        {/* Latest projects */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-          {initialCards.map((project, i) => (
-            <ProjectCard
-              key={project.id}
-              project={project}
-              index={i}
-              animate={true}
-            />
+          {latest.map((project, i) => (
+            <ProjectCard key={project.id} project={project} index={i} />
           ))}
-          {showAll &&
-            extraCards.map((project, i) => (
-              <ProjectCard
-                key={project.id}
-                project={project}
-                index={i}
-                animate={false}
-              />
-            ))}
         </div>
 
-        {/* View More toggle */}
-        {!showAll && ALL_PROJECTS.length > PREVIEW_COUNT && (
-          <div className="text-center mb-4">
-            <button
-              onClick={() => setShowAll(true)}
-              className="inline-flex items-center gap-2 px-8 py-3 rounded-xl border-2 border-primary-600 text-primary-600 font-semibold hover:bg-primary-600 hover:text-white transition-all duration-300"
-            >
-              View All Projects
-              <ChevronDown className="w-4 h-4" />
-            </button>
-          </div>
-        )}
+        {/* View all → dedicated page */}
+        <div className="text-center mb-4">
+          <Link
+            to="/projects"
+            className="inline-flex items-center gap-2 px-8 py-3 rounded-xl border-2 border-primary-600 text-primary-600 font-semibold hover:bg-primary-600 hover:text-white transition-all duration-300"
+          >
+            View All Projects ({PROJECTS.length})
+            <ArrowRight className="w-4 h-4" />
+          </Link>
+        </div>
 
         {/* CTA banner */}
         <div
@@ -304,12 +78,11 @@ const ProjectsSection: React.FC = () => {
               assessment and personalized quote today.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              {/* Scroll to contact section programmatically */}
               <button onClick={handleGetQuote} className="btn-amber">
-                Get a Free Consultation
+                Get a Free Quote
                 <ArrowRight className="w-4 h-4" />
               </button>
-              <a href="tel:+254746430693" className="btn-outline">
+              <a href="tel:+254700000000" className="btn-outline">
                 Call Us Now
               </a>
             </div>

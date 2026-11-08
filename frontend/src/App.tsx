@@ -28,6 +28,7 @@ const ProductPage = lazy(() => import("./pages/ProductPage"));
 const ServicePage = lazy(() => import("./pages/ServicePage"));
 const CareersPage = lazy(() => import("./pages/CareersPage"));
 const MeetTeamPage = lazy(() => import("./pages/MeetTeamPage"));
+const ProjectsPage = lazy(() => import("./pages/ProjectsPage"));
 
 const LoginPage = lazy(() => import("./pages/auth/LoginPage"));
 const RegisterPage = lazy(() => import("./pages/auth/RegisterPage"));
@@ -52,7 +53,7 @@ const App: React.FC = () => (
             <Route path="/services/:serviceId" element={<ServicePage />} />
             <Route path="/careers" element={<CareersPage />} />
             <Route path="/meet-team" element={<MeetTeamPage />} />
-
+            <Route path="/projects" element={<ProjectsPage />} />
             <Route
               path="/login"
               element={

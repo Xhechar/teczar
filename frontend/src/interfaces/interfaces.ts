@@ -363,3 +363,14 @@ export interface HeroSlide {
   CreatedAt: Date;
   UpdatedAt: Date;
 }
+
+export interface Project {
+  id: string;
+  title: string;
+  subtitle: string;
+  county: string;
+  image: string;
+  category: string;
+  completedAt: string;
+  details: string[];
+}
