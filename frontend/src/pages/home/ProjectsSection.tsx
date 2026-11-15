@@ -82,7 +82,7 @@ const ProjectsSection: React.FC = () => {
                 Get a Free Quote
                 <ArrowRight className="w-4 h-4" />
               </button>
-              <a href="tel:+254700000000" className="btn-outline">
+              <a href="tel:+254746430693" className="btn-outline">
                 Call Us Now
               </a>
             </div>

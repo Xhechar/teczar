@@ -195,16 +195,6 @@ const Footer: React.FC = () => {
                     href: "tel:+254746430693",
                   },
                   {
-                    icon: Phone,
-                    text: "+254 797 133 976",
-                    href: "tel:+254797133976",
-                  },
-                  {
-                    icon: Phone,
-                    text: "+254 790 441 659",
-                    href: "tel:+254790441659",
-                  },
-                  {
                     icon: Mail,
                     text: "raztechnologies9@gmail.com",
                     href: "mailto:raztechnologies9@gmail.com",
